@@ -1,0 +1,38 @@
+; Code Composer Project File, Version 2.0 (do not modify or remove this line)
+
+[Project Settings]
+ProjectDir="C:\CCStudio_v3.1\MyProjects\LabTest01\"
+ProjectType=Executable
+CPUFamily=TMS320C62XX
+Tool="Compiler"
+Tool="Linker"
+Config="Debug"
+Config="Release"
+
+[Source Files]
+Source="..\..\C6000\cgtools\lib\rts6700.lib"
+Source="..\..\C6000\csl\lib\csl6713.lib"
+Source="..\..\C6000\dsk6713\lib\dsk6713bsl.lib"
+Source="c6713dskinit.c"
+Source="Loop_intr.c"
+Source="Vectors_intr.asm"
+Source="C6713dsk.cmd"
+
+["Compiler" Settings: "Debug"]
+Options=-g -fr"$(Proj_dir)\Debug" -i"C:\CCStudio_v3.1\C6000\dsk6713\include" -d"_DEBUG" -d"CHIP_6713" --mem_model:data=far
+
+["Compiler" Settings: "Release"]
+Options=-o3 -fr"$(Proj_dir)\Release"
+
+["Linker" Settings: "Debug"]
+Options=-c -m".\Debug\LabTest01.map" -o".\Debug\LabTest01.out" -stack400 -w -x -i"C:\CCStudio_v3.1\C6000\dsk6713\lib" -l"csl6713.lib" -l"dsk6713bsl.lib" -l"rts6700.lib"
+
+["Linker" Settings: "Release"]
+Options=-c -m".\Release\LabTest01.map" -o".\Release\LabTest01.out" -w -x
+
+["C6713dsk.cmd" Settings: "Debug"]
+LinkOrder=1
+
+["C6713dsk.cmd" Settings: "Release"]
+LinkOrder=1
+
