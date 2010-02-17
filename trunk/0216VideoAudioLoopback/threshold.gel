@@ -1,0 +1,26 @@
+/*threshold.gel GEL slider to vary threshold of R,G,B values*/
+/*modifed from program sine8_LED.c*/
+
+menuitem "Threshold"
+
+slider R_Thres(0,31,1,1,R_parameter) 	/*incr by 1, up to 31*/
+{
+        R_Threshold = R_parameter;     	/*vary R_Threshold of R_Thres*/
+}
+
+slider R_Noise(0,240,10,1,R_parameter)  /*incr by 10, up to 240*/
+{
+		R_Tolerance = R_parameter;		/*vary R_Tolerance of R_Noise*/
+}
+
+slider R_Range(0,240,10,1,R_parameter) /*incr by 10, up to 240*/
+{
+        R_Padding = R_parameter;       /*vary R_Padding of R_Range*/
+}
+
+slider R_Bound(0,240,10,1,R_parameter) /*incr by 10, up to 240*/
+{
+        R_Border = R_parameter;       /*vary R_Border of R_Bound*/
+}
+
+                             

@@ -1,0 +1,15 @@
+---------------------------  VALoopback.pjt - Debug  ---------------------------
+[main.c] "C:\CCStudio_v3.1\C6000\cgtools\bin\cl6x" -g -fr"C:/CCStudio_v3.1/MyProjects/ti6713dsk/CCS_v3.1/MCHproj/0214VideoAudioLoopback/Debug" -d"_DEBUG" -d"_C6713_" -@"Debug.lkf" "main.c"
+"main.c", line 356: error: identifier "DSK6713_LED_on" is undefined
+"main.c", line 357: error: identifier "DSK6713_LED_off" is undefined
+"main.c", line 358: error: identifier "DSK6713_DIP_get" is undefined
+3 errors detected in the compilation of "main.c".
+
+>> Compilation failure
+
+[start.asm] "C:\CCStudio_v3.1\C6000\cgtools\bin\cl6x" -g -fr"C:/CCStudio_v3.1/MyProjects/ti6713dsk/CCS_v3.1/MCHproj/0214VideoAudioLoopback/Debug" -d"_DEBUG" -d"_C6713_" -@"Debug.lkf" "start.asm"
+
+[vm3224k.c] "C:\CCStudio_v3.1\C6000\cgtools\bin\cl6x" -g -fr"C:/CCStudio_v3.1/MyProjects/ti6713dsk/CCS_v3.1/MCHproj/0214VideoAudioLoopback/Debug" -d"_DEBUG" -d"_C6713_" -@"Debug.lkf" "vm3224k.c"
+
+Build Complete,
+  3 Errors, 0 Warnings, 0 Remarks.
