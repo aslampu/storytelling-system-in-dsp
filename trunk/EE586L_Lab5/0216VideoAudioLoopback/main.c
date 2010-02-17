@@ -207,15 +207,15 @@ int DrawBox(short tmp[][YLCD], Box *NewComer, int XFrom, int XTo, int YFrom, int
 		NewComer->Xend = floor(NewComer->Xstart + NewComer->Xlength + 2 * Border + 2 * Padding);
 		NewComer->Yend = floor(NewComer->Ystart + NewComer->Ylength + 2 * Border + 2 * Padding);
 		//without Padding, but with Border
-		tmpXstart1 = int_min(XLCD, int_max( NewComer->Xstart + Padding));
-		tmpYstart1 = int_min(YLCD, int_max( NewComer->Ystart + Padding));
-		tmpXend1 = int_min(XLCD, int_max( NewComer->Xend - Padding));
-		tmpYend1 = int_min(YLCD, int_max( NewComer->Yend - Padding));
+		tmpXstart1 = int_min(XLCD, int_max(0, NewComer->Xstart + Padding));
+		tmpYstart1 = int_min(YLCD, int_max(0, NewComer->Ystart + Padding));
+		tmpXend1 = int_min(XLCD, int_max(0, NewComer->Xend - Padding));
+		tmpYend1 = int_min(YLCD, int_max(0, NewComer->Yend - Padding));
 		//without Padding and without Border
-		tmpXstart2 = int_min(XLCD, int_max( NewComer->Xstart + Padding + Border));
-		tmpYstart2 = int_min(YLCD, int_max( NewComer->Ystart + Padding + Border));
-		tmpXend2 = int_min(XLCD, int_max( NewComer->Xend - Padding - Border));
-		tmpYend2 = int_min(YLCD, int_max( NewComer->Yend - Padding - Border));
+		tmpXstart2 = int_min(XLCD, int_max(0, NewComer->Xstart + Padding + Border));
+		tmpYstart2 = int_min(YLCD, int_max(0, NewComer->Ystart + Padding + Border));
+		tmpXend2 = int_min(XLCD, int_max(0, NewComer->Xend - Padding - Border));
+		tmpYend2 = int_min(YLCD, int_max(0, NewComer->Yend - Padding - Border));
 		
 		//show Box in tmp
 		//add black:0 UP

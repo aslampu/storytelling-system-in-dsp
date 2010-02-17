@@ -1,12 +1,10 @@
 ----------------------  Video_Noise_Template.pjt - Debug  ----------------------
-[Video_Noise_Template.c] "C:\CCStudio_v3.1\C6000\cgtools\bin\cl6x" -g -fr"C:/CCStudio_v3.1/MyProjects/Will/Video_Noise_Template/Debug" -d"_DEBUG" -d"_C6713_" -@"Debug.lkf" "Video_Noise_Template.c"
-"Video_Noise_Template.c", line 18: fatal error: could not open source file "c6000.h"
-1 fatal error detected in the compilation of "Video_Noise_Template.c".
-Compilation terminated.
+[Video_Noise_Template.c] "C:\CCStudio_v3.1\C6000\cgtools\bin\cl6x" -g -fr"C:/CCStudio_v3.1/MCHproj/Video_Noise_Template/Debug" -d"_DEBUG" -d"_C6713_" -@"Debug.lkf" "Video_Noise_Template.c"
 
->> Compilation failure
+[vm3224k.c] "C:\CCStudio_v3.1\C6000\cgtools\bin\cl6x" -g -fr"C:/CCStudio_v3.1/MCHproj/Video_Noise_Template/Debug" -d"_DEBUG" -d"_C6713_" -@"Debug.lkf" "vm3224k.c"
 
-[vm3224k.c] "C:\CCStudio_v3.1\C6000\cgtools\bin\cl6x" -g -fr"C:/CCStudio_v3.1/MyProjects/Will/Video_Noise_Template/Debug" -d"_DEBUG" -d"_C6713_" -@"Debug.lkf" "vm3224k.c"
+[Linking...] "C:\CCStudio_v3.1\C6000\cgtools\bin\cl6x" -@"Debug.lkf"
+<Linking>
 
 Build Complete,
-  1 Errors, 0 Warnings, 0 Remarks.
+  0 Errors, 0 Warnings, 0 Remarks.
