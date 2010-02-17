@@ -15,10 +15,6 @@
 #include	"vm3224k.h"
 #include	"math.h"
 #include  	"image.h"
-#include	"c6000.h"
-#include	"dsxio.h"
-#include	"dsk6713.h"
-#include	"dsk6713_aic23.h"
 
 #define		CE2CTL		*(volatile int *)(0x01800010)
 // Definitions for async access(change as you wish)
@@ -48,14 +44,14 @@ float GAIN6=0;
 float GAIN7=0;
 
 //-----------------
-#define RAND_MAX 255;
-double DCT_Table[4096];
-//double DCT_Table_Noise[4096];
+//#define RAND_MAX 256;
+double DCT_Table[8][8][8][8];
 short N = 8;
+double noise = 0;
+double check = 0;
 double pi = 3.14159265424;
-double dct_img[X_SIZE*Y_SIZE];
-int rev_img[X_SIZE*Y_SIZE];
-//double GAIN0, GAIN1,GAIN2,GAIN3,GAIN4,GAIN5,GAIN6,GAIN7;
+double dct_img[X_SIZE][Y_SIZE];
+int rev_img[X_SIZE][Y_SIZE];
 
 //-----------------
 
@@ -97,15 +93,11 @@ unsigned short	ybr_565(short y,short u,short v)
 
 void main()
 {
-	int 	i,j,k,n,temp1, temp2,temp3,temp4;
+	int 	i,j,p,q,n,k;
+	unsigned short 	rand256;
 	double  sum;
 	PLL6713();			// Initialize C6713 PLL
 	CE2CTL = (WSU|WST|WHD|RSU|RST|RHD|MTYPEA);
-	intr_disable(6);
-	intr_disable(15);
-	intr_select(INT6,6);
-	intr_select(INT15,RINT1);
-	hCodec = DSK6713_AIC23_openCodec(0, &config);   // Set codec control registers and get codec handle
 	vm3224init();       // Initialize vm3224k2
 	vm3224rate(3);		// Set frame rate
 	vm3224bl(15);       // Set backlight
@@ -113,20 +105,13 @@ void main()
 	// Create RGB565 lookup table
 	for (k=0;k<64;k++)  
 		rgb[k] = ybr_565(k<<2,128,128);
-	
-	DSK6713_LED_init();
-	DSK6713_DIP_init();
-
-	intr_enable(6);
-	intr_enable(15);
 
 	//Generate a table of DCT Coefficients
-	for(i = 0; i < N; i++){
-		for(j = 0; j < N; j++){
+	for(p = 0; p < N; p++){
+		for(q = 0; q < N; q++){
 			for (n = 0; n < N; n++){
 				for (k=0;k<N;k++){
-					DCT_Table[(i * N * N * N)+(j * N * N)+(n * N)+k] = cos((pi/N) * (n+0.5) * (i+0.5)) * cos((pi/N) * (k+0.5) * (j+0.5));
-					//DCT_Table_Noise[(i * N * N * N)+(j * N * N)+(n * N)+k] = cos((pi/N) * (n+0.5) * (i+0.5)) * cos((pi/N) * (k+0.5) * (j+0.5));	
+					DCT_Table[p][q][n][k] =  cos((pi/N) * (n+0.5) * (p+0.5)) * cos((pi/N) * (k+0.5) * (q+0.5));
 				}
 			}
 		}
@@ -134,80 +119,90 @@ void main()
 	}
 		
 	while (1) {
-		//Transform input image (in_img) to DCT coefficients 	
-		for(i=0; i < X_SIZE; i++) {
-			for(j=0; j < Y_SIZE; j++) {
-				if(i==0 && j==0)
-					noise = (GAIN0/10) * rand() / RAND_MAX;
-				else if(i==1 && j==1)
-					noise = (GAIN1/10) * rand() / RAND_MAX;
-				else if(i==2 && j==2)
-					noise = (GAIN2/10) * rand() / RAND_MAX;
-				else if(i==3 && j==3)
-					noise = (GAIN3/10) * rand() / RAND_MAX;
-				else if(i==4 && j==4)
-					noise =	(GAIN4/10) * rand() / RAND_MAX;
-				else if(i==5 && j==5)
-					noise = (GAIN5/10) * rand() / RAND_MAX;
-				else if(i==6 && j==6)
-					noise = (GAIN6/10) * rand() / RAND_MAX;
-				else if(i==7 && j==7)
-					noise = (GAIN7/10) * rand() / RAND_MAX;
-				else
-					noise = 0;
+		//Transform input image (in_img) to DCT coefficients with noise	
+		for(i=0; i < X_SIZE; i+=8) {
+			for(j=0; j < Y_SIZE; j+=8) {
+				for(p=0; p<N; p++){
+					for(q=0; q<N; q++){
+						sum = 0;
+						for (n = 0; n < N; n++) {
+							for (k = 0; k < N; k++) {
+								rand256 = rand() % 256;
+								noise = 0;
+								if(n==0 && k==0)
+									noise = GAIN0 * rand256;
+								if(n==1 && k==1)
+									noise = GAIN1 * rand256;
+								if(n==2 && k==2)
+									noise = GAIN2 * rand256;
+								if(n==3 && k==3)
+									noise = GAIN3 * rand256;
+								if(n==4 && k==4)
+									noise =	GAIN4 * rand256;
+								if(n==5 && k==5)
+									noise = GAIN5 * rand256;;
+								if(n==6 && k==6)
+									noise = GAIN6 * rand256;
+								if(n==7 && k==7)
+									noise = GAIN7 * rand256;
 
-				sum = 0;
-				for (n = 0; n < N; n++) {
-					for (k = 0; k < N; k++) {
-				 		temp3 = i / N;
-				 		temp4 = j / N;
-						sum = sum + atoi(in_img[temp3 * N * N + n * N + temp4 * N + k]) * (DCT_Table[temp3 * N * N * N + temp4 * N * N+ n * N + k]+noise);
+								sum += ((int)in_img[i+p][j+q] * (DCT_Table[p][q][n][k] + noise));
+							}
+						}
+						check = (2.0 / N) * sum;
+						if(check > 255.0)
+			 				check = 255.0;
+						if(check < 0.0)
+							check = 0.0;
+
+						dct_img[i+p][j+q] = check;
 					}
 				}
-				dct_img[i*X_SIZE + j] = (2.0 / N) * sum;
 			}
 		}
 		
 		//take inverse DCT transform
-		for(i=0; i < X_SIZE; i++) {
-			for(j=0; j < Y_SIZE; j++) {
-				sum = 0;
-				for (n = 0; n < N; n++) {
-					for (k = 0; k < N; k++) {
-				 		temp1 = i / N;
-				 		temp2 = j / N;
-						sum = sum + dct_img[temp1 * N * N + n * N + temp2 * N + k] * DCT_Table[temp1 * N * N * N + temp2 * N * N+ n * N + k];
+		for(i=0; i < X_SIZE; i+=8) {
+			for(j=0; j < Y_SIZE; j+=8) {
+				for(p=0; p<N; p++){
+					for(q=0; q<N; q++){
+						sum = 0;
+						for (n = 0; n < N; n++) {
+							for (k = 0; k < N; k++) {
+								sum += (dct_img[i+p][j+q] * (DCT_Table[p][q][n][k]));
+							}
+						}
+						check = (2.0 / N) * sum;
+						if(check > 255.0)
+			 				check = 255.0;
+						if(check < 0.0)
+							check = 0.0;
+				
+						rev_img[i+p][j+q] = floor(check);
 					}
 				}
-				check =  (2.0 / N) * sum;
-				if(check > 255.0)
-			 		check = 255.0;
-				if(check < 0.0)
-					check = 0.0;
-				
-				rev_img[i*X_SIZE + j] = floor(check);
 			}
 		}
-
 		//used to output final image to LCD
 		VM3224ADDH = 0;		     // Select LCD screen buffer and Set address (0<<15|0x00000)
 		for (j=0;j<240;j++){
 			for (i=0;i<320;i++){
 				//since image is only 240x240
 				if( i < 240 ){
-					if(DSK6713_DIP_get(0)){
+					//if(DSK6713_DIP_get(0)){
 						//note that rgb only has 64 levels of greyscale
 						//so divide an 8-bit value by 4 (or shift by 2)	 
-						VM3224DATA = (short)(rgb[(in_img[j][i])>>2]); 
-						DSK6713_LED_off(0);
-					}else{
-						VM3224DATA = (short)(rgb[(rev_img[i*N+j])>>2)]);
-						DSK6713_LED_on(0);
-					}
+					//	VM3224DATA = (short)(rgb[in_img[j][i]>>2]); 
+					//	DSK6713_LED_off(0);
+					//}else{
+						//VM3224DATA = (short)(rgb[(in_img[j][i]>>2)]);
+						VM3224DATA = (short)(rgb[(unsigned char)(rev_img[j][i])>>2]);
+					//	DSK6713_LED_on(0);
+					//}
 				}
 				else
 					VM3224DATA = rgb[0];		
-					DSK6713_LED_off(0);	
+					//DSK6713_LED_off(0);	
 			}
     	}
 	}
