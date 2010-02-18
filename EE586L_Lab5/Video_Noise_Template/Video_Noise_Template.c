@@ -29,29 +29,32 @@
 
 #pragma		DATA_SECTION (in_img, ".sdram")
 #pragma 	DATA_ALIGN(in_img,8)
-#pragma		DATA_SECTION (dct_img, ".sdram")
 #pragma		DATA_SECTION (rev_img, ".sdram")
+#pragma		DATA_ALIGN(rev_img,8)
+#pragma		DATA_SECTION (dct_img, ".sdram")
 //rgb table used for outputing to LCD
 short		rgb[64];
 //Variable for Noise Gain levels
-float GAIN0=0;
+/*float GAIN0=0;
 float GAIN1=0;
 float GAIN2=0;
 float GAIN3=0;
 float GAIN4=0;
 float GAIN5=0;
 float GAIN6=0;
-float GAIN7=0;
+float GAIN7=0;*/
+float GAIN[8] = {0,0,0,0,0,0,0,0};
 
 //-----------------
 //#define RAND_MAX 256;
 double DCT_Table[8][8][8][8];
 short N = 8;
-double noise = 0;
+//double noise = 0;
 double check = 0;
 double pi = 3.14159265424;
+unsigned char rev_img[X_SIZE][Y_SIZE];
+//short rev_img[X_SIZE][Y_SIZE];
 double dct_img[X_SIZE][Y_SIZE];
-int rev_img[X_SIZE][Y_SIZE];
 
 //-----------------
 
@@ -94,7 +97,7 @@ unsigned short	ybr_565(short y,short u,short v)
 void main()
 {
 	int 	i,j,p,q,n,k;
-	unsigned short 	rand256;
+	int 	rand256;
 	double  sum;
 	PLL6713();			// Initialize C6713 PLL
 	CE2CTL = (WSU|WST|WHD|RSU|RST|RHD|MTYPEA);
@@ -117,50 +120,34 @@ void main()
 		}
 				
 	}
-		
-	while (1) {
-		//Transform input image (in_img) to DCT coefficients with noise	
-		for(i=0; i < X_SIZE; i+=8) {
-			for(j=0; j < Y_SIZE; j+=8) {
-				for(p=0; p<N; p++){
-					for(q=0; q<N; q++){
-						sum = 0;
-						for (n = 0; n < N; n++) {
-							for (k = 0; k < N; k++) {
-								rand256 = rand() % 256;
-								noise = 0;
-								if(n==0 && k==0)
-									noise = GAIN0 * rand256;
-								if(n==1 && k==1)
-									noise = GAIN1 * rand256;
-								if(n==2 && k==2)
-									noise = GAIN2 * rand256;
-								if(n==3 && k==3)
-									noise = GAIN3 * rand256;
-								if(n==4 && k==4)
-									noise =	GAIN4 * rand256;
-								if(n==5 && k==5)
-									noise = GAIN5 * rand256;;
-								if(n==6 && k==6)
-									noise = GAIN6 * rand256;
-								if(n==7 && k==7)
-									noise = GAIN7 * rand256;
 
-								sum += ((int)in_img[i+p][j+q] * (DCT_Table[p][q][n][k] + noise));
-							}
+	//Transform input image (in_img) to DCT coefficients
+	for(i=0; i < X_SIZE; i+=8) {
+		for(j=0; j < Y_SIZE; j+=8) {
+			for(p=0; p<N; p++){
+				for(q=0; q<N; q++){
+					sum = 0;
+					for (n = 0; n < N; n++) {
+						for (k = 0; k < N; k++) {
+							sum += ((int)in_img[i+p][j+q] * DCT_Table[p][q][n][k]);
 						}
-						check = (2.0 / N) * sum;
-						if(check > 255.0)
-			 				check = 255.0;
-						if(check < 0.0)
-							check = 0.0;
-
-						dct_img[i+p][j+q] = check;
 					}
+					dct_img[i+p][j+q] = sum;
 				}
 			}
 		}
+	}
 		
+	while (1) {
+		//apply noise to DCT coeffs. at subset of frequencies
+		for(i=0; i < X_SIZE; i+=8) {
+			for(j=0; j < Y_SIZE; j+=8) {
+				rand256 = rand() % 256;
+				for(p=0; p<N; p++){
+					dct_img[i+p][j+p] += GAIN[p] * rand256;					
+				}
+			}
+		}	
 		//take inverse DCT transform
 		for(i=0; i < X_SIZE; i+=8) {
 			for(j=0; j < Y_SIZE; j+=8) {
@@ -169,7 +156,7 @@ void main()
 						sum = 0;
 						for (n = 0; n < N; n++) {
 							for (k = 0; k < N; k++) {
-								sum += (dct_img[i+p][j+q] * (DCT_Table[p][q][n][k]));
+								sum += (dct_img[i+p][j+q] * DCT_Table[p][q][n][k]);
 							}
 						}
 						check = (2.0 / N) * sum;
@@ -179,6 +166,7 @@ void main()
 							check = 0.0;
 				
 						rev_img[i+p][j+q] = floor(check);
+						//rev_img[i+p][j+q] = (short)floor(check);
 					}
 				}
 			}
@@ -196,13 +184,14 @@ void main()
 					//	DSK6713_LED_off(0);
 					//}else{
 						//VM3224DATA = (short)(rgb[(in_img[j][i]>>2)]);
-						VM3224DATA = (short)(rgb[(unsigned char)(rev_img[j][i])>>2]);
+						VM3224DATA = (short)(rgb[rev_img[j][i]>>2]);
 					//	DSK6713_LED_on(0);
 					//}
 				}
-				else
+				else{
 					VM3224DATA = rgb[0];		
 					//DSK6713_LED_off(0);	
+				}
 			}
     	}
 	}

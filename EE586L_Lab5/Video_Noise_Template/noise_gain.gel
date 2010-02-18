@@ -4,42 +4,42 @@ menuitem "Noise Gain"
 
 slider gain0(0,20,1,1,gain_0)
 {
-  GAIN0 = gain_0*0.5;
+  GAIN[0] = gain_0*0.05;
 }
 
-slider gain1(0,200,10,1,gain_1)
+slider gain1(0,20,10,1,gain_1)
 {
-  GAIN1 = gain_1*0.5;
+  GAIN[1] = gain_1*0.05;
 }
 
-slider gain2(0,200,10,1,gain_2)
+slider gain2(0,20,10,1,gain_2)
 {
-  GAIN2 = gain_2*0.5;
+  GAIN[2] = gain_2*0.05;
 }
 
-slider gain3(0,200,10,1,gain_3)
+slider gain3(0,20,10,1,gain_3)
 {
-  GAIN3 = gain_3*0.5;
+  GAIN[3] = gain_3*0.05;
 }
 
-slider gain4(0,200,10,1,gain_4)
+slider gain4(0,20,10,1,gain_4)
 {
-  GAIN4 = gain_4*0.5;
+  GAIN[4] = gain_4*0.05;
 }
 
-slider gain5(0,200,10,1,gain_5)
+slider gain5(0,20,10,1,gain_5)
 {
-  GAIN5 = gain_5*0.5;
+  GAIN[5] = gain_5*0.05;
 }
 
-slider gain6(0,200,10,1,gain_6)
+slider gain6(0,20,10,1,gain_6)
 {
-  GAIN6 = gain_6*0.5;
+  GAIN[6] = gain_6*0.05;
 }
 
-slider gain7(0,200,10,1,gain_7)
+slider gain7(0,20,10,1,gain_7)
 {
-  GAIN7 = gain_7*0.5;
+  GAIN[7] = gain_7*0.05;
 }
 
 

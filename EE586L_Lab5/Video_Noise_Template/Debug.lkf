@@ -1,5 +1,5 @@
 -z -c -m"./Debug/Video_Noise_Template.map" -o"./Debug/Video_Noise_Template.out" -w -x -i"C:/CCStudio_v3.1/C6000/rtdx/lib" -i"C:/CCStudio_v3.1/C6000/csl/lib" -i"C:/CCStudio_v3.1/C6000/xdais/lib" -i"C:/CCStudio_v3.1/C6000/bios/lib" -i"C:/CCStudio_v3.1/C6000/cgtools/lib"
-"C:\CCStudio_v3.1\MCHproj\Video_Noise_Template\Debug\Video_Noise_Template.obj"
-"C:\CCStudio_v3.1\MCHproj\Video_Noise_Template\Debug\vm3224k.obj"
+"C:\CCStudio_v3.1\MyProjects\MCHproj\storytelling-system-in-dsp\EE586L_Lab5\Video_Noise_Template\Debug\Video_Noise_Template.obj"
+"C:\CCStudio_v3.1\MyProjects\MCHproj\storytelling-system-in-dsp\EE586L_Lab5\Video_Noise_Template\Debug\vm3224k.obj"
 "C:\CCStudio_v3.1\C6000\cgtools\lib\rts6700.lib"
-"C:\CCStudio_v3.1\MCHproj\Video_Noise_Template\c6713.cmd"
+"C:\CCStudio_v3.1\MyProjects\MCHproj\storytelling-system-in-dsp\EE586L_Lab5\Video_Noise_Template\c6713.cmd"
