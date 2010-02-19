@@ -35,21 +35,40 @@
 #pragma 	DATA_SECTION ( cam,".sdram" )
 #pragma 	DATA_SECTION ( now,".sdram" )
 #pragma 	DATA_SECTION ( tmp,".sdram" )
+//#pragma     DATA_SECTION ( hsv,".sdram" )
 
 short       now[XLCD][YLCD];
 short 		tmp[XLCD][YLCD];
 short		lcd[XLCD][YLCD];
 short		cam[XLCD][YLCD];
+//short     hsv[XLCD][YLCD][3];
 short		rgb[64][32][32];
 int			flag=0;
 
 //Can be controlled by GEL
-unsigned short 		R_Threshold = 15;	//The maximum RED pixel value to be classified as RED
+unsigned short 		RR_Threshold = 26;	//The minimum RED pixel value to be classified as RED
+unsigned short      RG_Threshold = 33;	//The maximum GREEN pixel value to be classified as RED
+unsigned short      RB_Threshold = 17;	//The maximum BLUE pixel value to be classified as RED
 unsigned short		R_Tolerance = 50; 	//The minimum necessary RED pixels to be judged as an object
-unsigned short      R_Padding = 2;		//Search range beyond Box's border
-unsigned short 		R_Border = 2;		//Box's border width
+unsigned short      R_Padding = 20;		//Search range beyond RED Box's border
+unsigned short 		R_Border = 2;		//RED Box's border width
+/*
+unsigned short 		GR_Threshold = 17;	//The minimum RED pixel value to be classified as GREEN
+unsigned short      GG_Threshold = 58;	//The maximum GREEN pixel value to be classified as GREEN
+unsigned short      GB_Threshold = 17;	//The maximum BLUE pixel value to be classified as GREEN
+unsigned short    	G_Tolerance = 50;	//The minimum necessary GREEN pixels to be judged as an object
+unsigned short    	G_Padding = 20;		//Search range beyond GREEN Box's border
+unsigned short 		G_Border = 2;		//GREEN Box's border width
 
-typedef struct {
+unsigned short 		BR_Threshold = 17;	//The minimum RED pixel value to be classified as BLUE
+unsigned short      BG_Threshold = 33;	//The maximum GREEN pixel value to be classified as BLUE
+unsigned short      BB_Threshold = 26;	//The maximum BLUE pixel value to be classified as BLUE
+unsigned short   	B_Tolerance = 50;	//The minimum necessary BLUE pixels to be judged as an object
+unsigned short    	B_Padding = 20;		//Search range beyond BLUE Box's border
+unsigned short 		B_Border = 2;		//BLUE Box's border width
+*/
+
+typedef struct Box{
 	int Size;
 	float Xcenter;
 	float Ycenter;
@@ -59,12 +78,9 @@ typedef struct {
 	int Ystart;
 	int Xend;
 	int Yend;
-	//float brightness;
-	//float hue;
-	//float saturation;
 } Box;
 
-typedef struct {
+typedef struct Display{
 	int stepIn;
 	int move;
 	int drawBox;
@@ -168,6 +184,44 @@ int int_max(int A, int B){
 		return B;
 }
 
+/*
+//Copied from Will's code: HSV_Control_4.0 and modifed a little bit
+void RGB2HSV(int rTemp, int gTemp, int bTemp, float *hsv){
+	int RGB_Min; 	//var_Min
+  	int RGB_Max; 	//var_Max
+  	int Difference; //del_Max
+		
+	RGB_Min = int_min(rTemp, int_min(gTemp, bTemp));
+	RGB_Max = int_max(rTemp, int_max(gTemp, bTemp));
+	Difference = RGB_Max - RGB_Min;
+
+	// V_value
+	hsv[2] = RGB_Max;
+
+	// S_value
+	if(RGB_Max != 0){
+		hsv[1] = Difference/RGB_Max;
+	}
+	else{
+		hsv[1] = 0;
+		hsv[0] = 0;
+		return;
+	}
+
+	//H_value
+	if(rTemp == RGB_Max)
+		hsv[0] = (gTemp - bTemp)/Difference;
+	else if(gTemp == RGB_Max)
+		hsv[0] = 2 + ( bTemp - rTemp ) / Difference;
+	else
+		hsv[0] = 4 + ( rTemp - gTemp ) / Difference;
+		
+	hsv[0] *= 60;
+	if( hsv[0] < 0 )
+    	hsv[0] += 360;
+}
+*/
+
 void boxInitialize(Box *A){
 	A->Size = 0;
 	A->Xcenter = 0.0;
@@ -180,19 +234,27 @@ void boxInitialize(Box *A){
 	A->Yend = 320;
 }
 
-int DrawBox(short tmp[][YLCD], Box *NewComer, int XFrom, int XTo, int YFrom, int YTo, int Threshold, int Tolerance, int Border, int Padding){
+//int DrawBox(short tmp[][YLCD], short hsv[][YLCD][3], Box *NewComer, int XFrom, int XTo, int YFrom, int YTo, int R_Threshold, int G_Threshold, int B_Threshold, int Tolerance, int Border, int Padding){
+int DrawBox(short tmp[][YLCD], Box *NewComer, int XFrom, int XTo, int YFrom, int YTo, int R_Threshold, int G_Threshold, int B_Threshold, int Tolerance, int Border, int Padding){
 	//NewComer should be cleared before going into this function
 	//XFrom, XTo, YFrom, YTo including Border and Padding means Predicted search range
 	int i,j;
 	int tmpXstart1, tmpYstart1, tmpXend1, tmpYend1, tmpXstart2, tmpYstart2, tmpXend2, tmpYend2;
+	int rTemp,gTemp,bTemp;
 	for(j=XFrom;j<XTo;j++){
 		for(i=YFrom;i<YTo;i++){
-			if((tmp[j][i]>>11) < Threshold){
+			rTemp = (tmp[j][i] & 0xf800) >> 11;
+			gTemp = (tmp[j][i] & 0x07e0) >> 5;
+			bTemp = (tmp[j][i] & 0x001f);
+			if(rTemp > R_Threshold && gTemp < G_Threshold && bTemp < B_Threshold){
 				NewComer->Size++;
 				NewComer->Xcenter += j;
 				NewComer->Ycenter += i;
 				NewComer->Xlength += j*j;
 				NewComer->Ylength += i*i;
+
+				//conversion from rgb to hsu
+				//RGB2HSV(rTemp, gTemp, bTemp, hsv[j][i]);
 			}
 		}
 	}
@@ -258,9 +320,9 @@ void main()
 	int					R_YTo=0;
 	unsigned short 		mask=0xffff;
 	
-	Box R_Former;
-	Box R_Latter;
-	Box R_NewComer;
+	Box R_Former, R_Latter, R_NewComer;
+	//Box G_Former, G_Latter, G_NewComer;
+	//Box B_Former, B_Latter, B_NewComer;
 	Display state = {0,0,0};
 	
 	enum colorID {ALL_Color, R_Color, G_Color, B_Color};
@@ -268,7 +330,15 @@ void main()
 	boxInitialize(&R_Former);
 	boxInitialize(&R_Latter);
 	boxInitialize(&R_NewComer);
-	
+	/*
+	boxInitialize(&G_Former);
+	boxInitialize(&G_Latter);
+	boxInitialize(&G_NewComer);
+
+	boxInitialize(&B_Former);
+	boxInitialize(&B_Latter);
+	boxInitialize(&B_NewComer);
+	*/	
 	PLL6713();			// Initialize C6713 PLL	
 	CE2CTL = (WSU|WST|WHD|RSU|RST|RHD|MTYPEA);
 
@@ -347,11 +417,27 @@ void main()
 			//           0 <= R_YFrom, R_YTo <= YLCD
 			R_XFrom = int_min(XLCD, int_max(0,2 * R_Latter.Xstart - R_Former.Xstart));
 			R_YFrom = int_min(YLCD, int_max(0,2 * R_Latter.Ystart - R_Former.Ystart));
+			//R_XFrom = int_min(XLCD, int_max(0, R_Latter.Xstart));
+			//R_YFrom = int_min(YLCD, int_max(0, R_Latter.Ystart));
 			R_XTo = int_min(XLCD, int_max(0,2 * R_Latter.Xend - R_Former.Xend));
 			R_YTo = int_min(YLCD, int_max(0,2 * R_Latter.Yend - R_Former.Yend));
-		
+			/*
+			G_XFrom = int_min(XLCD, int_max(0,2 * G_Latter.Xstart - G_Former.Xstart));
+			G_YFrom = int_min(YLCD, int_max(0,2 * G_Latter.Ystart - G_Former.Ystart));
+			G_XTo = int_min(XLCD, int_max(0,2 * G_Latter.Xend - G_Former.Xend));
+			G_YTo = int_min(YLCD, int_max(0,2 * G_Latter.Yend - G_Former.Yend));
+
+			B_XFrom = int_min(XLCD, int_max(0,2 * B_Latter.Xstart - B_Former.Xstart));
+			B_YFrom = int_min(YLCD, int_max(0,2 * B_Latter.Ystart - B_Former.Ystart));
+			B_XTo = int_min(XLCD, int_max(0,2 * B_Latter.Xend - B_Former.Xend));
+			B_YTo = int_min(YLCD, int_max(0,2 * B_Latter.Yend - B_Former.Yend));
+			*/
 			boxInitialize(&R_NewComer);
-			if(DrawBox(tmp, &R_NewComer, R_XFrom, R_XTo, R_YFrom, R_YTo, R_Threshold, R_Tolerance, R_Border, R_Padding)){
+			//boxInitialize(&G_NewComer);
+			//boxInitialize(&B_NewComer);
+
+			//if(DrawBox(tmp, hsv, &R_NewComer, R_XFrom, R_XTo, R_YFrom, R_YTo, RR_Threshold, RG_Threshold, RB_Threshold, R_Tolerance, R_Border, R_Padding)){
+			if(DrawBox(tmp, &R_NewComer, R_XFrom, R_XTo, R_YFrom, R_YTo, RR_Threshold, RG_Threshold, RB_Threshold, R_Tolerance, R_Border, R_Padding)){
 				R_Former = R_Latter;
 				R_Latter = R_NewComer;
 			}else{
@@ -359,6 +445,24 @@ void main()
 				boxInitialize(&R_Former);
 				boxInitialize(&R_Latter);
 			}
+			/*
+			if(DrawBox(tmp, &G_NewComer, G_XFrom, G_XTo, G_YFrom, G_YTo, GR_Threshold, GG_Threshold, GB_Threshold, G_Tolerance, G_Border, G_Padding)){
+				G_Former = G_Latter;
+				G_Latter = G_NewComer;
+			}else{
+				boxInitialize(&G_NewComer);//if losing tracking of the object, then reset
+				boxInitialize(&G_Former);
+				boxInitialize(&G_Latter);
+			}
+			if(DrawBox(tmp, &B_NewComer, B_XFrom, B_XTo, B_YFrom, B_YTo, BR_Threshold, BG_Threshold, BB_Threshold, B_Tolerance, B_Border, B_Padding)){
+				B_Former = B_Latter;
+				B_Latter = B_NewComer;
+			}else{
+				boxInitialize(&B_NewComer);//if losing tracking of the object, then reset
+				boxInitialize(&B_Former);
+				boxInitialize(&B_Latter);
+			}
+			*/
 		}
 		
 		switch(!DSK6713_DIP_get(1)*2+!DSK6713_DIP_get(2)){
