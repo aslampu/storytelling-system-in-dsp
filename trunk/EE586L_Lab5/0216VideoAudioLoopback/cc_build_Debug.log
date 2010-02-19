@@ -1,9 +1,9 @@
 ---------------------------  VALoopback.pjt - Debug  ---------------------------
-[main.c] "C:\CCStudio_v3.1\C6000\cgtools\bin\cl6x" -g -fr"C:/CCStudio_v3.1/MyProjects/MCHproj/storytelling-system-in-dsp/EE586L_Lab5/0216VideoAudioLoopback/Debug" -d"_DEBUG" -d"_C6713_" -@"Debug.lkf" "main.c"
+[main.c] "C:\CCStudio_v3.1\C6000\cgtools\bin\cl6x" -g -fr"C:/CCStudio_v3.1/MCHproj/0216VideoAudioLoopback/Debug" -d"_DEBUG" -d"_C6713_" -@"Debug.lkf" "main.c"
 
-[start.asm] "C:\CCStudio_v3.1\C6000\cgtools\bin\cl6x" -g -fr"C:/CCStudio_v3.1/MyProjects/MCHproj/storytelling-system-in-dsp/EE586L_Lab5/0216VideoAudioLoopback/Debug" -d"_DEBUG" -d"_C6713_" -@"Debug.lkf" "start.asm"
+[start.asm] "C:\CCStudio_v3.1\C6000\cgtools\bin\cl6x" -g -fr"C:/CCStudio_v3.1/MCHproj/0216VideoAudioLoopback/Debug" -d"_DEBUG" -d"_C6713_" -@"Debug.lkf" "start.asm"
 
-[vm3224k.c] "C:\CCStudio_v3.1\C6000\cgtools\bin\cl6x" -g -fr"C:/CCStudio_v3.1/MyProjects/MCHproj/storytelling-system-in-dsp/EE586L_Lab5/0216VideoAudioLoopback/Debug" -d"_DEBUG" -d"_C6713_" -@"Debug.lkf" "vm3224k.c"
+[vm3224k.c] "C:\CCStudio_v3.1\C6000\cgtools\bin\cl6x" -g -fr"C:/CCStudio_v3.1/MCHproj/0216VideoAudioLoopback/Debug" -d"_DEBUG" -d"_C6713_" -@"Debug.lkf" "vm3224k.c"
 
 [Linking...] "C:\CCStudio_v3.1\C6000\cgtools\bin\cl6x" -@"Debug.lkf"
 <Linking>
