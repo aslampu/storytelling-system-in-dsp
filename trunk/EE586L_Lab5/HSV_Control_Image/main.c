@@ -18,10 +18,11 @@
 #include	"dsk6713.h"
 #include	"dsk6713_aic23.h"
 
-#include	"ball.dat"
+
 
 //=================================================================== Additional Lib 
 #include 	"math.h"
+#include	"ball.dat"
 //===================================================================
 
 // Definitions for async access(change as you wish)
@@ -366,7 +367,7 @@ void main()
 			{
 				for(j = 0; j < BALL_SIZE; j++)
 				{
-					lcd[i][j] = ball[i][j];
+					//lcd[i][j] = ball[20][20];
 
 					rTemp = ((float)((ball[i][j]&0xF800)>>11))/31;
 					gTemp = ((float)((ball[i][j]&0x7E0)>>5))/63;
