@@ -18,7 +18,8 @@
 #include	"dsk6713.h"
 #include	"dsk6713_aic23.h"
 
-#include    "Acrylic Paint.h"
+//#include    "Acrylic Paint.h"
+include       "Paint.h"
 
 //=================================================================== Additional Lib 
 #include 	"math.h"
@@ -373,10 +374,8 @@ void main()
 				for(j = 0; j < HEIGHT; j++)
 				{
 					
-					if(image[j][i] != ((short)0xFFFF))
+					if((image[j][i] -  ((short)0xFFFF)) > (1))
 					{ 
-						lcd[j][i] = 256;
-						/*
 						rTemp = ((float)((image[j][i]&0xF800)>>11))/31;
 						gTemp = ((float)((image[j][i]&0x7E0)>>5))/63;
 						bTemp = ((float)(image[j][i]&0x1F))/31;
@@ -417,12 +416,6 @@ void main()
 
 						rgbAdj = (((short)rTemp)<<11)|(((short)gTemp)<<5)|(((short)bTemp));
 						lcd[j+Y_SHIFT][i+X_SHIFT] = rgbAdj;
-						*/
-					}
-					else
-					{
-						lcd[j][i] = 0;
-					}
 				}
 			}
 			
