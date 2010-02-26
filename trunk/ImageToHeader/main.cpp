@@ -9,6 +9,7 @@ int G_BITS = 6;
 int B_BITS = 5;
 
 int main (int argc, char * const argv[]) {
+	
     if (argc != 5) {
 		cout << "usage: ./ImageToHeader /path/to/input/file.raw width height /path/to/output/file.h" << endl;
 		return 1;
@@ -18,8 +19,14 @@ int main (int argc, char * const argv[]) {
 	int height = atoi(argv[3]);
 	char* outputDatPath = argv[4];
 	
+	
+	//int width = 150;
+	//int height = 189;
+	
 	// Initialize input and output files
+	//string tmpInput = "/Users/david/Spring 2010/EE 586L/Code/Input Images/Acrylic Paint.raw";
 	ByteFile inputImg = ByteFile(inputImgPath);
+	//string tmpOutput = "/Users/david/Spring 2010/EE 586L/Code/Input Images/Acrylic Paint.h";
 	ofstream outputDat(outputDatPath, ofstream::binary);
 	
 	// Dimension Validation
@@ -51,7 +58,7 @@ int main (int argc, char * const argv[]) {
 	outputVal += gScaled<<(B_BITS);
 	outputVal += bScaled;
 	
-	sprintf(buffer, "#define		BG_COLOR	0x%04x\n", outputVal);
+	sprintf(buffer, "short		BG_COLOR = 0x%04x\n", outputVal);
 	strBuffer = new string(buffer);
 	outputDat.write(strBuffer->c_str(), strBuffer->length());
 	delete strBuffer;
@@ -61,10 +68,13 @@ int main (int argc, char * const argv[]) {
 	int countWidth = 0;
 	int countHeight = 0;
 	while (rVal != NULL && gVal != NULL && bVal != NULL) {
+		
+		if ((int)*rVal < 200)
+			cout << "Hi!";
 		// Convert 24-bit pixel to 16-bit pixel (RGB: 5,6,5)
-		rScaled = (int)*rVal / 255 * (pow(2.0, (double)R_BITS) - 1);
-		gScaled = (int)*gVal / 255 * (pow(2.0, (double)G_BITS) - 1);
-		bScaled = (int)*bVal / 255 * (pow(2.0, (double)B_BITS) - 1);
+		rScaled = ((int)*rVal / 255.0) * (pow(2.0, (double)R_BITS) - 1);
+		gScaled = ((int)*gVal / 255.0) * (pow(2.0, (double)G_BITS) - 1);
+		bScaled = ((int)*bVal / 255.0) * (pow(2.0, (double)B_BITS) - 1);
 		
 		// Generate single 16-bit int representation
 		outputVal  = rScaled<<(G_BITS+B_BITS);
@@ -77,6 +87,10 @@ int main (int argc, char * const argv[]) {
 		} else {
 			sprintf(buffer, ",0x%04x", outputVal);
 		}
+		
+		printf("rOrig:   %d gOrig:   %d, bOrig:   %d\n", (int)*rVal, (int)*gVal, (int)*bVal);
+		printf("rScaled: %d gScaled: %d, bScaled: %d\n", rScaled, gScaled, bScaled);
+		printf("0x%04x\n", outputVal);
 	
 		strBuffer = new string(buffer);
 		outputDat.write(strBuffer->c_str(), strBuffer->length());
