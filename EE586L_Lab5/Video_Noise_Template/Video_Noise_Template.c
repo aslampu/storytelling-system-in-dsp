@@ -120,8 +120,9 @@ void main()
 		}
 				
 	}
-
-	//Transform input image (in_img) to DCT coefficients
+		
+	while (1) {
+		//Transform input image (in_img) to DCT coefficients
 	for(i=0; i < X_SIZE; i+=8) {
 		for(j=0; j < Y_SIZE; j+=8) {
 			for(p=0; p<N; p++){
@@ -129,16 +130,15 @@ void main()
 					sum = 0;
 					for (n = 0; n < N; n++) {
 						for (k = 0; k < N; k++) {
-							sum += ((int)in_img[i+p][j+q] * DCT_Table[p][q][n][k]);
+							sum += ((int)in_img[i+n][j+k] * DCT_Table[p][q][n][k]);
 						}
 					}
-					dct_img[i+p][j+q] = sum;
+					dct_img[i+p][j+q] = (2.0 / N) * sum;
 				}
 			}
 		}
 	}
-		
-	while (1) {
+
 		//apply noise to DCT coeffs. at subset of frequencies
 		for(i=0; i < X_SIZE; i+=8) {
 			for(j=0; j < Y_SIZE; j+=8) {
@@ -156,7 +156,7 @@ void main()
 						sum = 0;
 						for (n = 0; n < N; n++) {
 							for (k = 0; k < N; k++) {
-								sum += (dct_img[i+p][j+q] * DCT_Table[p][q][n][k]);
+								sum += (dct_img[i+n][j+k] * DCT_Table[p][q][n][k]);
 							}
 						}
 						check = (2.0 / N) * sum;
