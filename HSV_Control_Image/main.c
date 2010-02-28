@@ -52,23 +52,23 @@ DSK6713_AIC23_CodecHandle hCodec;
 extern cregister volatile unsigned int IER;
 extern cregister volatile unsigned int CSR;
 
-//=================================================================== HSV_GEL Variable
+//=================================================================== LAB_GEL Variable
 //---For GEL
-short doHSV = 0; //if doHSV is '0', the frame will be original
-short negativeH = 0;
-short negativeS = 0;
-short negativeV = 0;
-short h_adjust = 0;
-short s_adjust = 0;
-short v_adjust = 0;
+short doLAB = 0; //if doLAB is '0', the frame will be original
+short negativeL = 0;
+short negativeA = 0;
+short negativeB = 0;
+short l_adjust = 0;
+short a_adjust = 0;
+short b_adjust = 0;
 short time = 100;
 
-//---For RGB_HSV transform
+//---For RGB_LAB transform
 
 short rgbOri;
 short rgbAdj;
-float rTemp, gTemp, bTemp;
-float hsv[3];
+unsigned char rTemp, gTemp, bTemp;
+int *L, *a, *b;
 
 //===================================================================
 
@@ -152,172 +152,94 @@ interrupt void	c_int15(void)
 	DXR1 = DRR1;
 }
 
-
-//=================================================================== HSV_GEL Function
-float rgbMax(float R_value, float G_value, float B_value)
+//Reference: Mr.Mark Ruzon
+/* Color.c */
+// Convert between RGB and CIE-Lab color spaces
+// Uses ITU-R recommendation BT.709 with D65 as reference white.
+// Yossi Rubner
+// Last modified 2/24/98
+//=================================================================== LAB_GEL Function
+void RGB2Lab(unsigned char R, unsigned char G, unsigned char B,
+	     int *L, int *a, int *b)
 {
-	float temp = 0;
-	if(R_value >= temp)
-	{
-		temp = R_value;
-	}
-	if(G_value >= temp)
-	{
-		temp = G_value;
-	}
-	if(B_value >= temp)
-	{
-		temp = B_value;
-	}
+  float X, Y, Z, fX, fY, fZ;
 
-	return temp;
-}
+  X = 0.412453*R + 0.357580*G + 0.180423*B;
+  Y = 0.212671*R + 0.715160*G + 0.072169*B;
+  Z = 0.019334*R + 0.119193*G + 0.950227*B;
 
-float rgbMin(float rTemp, float gTemp, float bTemp)
-{
-	float temp = 255;
-	if(rTemp <= temp)
-	{
-		temp = rTemp;
-	}
-	if( gTemp <= temp)
-	{
-		temp =  gTemp;
-	}
-	if(bTemp <= temp)
-	{
-		temp = bTemp;
-	}
+  X /= (255 * 0.950456);
+  Y /=  255;
+  Z /= (255 * 1.088754);
 
-	return temp;
-}
-
-void RGB2HSV(float rTemp,float gTemp,float bTemp, float *hsv)
-{
-	float RGB_Min; //var_Min
-  	float RGB_Max; //var_Max
-  	float Difference; //del_Max
-
-	RGB_Min = rgbMin(rTemp, gTemp, bTemp);
-	RGB_Max = rgbMax(rTemp, gTemp, bTemp);
-	Difference = RGB_Max - RGB_Min;
-
-	// V_value
-	hsv[2] = RGB_Max;
-
-	// S_value
-	if(RGB_Max != 0)
-	{
-		hsv[1] = Difference/RGB_Max;
-	}
-	else
-	{
-		hsv[1] = 0;
-		hsv[0] = 0;
-		return;
-	}
-
-	//H_value
-	if(rTemp == RGB_Max)
-		hsv[0] = (gTemp - bTemp)/Difference;
-	else if(gTemp == RGB_Max)
-		hsv[0] = 2 + ( bTemp - rTemp ) / Difference;
-	else
-		hsv[0] = 4 + ( rTemp - gTemp ) / Difference;
-		
-	
-	hsv[0] *= 60;
-	if( hsv[0] < 0 )
-    	hsv[0] += 360; 
-
-}
-
-void HSV2RGB(float* hsv, float* rTemp, float* gTemp, float* bTemp)
-{
-	 int i;
-     float f, p, q, t;
-
-	//--- Threshold for H(0~360), S(0~1), V(0~1)
-	if(hsv[0] > 360)
-	{
-		hsv[0] = 360;
-	}
-
-	if(hsv[0] < 0)
-	{
-		hsv[0] = 0;
-	}
-
-	if(hsv[1] > 1)
-	{
-		hsv[1] = 1;
-	}
-
-	if(hsv[1] < 0)
-	{
-		hsv[1] = 0;
-	}
-
-	if(hsv[2] > 1)
-	{
-		hsv[2] = 1;
-	}
-
-	if(hsv[2] < 0)
-	{
-		hsv[2] = 0;
-	}
-	//--- 
-
-
-    if( hsv[1] == 0 ) 
+  if (Y > 0.008856)
     {
-    	// achromatic (grey)
-        *rTemp = hsv[2];
-        *gTemp = hsv[2];
-        *bTemp = hsv[2];
-        return;
+      fY = pow(Y, 1.0/3.0);
+      *L = (int)(116.0*fY - 16.0 + 0.5);
+    }
+  else
+    {
+      fY = 7.787*Y + 16.0/116.0;
+      *L = (int)(903.3*Y + 0.5);
     }
 
-	hsv[0] /= 60;                        // sector 0 to 5
-    i = floor( hsv[0] ); 
-    f = hsv[0] - i;                        // factorial part of h
-    p = hsv[2] * ( 1 - hsv[1] );
-    q = hsv[2] * ( 1 - hsv[1] * f );
-    t = hsv[2] * ( 1 - hsv[1] * ( 1 - f ) );
+  if (X > 0.008856)
+      fX = pow(X, 1.0/3.0);
+  else
+      fX = 7.787*X + 16.0/116.0;
 
-	switch( i ) {
-		case 0:
-		        *rTemp = hsv[2];
-		        *gTemp = t;
-		        *bTemp = p;
-		        break;
-		case 1:
-		        *rTemp = q;
-		        *gTemp = hsv[2];
-		        *bTemp = p;
-		        break;
-		case 2:
-		        *rTemp = p;
-		        *gTemp = hsv[2];
-		        *bTemp = t;
-		        break;
-		case 3:
-		        *rTemp = p;
-		        *gTemp = q;
-		        *bTemp = hsv[2];
-		        break;
-		case 4:
-		        *rTemp = t;
-		        *gTemp = p;
-		        *bTemp = hsv[2];
-		        break;
-		default:                // case 5:
-		        *rTemp = hsv[2];
-		        *gTemp = p;
-		        *bTemp = q;
-		        break;
-		}
+  if (Z > 0.008856)
+      fZ = pow(Z, 1.0/3.0);
+  else
+      fZ = 7.787*Z + 16.0/116.0;
+
+  *a = (int)(500.0*(fX - fY) + 0.5);
+  *b = (int)(200.0*(fY - fZ) + 0.5);
+
+//printf("RGB=(%d,%d,%d) ==> Lab(%d,%d,%d)\n",R,G,B,*L,*a,*b);
+}
+
+void Lab2RGB(int L, int a, int b, 
+	     unsigned char *R, unsigned char *G, unsigned char *B)
+{
+  float X, Y, Z, fX, fY, fZ;
+  int RR, GG, BB;
+
+  fY = pow((L + 16.0) / 116.0, 3.0);
+  if (fY < 0.008856)
+      fY = L / 903.3;
+  Y = fY;
+
+  if (fY > 0.008856)
+    fY = pow(fY, 1.0/3.0);
+  else
+    fY = 7.787 * fY + 16.0/116.0;
+
+  fX = a / 500.0 + fY;      
+  if (fX > 0.206893)
+      X = pow(fX, 3.0);
+  else
+      X = (fX - 16.0/116.0) / 7.787;
+ 
+  fZ = fY - b /200.0;      
+  if (fZ > 0.206893)
+      Z = pow(fZ, 3.0);
+  else
+      Z = (fZ - 16.0/116.0) / 7.787;
+
+  X *= (0.950456 * 255);
+  Y *=             255;
+  Z *= (1.088754 * 255);
+
+  RR =  (int)(3.240479*X - 1.537150*Y - 0.498535*Z + 0.5);
+  GG = (int)(-0.969256*X + 1.875992*Y + 0.041556*Z + 0.5);
+  BB =  (int)(0.055648*X - 0.204043*Y + 1.057311*Z + 0.5);
+
+  *R = (unsigned char)(RR < 0 ? 0 : RR > 255 ? 255 : RR);
+  *G = (unsigned char)(GG < 0 ? 0 : GG > 255 ? 255 : GG);
+  *B = (unsigned char)(BB < 0 ? 0 : BB > 255 ? 255 : BB);
+
+//printf("Lab=(%f,%f,%f) ==> RGB(%f,%f,%f)\n",L,a,b,*R,*G,*B);
 }
 
 
@@ -376,43 +298,43 @@ void main()
 					
 					if((image[j][i] -  ((short)0xFFFF)) > (1))
 					{ 
-						rTemp = ((float)((image[j][i]&0xF800)>>11))/31;
-						gTemp = ((float)((image[j][i]&0x7E0)>>5))/63;
-						bTemp = ((float)(image[j][i]&0x1F))/31;
+						rTemp = ((unsigned char)((image[j][i]&0xF800)>>11))*255/31;
+						gTemp = ((unsigned char)((image[j][i]&0x7E0)>>5))*255/63;
+						bTemp = ((unsigned char)(image[j][i]&0x1F))*255/31;
 
-						RGB2HSV(rTemp,gTemp,bTemp,hsv);
+						RGB2Lab(rTemp,gTemp,bTemp,L,a,b);
 
-						if(negativeH == 0)
+						if(negativeL == 0)
 						{
-							hsv[0] = hsv[0] + ((float)h_adjust/100)*hsv[0]*time;
-						}
-						else if(negativeH == 1)
-						{
-							hsv[0] = hsv[0] - ((float)h_adjust/100)*hsv[0]*time;
-						}
-						if(negativeS == 0)
-						{
-							hsv[1] = hsv[1] + ((float)s_adjust/100)*hsv[1]*time;
+							*L = *L + ((float)h_adjust/100) * (*L) * time;
 						}
 						else
 						{
-							hsv[1] = hsv[1] - ((float)s_adjust/100)*hsv[1]*time;
+							*L = *L - ((float)h_adjust/100) * (*L) * time;
 						}
-
-						if(negativeV == 0)
+						if(negativeA == 0)
 						{
-							hsv[2] = hsv[2] + ((float)v_adjust/100)*hsv[2]*time;
+							*a = *a + ((float)s_adjust/100)* (*a) *time;
 						}
 						else
 						{
-							hsv[2] = hsv[2] - ((float)v_adjust/100)*hsv[2]*time;
+							*a = *a - ((float)s_adjust/100)* (*a) *time;
 						}
 
-						HSV2RGB(hsv, &rTemp, &gTemp, &bTemp);
+						if(negativeB == 0)
+						{
+							*b = *b + ((float)v_adjust/100)* (*b) *time;
+						}
+						else
+						{
+							*b = *b - ((float)v_adjust/100)* (*b) *time;
+						}
 
-						rTemp = rTemp*31;
-						gTemp = gTemp*63;
-						bTemp = bTemp*31;
+						Lab2RGB(*L, *a, *b, &rTemp, &gTemp, &bTemp);
+
+						rTemp = (unsigned char)((float)rTemp*(31/255));
+						gTemp = (unsigned char)((float)gTemp*(63/255));
+						bTemp = (unsigned char)((float)bTemp*(31/255));
 
 						rgbAdj = (((short)rTemp)<<11)|(((short)gTemp)<<5)|(((short)bTemp));
 						lcd[j+Y_SHIFT][i+X_SHIFT] = rgbAdj;
