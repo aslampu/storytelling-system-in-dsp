@@ -18,7 +18,6 @@
 #include	"dsk6713.h"
 #include	"dsk6713_aic23.h"
 
-//#include    "Acrylic Paint.h"
 include       "Paint.h"
 
 //=================================================================== Additional Lib 
