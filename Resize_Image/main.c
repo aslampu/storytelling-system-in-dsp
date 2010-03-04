@@ -18,6 +18,7 @@
 #include	"dsk6713.h"
 #include	"dsk6713_aic23.h"
 
+#include    "SubImage.h"
 //#include    "Acrylic Paint.h"
 #include "Paint.h"
 //=================================================================== Additional Lib 
@@ -34,13 +35,13 @@
 #define		RHD			(2<<0)	 // Read Hold   : 0-3
 #define		MTYPEA		(2<<4)
 
-#define 	X_SHIFT		160 - (WIDTH/2)
-#define		Y_SHIFT		120 - (HEIGHT/2)
-
+//#define	X_SHIFT	160 - (subImageWidth/2)
+//#define	Y_SHIFT	120 - (subImageHeight/2)
 
 #pragma 	DATA_SECTION ( lcd,".sdram" )
 #pragma 	DATA_SECTION ( cam,".sdram" )
 #pragma 	DATA_SECTION ( image,".sdram" )
+#pragma 	DATA_SECTION ( sub_image,".sdram" )
 
 short		lcd[240][320];
 short		cam[240][320];
@@ -51,16 +52,9 @@ DSK6713_AIC23_CodecHandle hCodec;
 extern cregister volatile unsigned int IER;
 extern cregister volatile unsigned int CSR;
 
-//=================================================================== HSV_GEL Variable
+//===================================================================
 //---For GEL
-short doHSV = 0; //if doHSV is '0', the frame will be original
-short negativeH = 0;
-short negativeS = 0;
-short negativeV = 0;
-short h_adjust = 0;
-short s_adjust = 0;
-short v_adjust = 0;
-short time = 100;
+short imageScaleFactor = 100;
 
 //---For RGB_HSV transform
 
@@ -68,6 +62,12 @@ short rgbOri;
 short rgbAdj;
 float rTemp, gTemp, bTemp;
 float hsv[3];
+
+//---For scaled image
+int subImageHeight = HEIGHT;
+int subImageWidth = WIDTH;
+//int	X_SHIFT	= 160 - (subImageWidth/2);
+//int	Y_SHIFT	= 120 - (subImageHeight/2);
 
 //===================================================================
 
@@ -152,172 +152,79 @@ interrupt void	c_int15(void)
 }
 
 
-//=================================================================== HSV_GEL Function
-float rgbMax(float R_value, float G_value, float B_value)
-{
-	float temp = 0;
-	if(R_value >= temp)
-	{
-		temp = R_value;
-	}
-	if(G_value >= temp)
-	{
-		temp = G_value;
-	}
-	if(B_value >= temp)
-	{
-		temp = B_value;
-	}
+//===================================================================
+float getPixelValueBilinear(float pPrime, float qPrime) {
+	// This function returns the pixel value at a non-integeral
+	// coordinates of the image using bilinear interpolation.
+	// If the values are outside of the bounds of the image,
+	// it returns white (255).
+	int lowerP = pPrime;
+	int lowerQ = qPrime;
+	float a = pPrime - lowerP;
+	float b = qPrime - lowerQ;
 
-	return temp;
-}
-
-float rgbMin(float rTemp, float gTemp, float bTemp)
-{
-	float temp = 255;
-	if(rTemp <= temp)
-	{
-		temp = rTemp;
-	}
-	if( gTemp <= temp)
-	{
-		temp =  gTemp;
-	}
-	if(bTemp <= temp)
-	{
-		temp = bTemp;
-	}
-
-	return temp;
-}
-
-void RGB2HSV(float rTemp,float gTemp,float bTemp, float *hsv)
-{
-	float RGB_Min; //var_Min
-  	float RGB_Max; //var_Max
-  	float Difference; //del_Max
-
-	RGB_Min = rgbMin(rTemp, gTemp, bTemp);
-	RGB_Max = rgbMax(rTemp, gTemp, bTemp);
-	Difference = RGB_Max - RGB_Min;
-
-	// V_value
-	hsv[2] = RGB_Max;
-
-	// S_value
-	if(RGB_Max != 0)
-	{
-		hsv[1] = Difference/RGB_Max;
-	}
-	else
-	{
-		hsv[1] = 0;
-		hsv[0] = 0;
-		return;
-	}
-
-	//H_value
-	if(rTemp == RGB_Max)
-		hsv[0] = (gTemp - bTemp)/Difference;
-	else if(gTemp == RGB_Max)
-		hsv[0] = 2 + ( bTemp - rTemp ) / Difference;
-	else
-		hsv[0] = 4 + ( rTemp - gTemp ) / Difference;
-		
+	float r00, r01, r10, r11, rPrime;
+	float g00, g01, g10, g11, gPrime;
+	float b00, b01, b10, b11, bPrime;
 	
-	hsv[0] *= 60;
-	if( hsv[0] < 0 )
-    	hsv[0] += 360; 
+	//if (pPrime < 0 || pPrime >= HEIGHT - 1 || qPrime < 0 || qPrime >= WIDTH - 1)
+	//	return BG_COLOR;
+	
+	// R
+	r00 = (float)((image[lowerP][lowerQ]&0xF800)>>11) / 31;
+	r01 = (float)((image[lowerP + 1][lowerQ]&0xF800)>>11) / 31;
+	r10 = (float)((image[lowerP][lowerQ + 1]&0xF800)>>11) / 31;
+	r11 = (float)((image[lowerP + 1][lowerQ + 1]&0xF800)>>11) / 31;
+	rPrime = (1-a) * (1-b) * r00 +
+			 (1-a) *   b   * r01 +
+			   a   * (1-b) * r10 +
+			   a   *   b   * r11;
 
+	// G
+	g00 = (float)((image[lowerP][lowerQ]&0x7E0)>>5) / 63;
+	g01 = (float)((image[lowerP + 1][lowerQ]&0x7E0)>>5) / 63;
+	g10 = (float)((image[lowerP][lowerQ + 1]&0x7E0)>>5) / 63;
+	g11 = (float)((image[lowerP + 1][lowerQ + 1]&0x7E0)>>5) / 63;
+	gPrime = (1-a) * (1-b) * g00 +
+			 (1-a) *   b   * g01 +
+			   a   * (1-b) * g10 +
+			   a   *   b   * g11;
+    
+	// B
+	b00 = (float)(image[lowerP][lowerQ]&0x1F) / 31;
+	b01 = (float)(image[lowerP + 1][lowerQ]&0x1F) / 31;
+	b10 = (float)(image[lowerP][lowerQ + 1]&0x1F) / 31;
+	b11 = (float)(image[lowerP + 1][lowerQ + 1]&0x1F) / 31;
+	bPrime = (1-a) * (1-b) * b00 +
+			 (1-a) *   b   * b01 +
+			   a   * (1-b) * b10 +
+			   a   *   b   * b11;
+    
+
+	rPrime = rPrime * 31;
+	gPrime = gPrime * 63;
+	bPrime = bPrime * 31;
+
+	return (((short)rPrime)<<11)|(((short)gPrime)<<5)|(((short)bPrime));
 }
 
-void HSV2RGB(float* hsv, float* rTemp, float* gTemp, float* bTemp)
-{
-	 int i;
-     float f, p, q, t;
 
-	//--- Threshold for H(0~360), S(0~1), V(0~1)
-	if(hsv[0] > 360)
-	{
-		hsv[0] = 360;
-	}
-
-	if(hsv[0] < 0)
-	{
-		hsv[0] = 0;
-	}
-
-	if(hsv[1] > 1)
-	{
-		hsv[1] = 1;
-	}
-
-	if(hsv[1] < 0)
-	{
-		hsv[1] = 0;
-	}
-
-	if(hsv[2] > 1)
-	{
-		hsv[2] = 1;
-	}
-
-	if(hsv[2] < 0)
-	{
-		hsv[2] = 0;
-	}
-	//--- 
-
-
-    if( hsv[1] == 0 ) 
-    {
-    	// achromatic (grey)
-        *rTemp = hsv[2];
-        *gTemp = hsv[2];
-        *bTemp = hsv[2];
-        return;
-    }
-
-	hsv[0] /= 60;                        // sector 0 to 5
-    i = floor( hsv[0] ); 
-    f = hsv[0] - i;                        // factorial part of h
-    p = hsv[2] * ( 1 - hsv[1] );
-    q = hsv[2] * ( 1 - hsv[1] * f );
-    t = hsv[2] * ( 1 - hsv[1] * ( 1 - f ) );
-
-	switch( i ) {
-		case 0:
-		        *rTemp = hsv[2];
-		        *gTemp = t;
-		        *bTemp = p;
-		        break;
-		case 1:
-		        *rTemp = q;
-		        *gTemp = hsv[2];
-		        *bTemp = p;
-		        break;
-		case 2:
-		        *rTemp = p;
-		        *gTemp = hsv[2];
-		        *bTemp = t;
-		        break;
-		case 3:
-		        *rTemp = p;
-		        *gTemp = q;
-		        *bTemp = hsv[2];
-		        break;
-		case 4:
-		        *rTemp = t;
-		        *gTemp = p;
-		        *bTemp = hsv[2];
-		        break;
-		default:                // case 5:
-		        *rTemp = hsv[2];
-		        *gTemp = p;
-		        *bTemp = q;
-		        break;
+void scaleImage() {
+	int j,k;
+	double pPrime, qPrime;
+	
+	subImageHeight = HEIGHT * imageScaleFactor / 100.0;
+	subImageWidth = WIDTH * imageScaleFactor / 100.0;
+	
+	for (j=0; j < subImageHeight; j++) {
+		for (k=0; k < subImageWidth; k++) {
+			pPrime = (double)j / (imageScaleFactor / 100.0);
+			qPrime = (double)k / (imageScaleFactor / 100.0);
+			sub_image[j][k] = getPixelValueBilinear(pPrime, qPrime);
 		}
+	}
 }
+
 
 
 //===================================================================
@@ -368,60 +275,25 @@ void main()
 			}
 
 			//============================Change Here
-			for(i = 0; i < WIDTH; i++)
+
+            scaleImage();
+
+			for(i = 0; i < subImageWidth; i++)
 			{
-				for(j = 0; j < HEIGHT; j++)
+				for(j = 0; j < subImageHeight; j++)
 				{
 					
-					if((image[j][i] - ((short)0xFFFF)) >= (1))
+					if((sub_image[j][i] - ((short)0xFFFF)) >= (1))
 					{ 
 						//lcd[j][i] = 256;
 						
-						rTemp = ((float)((image[j][i]&0xF800)>>11))/31;
-						gTemp = ((float)((image[j][i]&0x7E0)>>5))/63;
-						bTemp = ((float)(image[j][i]&0x1F))/31;
-
-						RGB2HSV(rTemp,gTemp,bTemp,hsv);
-
-						if(negativeH == 0)
-						{
-							hsv[0] = hsv[0] + ((float)h_adjust/100)*hsv[0]*time;
-						}
-						else if(negativeH == 1)
-						{
-							hsv[0] = hsv[0] - ((float)h_adjust/100)*hsv[0]*time;
-						}
-						if(negativeS == 0)
-						{
-							hsv[1] = hsv[1] + ((float)s_adjust/100)*hsv[1]*time;
-						}
-						else
-						{
-							hsv[1] = hsv[1] - ((float)s_adjust/100)*hsv[1]*time;
-						}
-
-						if(negativeV == 0)
-						{
-							hsv[2] = hsv[2] + ((float)v_adjust/100)*hsv[2]*time;
-						}
-						else
-						{
-							hsv[2] = hsv[2] - ((float)v_adjust/100)*hsv[2]*time;
-						}
-
-						HSV2RGB(hsv, &rTemp, &gTemp, &bTemp);
-
-						rTemp = rTemp*31;
-						gTemp = gTemp*63;
-						bTemp = bTemp*31;
+						rTemp = ((float)((sub_image[j][i]&0xF800)>>11));
+						gTemp = ((float)((sub_image[j][i]&0x7E0)>>5));
+						bTemp = ((float)(sub_image[j][i]&0x1F));
 
 						rgbAdj = (((short)rTemp)<<11)|(((short)gTemp)<<5)|(((short)bTemp));
-						lcd[j+Y_SHIFT][i+X_SHIFT] = rgbAdj;
+						lcd[j+ 120 - (subImageHeight / 2)][i+ 160 - (subImageWidth / 2)] = rgbAdj;
 						
-					}
-					else
-					{
-						//lcd[j][i] = 0;
 					}
 				}
 			}
