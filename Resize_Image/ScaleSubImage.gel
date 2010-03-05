@@ -1,0 +1,10 @@
+/*---------------------------------------------------------------*/
+/* Scale SubImage GEL 
+/*---------------------------------------------------------------*/
+
+menuitem "Scale SubImage"
+
+slider ScaleFactor(0,100,100,1,v_para)
+{
+	imageScaleFactor = v_para;
+}
