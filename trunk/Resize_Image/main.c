@@ -18,10 +18,9 @@
 #include	"dsk6713.h"
 #include	"dsk6713_aic23.h"
 
-#include    "SubImage.h"
-//#include    "Acrylic Paint.h"
-#include "Paint.h"
-//=================================================================== Additional Lib 
+#include	"Image.h"
+#include	"SubImage.h"
+
 #include 	"math.h"
 //===================================================================
 
@@ -34,9 +33,6 @@
 #define		RST			(8<<8)	 // Read Strobe : 0-63
 #define		RHD			(2<<0)	 // Read Hold   : 0-3
 #define		MTYPEA		(2<<4)
-
-//#define	X_SHIFT	160 - (subImageWidth/2)
-//#define	Y_SHIFT	120 - (subImageHeight/2)
 
 #pragma 	DATA_SECTION ( lcd,".sdram" )
 #pragma 	DATA_SECTION ( cam,".sdram" )
@@ -57,17 +53,15 @@ extern cregister volatile unsigned int CSR;
 short imageScaleFactor = 100;
 
 //---For RGB_HSV transform
-
 short rgbOri;
 short rgbAdj;
 float rTemp, gTemp, bTemp;
 float hsv[3];
 
 //---For scaled image
+// Initizize sub_image with image parameters
 int subImageHeight = HEIGHT;
 int subImageWidth = WIDTH;
-//int	X_SHIFT	= 160 - (subImageWidth/2);
-//int	Y_SHIFT	= 120 - (subImageHeight/2);
 
 //===================================================================
 
@@ -230,8 +224,7 @@ void scaleImage() {
 //===================================================================
 
 
-void main()
-{
+void main() {
 	int i,j,k,y0,y1,v0,u0;
 	PLL6713();			// Initialize C6713 PLL	
 	CE2CTL = (WSU|WST|WHD|RSU|RST|RHD|MTYPEA);
@@ -247,8 +240,8 @@ void main()
 	vm3224rate(3);		// Set frame rate
 	vm3224bl(15);       // Set backlight
 	for (k=0;k<64;k++)  // Create RGB565 lookup table
-    for (i=0;i<32;i++)
-    for (j=0;j<32;j++) rgb[k][i][j] = ybr_565(k<<2,i<<3,j<<3);
+	for (i=0;i<32;i++)
+	for (j=0;j<32;j++) rgb[k][i][j] = ybr_565(k<<2,i<<3,j<<3);
 	VM3224CNTL = VM3224CNTL&0xffff | 0x2;
 
 	intr_enable(6);
@@ -259,7 +252,7 @@ void main()
 			VM3224ADDH = 0x08000;
 			for (j=0;j<240;j++)
 			for (i=0;i<320;i++) cam[j][i]=VM3224DATA;
-
+			
 			for (j=0;j<240;j++)
 			for (i=0;i<320;i+=2) {
 				y0 = (cam[j][i]>>8) & 0x0ff;
@@ -276,7 +269,7 @@ void main()
 
 			//============================Change Here
 
-            scaleImage();
+			scaleImage();
 
 			for(i = 0; i < subImageWidth; i++)
 			{
@@ -292,7 +285,7 @@ void main()
 						bTemp = ((float)(sub_image[j][i]&0x1F));
 
 						rgbAdj = (((short)rTemp)<<11)|(((short)gTemp)<<5)|(((short)bTemp));
-						lcd[j+ 120 - (subImageHeight / 2)][i+ 160 - (subImageWidth / 2)] = rgbAdj;
+						lcd[j + 120 - (subImageHeight / 2)][i + 160 - (subImageWidth / 2)] = rgbAdj;
 						
 					}
 				}
