@@ -1,7 +1,7 @@
 -q 
 -cr 
--m VALoopback.map 
--o VALoopback.out 
+-m ResizeImage.map 
+-o ResizeImage.out 
 -stack 0x2000
 -x
 
