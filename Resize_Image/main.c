@@ -61,8 +61,8 @@ float hsv[3];
 
 //---For scaled image
 // Initizize sub_image with image parameters
-int subImageHeight = HEIGHT;
-int subImageWidth = WIDTH;
+//int subImageHeight = HEIGHT;
+//int subImageWidth = WIDTH;
 
 //===================================================================
 

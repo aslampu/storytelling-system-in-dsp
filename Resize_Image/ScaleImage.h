@@ -3,6 +3,9 @@
 
 #include "Image.h"
 
+int subImageHeight = HEIGHT;
+int subImageWidth = WIDTH;
+
 float getPixelValueBilinear(float pPrime, float qPrime) {
 	// This function returns the pixel value at a non-integeral
 	// coordinates of the image using bilinear interpolation.
