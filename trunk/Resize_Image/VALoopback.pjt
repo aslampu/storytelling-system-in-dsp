@@ -1,7 +1,7 @@
 ; Code Composer Project File, Version 2.0 (do not modify or remove this line)
 
 [Project Settings]
-ProjectDir="C:\CCStudio_v3.1\MyProjects\Resize_Image\"
+ProjectDir="C:\CCStudio_v3.1\Today\Resize_Image\"
 ProjectType=Executable
 CPUFamily=TMS320C62XX
 Tool="Compiler"
