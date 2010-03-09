@@ -21,6 +21,7 @@
 #include	"Image.h"
 #include	"SubImage.h"
 #include	"ScaleImage.h"
+#include	"LAB.h"
 
 #include	"math.h"
 //===================================================================
@@ -51,12 +52,22 @@ extern cregister volatile unsigned int CSR;
 
 //===================================================================
 //---For GEL
+short doLAB = 0; //if doLAB is '0', the frame will be original
+short negativeL = 0;
+short negativeA = 0;
+short negativeB = 0;
+short l_adjust = 0;
+short a_adjust = 0;
+short b_adjust = 0;
+short time = 20;
 short imageScaleFactor = 100;
 
-//---For RGB_HSV transform
+//---For RGB_LAB transform
 short rgbOri;
 short rgbAdj;
 float rTemp, gTemp, bTemp;
+unsigned char rChar, gChar, bChar;
+int *l, *a, *b;
 float hsv[3];
 
 //---For scaled image
@@ -205,9 +216,43 @@ void main() {
 					{ 
 						//lcd[j][i] = 256;
 						
-						rTemp = ((float)((sub_image[j][i]&0xF800)>>11));
-						gTemp = ((float)((sub_image[j][i]&0x7E0)>>5));
-						bTemp = ((float)(sub_image[j][i]&0x1F));
+						rTemp = ((short)((sub_image[j][i]&0xF800)>>11)) * 255 / 31;
+						gTemp = ((short)((sub_image[j][i]&0x7E0)>>5) * 255 / 63);
+						bTemp = ((short)(sub_image[j][i]&0x1F)) * 255 / 31;
+						
+						RGB2Lab(rTemp,gTemp,bTemp,l,a,b);
+
+						if(negativeL == 0)
+						{
+							*l = *l + ((float)l_adjust/100) * (*l) * time;
+						}
+						else
+						{
+							*l = *l - ((float)l_adjust/100) * (*l) * time;
+						}
+						if(negativeA == 0)
+						{
+							*a = *a + ((float)a_adjust/100)* (*a) *time;
+						}
+						else
+						{
+							*a = *a - ((float)a_adjust/100)* (*a) *time;
+						}
+
+						if(negativeB == 0)
+						{
+							*b = *b + ((float)b_adjust/100)* (*b) *time;
+						}
+						else
+						{
+							*b = *b - ((float)b_adjust/100)* (*b) *time;
+						}
+
+						Lab2RGB(*l, *a, *b, &rTemp, &gTemp, &bTemp);
+	
+						rTemp = (float)rTemp * 31 / 255;
+						gTemp = (float)gTemp * 63 / 255;
+						bTemp = (float)bTemp * 31 / 255;
 
 						rgbAdj = (((short)rTemp)<<11)|(((short)gTemp)<<5)|(((short)bTemp));
 						lcd[j + 120 - (subImageHeight / 2)][i + 160 - (subImageWidth / 2)] = rgbAdj;

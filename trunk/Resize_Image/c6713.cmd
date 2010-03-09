@@ -1,7 +1,7 @@
 -q 
 -cr 
--m ResizeImage.map 
--o ResizeImage.out 
+-m LABResizeImage.map 
+-o LABResizeImage.out 
 -stack 0x2000
 -x
 
