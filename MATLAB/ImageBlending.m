@@ -99,7 +99,7 @@ new_insert_rgb = Lab2RGB(insert_lab);
 
 % Display results
 figure; hold on;
-subplot(2,2,1); imagesc(bg_image);
-subplot(2,2,2); imagesc(new_bg_rgb);
-subplot(2,2,3); imagesc(insert_image);
-subplot(2,2,4); imagesc(new_insert_rgb);
+subplot(2,2,1); imagesc(bg_image); title('Target Image');
+%subplot(2,2,2); imagesc(new_bg_rgb);
+subplot(2,2,3); imagesc(insert_image); title('Original Source Image');
+subplot(2,2,4); imagesc(new_insert_rgb); title('Blended Source Image (excluding backgound color)');
