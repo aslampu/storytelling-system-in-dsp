@@ -1,0 +1,10 @@
+-------------------------  cam2lcd3_QDMA.pjt - Debug  -------------------------
+[main.c] "C:\CCStudio_v3.1\C6000\cgtools\bin\cl6x" -g -fr"C:/CCStudio_v3.1/MyProjects/MCHproj/bak_storytelling-system-in-dsp/Cam2lcd3_QDMA/Debug" -d"_DEBUG" -d"_C6713_" -@"Debug.lkf" "main.c"
+
+[vm3224k.c] "C:\CCStudio_v3.1\C6000\cgtools\bin\cl6x" -g -fr"C:/CCStudio_v3.1/MyProjects/MCHproj/bak_storytelling-system-in-dsp/Cam2lcd3_QDMA/Debug" -d"_DEBUG" -d"_C6713_" -@"Debug.lkf" "vm3224k.c"
+
+[Linking...] "C:\CCStudio_v3.1\C6000\cgtools\bin\cl6x" -@"Debug.lkf"
+<Linking>
+
+Build Complete,
+  0 Errors, 0 Warnings, 0 Remarks.
