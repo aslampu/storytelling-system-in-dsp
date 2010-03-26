@@ -1,0 +1,61 @@
+/*threshold.gel GEL slider to vary threshold of R,G,B values*/
+/*modifed from program sine8_LED.c*/
+
+menuitem "Threshold"
+
+slider RH_Thres(0,359,10,1,R_parameter)	//incr by 10, up to 359
+{
+	RH_Threshold = R_parameter;			//vary RH_Threshold of RH_Thres
+}
+
+slider RS_Thres(0,10,1,1,R_parameter) 	//incr by 0.1, up to 1
+{
+	RS_Threshold = R_parameter/10; 		//vary RS_Threshold of RS_Thres
+}
+
+slider RV_Thres(0,10,1,1,R_parameter) 	//incr by 0.1, up to 1
+{
+	RV_Threshold = R_parameter/10;    		//vary RV_Threshold of RV_Thres
+}
+
+slider RH_Bia(0,359,10,1,R_parameter)  	//incr by 10, up to 359
+{
+	RH_Bias = R_parameter;				//vary RH_Bias of RH_Bia
+}
+
+slider RS_Bia(0,10,1,1,R_parameter) 	//incr by 0.1, up to 1
+{
+	RS_Bias = R_parameter/10;      		//vary RS_Bias of RS_Bia
+}
+
+slider RV_Bia(0,10,1,1,R_parameter) 	//incr by 0.1, up to 1
+{
+    RV_Bias = R_parameter/10;       		//vary RV_Bias of RV_Bia
+}
+
+slider R_LB(0,1000,100,1,R_parameter) 	//incr by 100, up to 1000
+{
+	R_LowerBound = R_parameter; 		//vary R_LowerBound of R_LB
+}
+
+slider R_UB(0,1000,100,1,R_parameter)	//incr by 100, up to 1000
+{
+	R_UpperBound = R_parameter;    		//vary R_UpperBound of R_UB
+}
+
+slider R_Lvl(0,100,10,1,R_parameter)  	//incr by 10, up to 100
+{
+	R_Level = R_parameter;				//vary R_Level of R_Lvl
+}
+
+slider R_Pad(0,100,10,1,R_parameter) 	//incr by 10, up to 100
+{
+	R_Padding = R_parameter;      		//vary R_Padding of R_Pad
+}
+
+slider R_Brd(0,10,1,1,R_parameter) 		//incr by 1, up to 10
+{
+    R_Border = R_parameter;       		//vary R_Border of R_Brd
+}
+
+

@@ -1,35 +1,35 @@
 #include "utility.h"
 
-unsigned short RH_Threshold = 26;	//The minimum RED pixel value to be classified as RED
-unsigned short RS_Threshold = 33;	//The maximum GREEN pixel value to be classified as RED
-unsigned short RV_Threshold = 17;	//The maximum BLUE pixel value to be classified as RED
-unsigned short RH_Bias = 10;	//The minimum RED pixel value to be classified as RED
-unsigned short RS_Bias = 10;	//The maximum GREEN pixel value to be classified as RED
-unsigned short RV_Bias = 10;	//The maximum BLUE pixel value to be classified as RED
+float RH_Threshold = 0;//= 26;	//The minimum RED pixel value to be classified as RED
+float RS_Threshold = 0.5;//= 33;	//The maximum GREEN pixel value to be classified as RED
+float RV_Threshold = 0.5;//= 17;	//The maximum BLUE pixel value to be classified as RED
+float RH_Bias = 10;	//The minimum RED pixel value to be classified as RED
+float RS_Bias = 0.1;	//The maximum GREEN pixel value to be classified as RED
+float RV_Bias = 0.1;	//The maximum BLUE pixel value to be classified as RED
 unsigned short R_LowerBound = 100;
 unsigned short R_UpperBound = 1000;
 unsigned short R_Level = 10;
 unsigned short R_Padding = 20;		//Search range beyond RED Box's border
 unsigned short R_Border = 2;		//RED Box's border width
 /*
-unsigned short GH_Threshold = 17;	//The minimum RED pixel value to be classified as GREEN
-unsigned short GS_Threshold = 58;	//The maximum GREEN pixel value to be classified as GREEN
-unsigned short GV_Threshold = 17;	//The maximum BLUE pixel value to be classified as GREEN
-unsigned short GH_Bias = 10;	//The minimum RED pixel value to be classified as RED
-unsigned short GS_Bias = 10;	//The maximum GREEN pixel value to be classified as RED
-unsigned short GV_Bias = 10;	//The maximum BLUE pixel value to be classified as RED
+float GH_Threshold = 17;	//The minimum RED pixel value to be classified as GREEN
+float GS_Threshold = 58;	//The maximum GREEN pixel value to be classified as GREEN
+float GV_Threshold = 17;	//The maximum BLUE pixel value to be classified as GREEN
+float GH_Bias = 10;	//The minimum RED pixel value to be classified as RED
+float GS_Bias = 10;	//The maximum GREEN pixel value to be classified as RED
+float GV_Bias = 10;	//The maximum BLUE pixel value to be classified as RED
 unsigned short G_LowerBound = 100;
 unsigned short G_UpperBound = 1000;
 unsigned short G_Level = 10;
 unsigned short G_Padding = 20;		//Search range beyond RED Box's border
 unsigned short G_Border = 2;		//RED Box's border width
 */
-unsigned short BH_Threshold = 15;	//The minimum RED pixel value to be classified as BLUE
-unsigned short BS_Threshold = 32;	//The maximum GREEN pixel value to be classified as BLUE
-unsigned short BV_Threshold = 22;	//The maximum BLUE pixel value to be classified as BLUE
-unsigned short BH_Bias = 10;	//The minimum RED pixel value to be classified as RED
-unsigned short BS_Bias = 10;	//The maximum GREEN pixel value to be classified as RED
-unsigned short BV_Bias = 10;	//The maximum BLUE pixel value to be classified as RED
+float BH_Threshold = 15;	//The minimum RED pixel value to be classified as BLUE
+float BS_Threshold = 32;	//The maximum GREEN pixel value to be classified as BLUE
+float BV_Threshold = 22;	//The maximum BLUE pixel value to be classified as BLUE
+float BH_Bias = 10;	//The minimum RED pixel value to be classified as RED
+float BS_Bias = 10;	//The maximum GREEN pixel value to be classified as RED
+float BV_Bias = 10;	//The maximum BLUE pixel value to be classified as RED
 unsigned short B_LowerBound = 100;
 unsigned short B_UpperBound = 1000;
 unsigned short B_Level = 10;

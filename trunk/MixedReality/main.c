@@ -44,6 +44,11 @@ void main()
 	QDMA_CNT 	= (239<<16)|320;
 	QDMA_IDX 	= 0x0000<<16;
 	
+	filterInitialize(R_Color, &R_Former);
+	filterInitialize(R_Color, &R_Latter);
+	filterInitialize(B_Color, &B_Former);
+	filterInitialize(R_Color, &B_Latter);
+
 	//Read input video
 	while (1) {
 		//Get Input Frames
@@ -68,13 +73,13 @@ void main()
 			tmp[j][i]=rgb[y0][u0][v0];
 			tmp[j][i+1]=rgb[y1][u0][v0];
 		}
-
+		
 		//Call track function, which modified the tmp array passed by a pointer
 		track(tmp, &R_Former, &R_Latter); //R_Color = 0
 		//track(tmp, &G_Former, &G_Latter); //G_Color = 1
-		track(tmp, &B_Former, &B_Latter); //B_Color = 2
-		if(R_Latter.Found || B_Latter.Found)
-			overlayImage2D(tmp, &R_Latter, &B_Latter);//Include resize and rotation
+		//track(tmp, &B_Former, &B_Latter); //B_Color = 2
+		//if(R_Latter.Found || B_Latter.Found)
+		//	overlayImage2D(tmp, &R_Latter, &B_Latter);//Include resize and rotation
 		
 		//Output Synthesized Frames
 		for(i=0;i<1000000;i++) if(EDMA_CIPR&0x200) break;
