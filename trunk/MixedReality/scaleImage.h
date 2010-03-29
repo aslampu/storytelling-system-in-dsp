@@ -72,7 +72,7 @@ void scaleImage(short scaleFactor100) {
 		for (k=0; k < subImageWidth; k++) {
 			pPrime = (double)j / (scaleFactor100 / 100.0);
 			qPrime = (double)k / (scaleFactor100 / 100.0);
-			sub_image[j][k] = getPixelValueBilinear(pPrime, qPrime);
+			ary2_subImage[j][k] = getPixelValueBilinear(pPrime, qPrime);
 		}
 	}
 }

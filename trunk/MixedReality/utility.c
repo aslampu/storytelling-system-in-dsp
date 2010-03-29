@@ -1,40 +1,40 @@
-#include "utility.h"
+#include "Utility.h"
 
-float RH_Threshold = 0;//= 26;	//The minimum RED pixel value to be classified as RED
-float RS_Threshold = 0.5;//= 33;	//The maximum GREEN pixel value to be classified as RED
-float RV_Threshold = 0.5;//= 17;	//The maximum BLUE pixel value to be classified as RED
-float RH_Bias = 10;	//The minimum RED pixel value to be classified as RED
-float RS_Bias = 0.1;	//The maximum GREEN pixel value to be classified as RED
-float RV_Bias = 0.1;	//The maximum BLUE pixel value to be classified as RED
-unsigned short R_LowerBound = 100;
-unsigned short R_UpperBound = 1000;
-unsigned short R_Level = 10;
-unsigned short R_Padding = 20;		//Search range beyond RED Box's border
-unsigned short R_Border = 2;		//RED Box's border width
+float 			rhThreshold = 0;//= 26;		//The minimum RED pixel value to be classified as RED
+float 			rsThreshold = 0.5;//= 33;	//The maximum GREEN pixel value to be classified as RED
+float 			rvThreshold = 0.5;//= 17;	//The maximum BLUE pixel value to be classified as RED
+float 			rhBias = 10;				//The minimum RED pixel value to be classified as RED
+float 			rsBias = 0.1;				//The maximum GREEN pixel value to be classified as RED
+float 			rvBias = 0.1;				//The maximum BLUE pixel value to be classified as RED
+unsigned short 	rLowerBound = 100;
+unsigned short 	rUpperBound = 1000;
+unsigned short 	rQuantifiedLevel = 10;
+unsigned short 	rBoxPadding = 20;			//Search range beyond RED Box's border
+unsigned short 	rBoxBorder = 2;				//RED Box's border width
 /*
-float GH_Threshold = 17;	//The minimum RED pixel value to be classified as GREEN
-float GS_Threshold = 58;	//The maximum GREEN pixel value to be classified as GREEN
-float GV_Threshold = 17;	//The maximum BLUE pixel value to be classified as GREEN
-float GH_Bias = 10;	//The minimum RED pixel value to be classified as RED
-float GS_Bias = 10;	//The maximum GREEN pixel value to be classified as RED
-float GV_Bias = 10;	//The maximum BLUE pixel value to be classified as RED
-unsigned short G_LowerBound = 100;
-unsigned short G_UpperBound = 1000;
-unsigned short G_Level = 10;
-unsigned short G_Padding = 20;		//Search range beyond RED Box's border
-unsigned short G_Border = 2;		//RED Box's border width
+float 			ghThreshold = 17;			//The minimum RED pixel value to be classified as GREEN
+float 			gsThreshold = 58;			//The maximum GREEN pixel value to be classified as GREEN
+float 			gvThreshold = 17;			//The maximum BLUE pixel value to be classified as GREEN
+float 			ghBias = 10;				//The minimum RED pixel value to be classified as RED
+float 			gsBias = 10;				//The maximum GREEN pixel value to be classified as RED
+float 			gvBias = 10;				//The maximum BLUE pixel value to be classified as RED
+unsigned short 	gLowerBound = 100;
+unsigned short  gUpperBound = 1000;
+unsigned short  gQuantifiedLevel = 10;
+unsigned short  gBoxPadding = 20;			//Search range beyond RED Box's border
+unsigned short  gBoxBorder = 2;				//RED Box's border width
 */
-float BH_Threshold = 15;	//The minimum RED pixel value to be classified as BLUE
-float BS_Threshold = 32;	//The maximum GREEN pixel value to be classified as BLUE
-float BV_Threshold = 22;	//The maximum BLUE pixel value to be classified as BLUE
-float BH_Bias = 10;	//The minimum RED pixel value to be classified as RED
-float BS_Bias = 10;	//The maximum GREEN pixel value to be classified as RED
-float BV_Bias = 10;	//The maximum BLUE pixel value to be classified as RED
-unsigned short B_LowerBound = 100;
-unsigned short B_UpperBound = 1000;
-unsigned short B_Level = 10;
-unsigned short B_Padding = 20;		//Search range beyond RED Box's border
-unsigned short B_Border = 2;		//RED Box's border width
+float 			bhThreshold = 15;			//The minimum RED pixel value to be classified as BLUE
+float 			bsThreshold = 32;			//The maximum GREEN pixel value to be classified as BLUE
+float 			bvThreshold = 22;			//The maximum BLUE pixel value to be classified as BLUE
+float 			bhBias = 10;				//The minimum RED pixel value to be classified as RED	
+float 			bsBias = 10;				//The maximum GREEN pixel value to be classified as RED
+float 			bvBias = 10;				//The maximum BLUE pixel value to be classified as RED
+unsigned short 	bLowerBound = 100;
+unsigned short 	bUpperBound = 1000;
+unsigned short 	bQuantifiedLevel = 10;
+unsigned short 	bBoxPadding = 20;			//Search range beyond RED Box's border
+unsigned short 	bBoxBorder = 2;				//RED Box's border width
 
 void PLL6713(){
 	int i;
@@ -69,7 +69,7 @@ unsigned short	ybr_565(short y,short u,short v){
 	return ((r&0x0f8)<<8)|((g&0x0fc)<<3)|((b&0x0f8)>>3);
 }
 
-int int_min(int A, int B){
+/*int int_min(int A, int B){
 	if(A < B)
 		return A;
 	else
@@ -81,53 +81,53 @@ int int_max(int A, int B){
 		return A;
 	else
 		return B;
-}
+}*/
 
-void filterInitialize(int color, Filter *F){
-	F->Found = 0;
-	F->Color = color;
-	F->Size = 0;
-	F->Xcenter = 0.0;
-	F->Ycenter = 0.0;
-	switch(color){
-		case R_Color:
-			F->H_Threshold = RH_Threshold;
-			F->S_Threshold = RS_Threshold;
-			F->V_Threshold = RV_Threshold;
-			F->H_Bias = RH_Bias;
-			F->S_Bias = RS_Bias;
-			F->V_Bias = RV_Bias;
-			F->LowerBound = R_LowerBound;
-			F->UpperBound = R_UpperBound;
-			F->Level = R_Level;
-			F->Padding = R_Padding;
-			F->Border = R_Border;
+void InitializeFilter(int ballColor, Filter *ptr_newFilter){
+	ptr_newFilter->ballFound = 0;
+	ptr_newFilter->ballColor = ballColor;
+	ptr_newFilter->ballSize = 0;
+	ptr_newFilter->xCenter = 0.0;
+	ptr_newFilter->yCenter = 0.0;
+	switch(ballColor){
+		case rColor:
+			ptr_newFilter->hThreshold = rhThreshold;
+			ptr_newFilter->sThreshold = rsThreshold;
+			ptr_newFilter->vThreshold = rvThreshold;
+			ptr_newFilter->hBias = rhBias;
+			ptr_newFilter->sBias = rsBias;
+			ptr_newFilter->vBias = rvBias;
+			ptr_newFilter->lowerBound = rLowerBound;
+			ptr_newFilter->upperBound = rUpperBound;
+			ptr_newFilter->quantifiedLevel = rQuantifiedLevel;
+			ptr_newFilter->boxPadding = rBoxPadding;
+			ptr_newFilter->boxBorder = rBoxBorder;
 			break;
-		case G_Color:
-			/*F->H_Threshold = GH_Threshold;
-			F->S_Threshold = GS_Threshold;
-			F->V_Threshold = GV_Threshold;
-			F->H_Bias = GH_Bias;
-			F->S_Bias = GS_Bias;
-			F->V_Bias = GV_Bias;
-			F->LowerBound = G_LowerBound;
-			F->UpperBound = G_UpperBound;
-			F->Level = G_Level;
-			F->Padding = G_Padding;
-			F->Border = G_Border;*/
+		case gColor:
+			/*ptr_newFilter->hThreshold = ghThreshold;
+			ptr_newFilter->sThreshold = gsThreshold;
+			ptr_newFilter->vThreshold = gvThreshold;
+			ptr_newFilter->hBias = ghBias;
+			ptr_newFilter->sBias = gsBias;
+			ptr_newFilter->vBias = gvBias;
+			ptr_newFilter->lowerBound = gLowerBound;
+			ptr_newFilter->upperBound = gUpperBound;
+			ptr_newFilter->quantifiedLevel = gQuantifiedLevel;
+			ptr_newFilter->boxPadding = gBoxPadding;
+			ptr_newFilter->boxBorder = gBoxBorder;*/
 			break;
-		case B_Color:
-			F->H_Threshold = BH_Threshold;
-			F->S_Threshold = BS_Threshold;
-			F->V_Threshold = BV_Threshold;
-			F->H_Bias = BH_Bias;
-			F->S_Bias = BS_Bias;
-			F->V_Bias = BV_Bias;
-			F->LowerBound = B_LowerBound;
-			F->UpperBound = B_UpperBound;
-			F->Level = B_Level;
-			F->Padding = B_Padding;
-			F->Border = B_Border;
+		case bColor:
+			ptr_newFilter->hThreshold = bhThreshold;
+			ptr_newFilter->sThreshold = bsThreshold;
+			ptr_newFilter->vThreshold = bvThreshold;
+			ptr_newFilter->hBias = bhBias;
+			ptr_newFilter->sBias = bsBias;
+			ptr_newFilter->vBias = bvBias;
+			ptr_newFilter->lowerBound = bLowerBound;
+			ptr_newFilter->upperBound = bUpperBound;
+			ptr_newFilter->quantifiedLevel = bQuantifiedLevel;
+			ptr_newFilter->boxPadding = bBoxPadding;
+			ptr_newFilter->boxBorder = bBoxBorder;
 			break;
 		default:
 			;//error message
