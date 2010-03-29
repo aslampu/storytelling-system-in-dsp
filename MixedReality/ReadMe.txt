@@ -1,0 +1,8 @@
+Internal Files:
+	main.c
+	vm3224k.c vm3224k.h
+	start.asm
+	c6713.cmd
+External Reference: 
+	C:\CCStudio_v3.1\c6000\cgtools\lib\rts6700.lib
+	               
