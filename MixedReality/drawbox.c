@@ -1,37 +1,37 @@
-#include "utility.h"
+#include "Utility.h"
 
-void DrawBox(short tmp[][YLCD], int XFrom, int XTo, int YFrom, int YTo, int Border, int Padding){
-	//XFrom, XTo, YFrom, YTo are integers and includes Border and Padding
+void DrawBox(int xFrom, int xTo, int yFrom, int yTo, int boxBorder, int boxPadding, short ary2_imgFrame[XLCD][YLCD]){
+	//xFrom, xTo, yFrom, yTo are integers and includes boxBorder and boxPadding
 	int i,j;
-	int tmpXstart1, tmpYstart1, tmpXend1, tmpYend1, tmpXstart2, tmpYstart2, tmpXend2, tmpYend2;
+	int tmpXStart1, tmpYStart1, tmpXEnd1, tmpYEnd1, tmpXStart2, tmpYStart2, tmpXEnd2, tmpYEnd2;
 
-	//without Padding, but with Border
-	tmpXstart1 = int_min(XLCD, int_max(0, XFrom + Padding));
-	tmpYstart1 = int_min(YLCD, int_max(0, YFrom + Padding));
-	tmpXend1 = int_min(XLCD, int_max(0, XTo - Padding));
-	tmpYend1 = int_min(YLCD, int_max(0, YTo - Padding));
-	//without Padding and without Border
-	tmpXstart2 = int_min(XLCD, int_max(0, XFrom + Padding + Border));
-	tmpYstart2 = int_min(YLCD, int_max(0, YFrom + Padding + Border));
-	tmpXend2 = int_min(XLCD, int_max(0, XTo - Padding - Border));
-	tmpYend2 = int_min(YLCD, int_max(0, YTo - Padding - Border));
+	//without boxPadding, but with boxBorder
+	tmpXStart1 = Min(XLCD, Max(0, xFrom + boxPadding));
+	tmpYStart1 = Min(YLCD, Max(0, yFrom + boxPadding));
+	tmpXEnd1 = Min(XLCD, Max(0, xTo - boxPadding));
+	tmpYEnd1 = Min(YLCD, Max(0, yTo - boxPadding));
+	//without boxPadding and without boxBorder
+	tmpXStart2 = Min(XLCD, Max(0, xFrom + boxPadding + boxBorder));
+	tmpYStart2 = Min(YLCD, Max(0, yFrom + boxPadding + boxBorder));
+	tmpXEnd2 = Min(XLCD, Max(0, xTo - boxPadding - boxBorder));
+	tmpYEnd2 = Min(YLCD, Max(0, yTo - boxPadding - boxBorder));
 		
-	//show Box in tmp
+	//show box in ary2_imgFrame
 	//add black:0 UP
-	for(j=tmpXstart1;j<tmpXstart2;j++)
-		for(i=tmpYstart1;i<tmpYend1;i++)
-			tmp[j][i] = 0;
+	for(j=tmpXStart1;j<tmpXStart2;j++)
+		for(i=tmpYStart1;i<tmpYEnd1;i++)
+			ary2_imgFrame[j][i] = 0;
 	//Down
-	for(j=tmpXend2;j<tmpXend1;j++)
-		for(i=tmpYstart1;i<tmpYend1;i++)
-			tmp[j][i] = 0;
+	for(j=tmpXEnd2;j<tmpXEnd1;j++)
+		for(i=tmpYStart1;i<tmpYEnd1;i++)
+			ary2_imgFrame[j][i] = 0;
 	//Left
-	for(i=tmpYstart1;i<tmpYstart2;i++)
-		for(j=tmpXstart1;j<tmpXend1;j++)
-			tmp[j][i] = 0;
+	for(i=tmpYStart1;i<tmpYStart2;i++)
+		for(j=tmpXStart1;j<tmpXEnd1;j++)
+			ary2_imgFrame[j][i] = 0;
 	//Right
-	for(i=tmpYend2;i<tmpYend1;i++)
-		for(j=tmpXstart1;j<tmpXend1;j++)
-			tmp[j][i] = 0;
+	for(i=tmpYEnd2;i<tmpYEnd1;i++)
+		for(j=tmpXStart1;j<tmpXEnd1;j++)
+			ary2_imgFrame[j][i] = 0;
 }
 
