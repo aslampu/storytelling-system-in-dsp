@@ -10,23 +10,31 @@ int B_BITS = 5;
 
 int main (int argc, char * const argv[]) {
 	
-    if (argc != 5) {
+    /*if (argc != 5) {
 		cout << "usage: ./ImageToHeader /path/to/input/file.raw width height /path/to/output/file.h" << endl;
 		return 1;
 	}
 	char* inputImgPath = argv[1];
 	int width = atoi(argv[2]);
 	int height = atoi(argv[3]);
-	char* outputDatPath = argv[4];
+	char* outputDatPath = argv[4];*/
+
+	char* inputImgPath = "./AcrylicPaint.raw";
+	//char* inputImgPath = "./TeaPot.raw";
 	
+	int width = 200;
+	int height = 200;
+	char* outputDatPath = "./AcrylicPaint.h";
+	//char* outputDatPath = "./TeaPot.h";
+	//char* outputDatPath = "./SubImage.h";
 	
 	//int width = 150;
 	//int height = 189;
 	
 	// Initialize input and output files
-	//string tmpInput = "/Users/david/Spring 2010/EE 586L/Code/Input Images/Acrylic Paint.raw";
+	//char* inputImgPath = "../Acrylic Paint.raw";
 	ByteFile inputImg = ByteFile(inputImgPath);
-	//string tmpOutput = "/Users/david/Spring 2010/EE 586L/Code/Input Images/Acrylic Paint.h";
+	//char* outputDatPath = "../Acrylic Paint.h";
 	ofstream outputDat(outputDatPath, ofstream::binary);
 	
 	// Dimension Validation
@@ -36,14 +44,14 @@ int main (int argc, char * const argv[]) {
 	// Parameter Definition Output
 	string* strBuffer = NULL;
 	char buffer[200];
-	sprintf(buffer, "#define		HEIGHT	%d\n", height);
+	/*sprintf(buffer, "#define		HEIGHT	%d\n", height);
 	strBuffer = new string(buffer);
 	outputDat.write(strBuffer->c_str(), strBuffer->length());
 	delete strBuffer;
 	sprintf(buffer, "#define		WIDTH	%d\n", width);
 	strBuffer = new string(buffer);
 	outputDat.write(strBuffer->c_str(), strBuffer->length());
-	delete strBuffer;
+	delete strBuffer;*/
 	
 	// Begin reading pixel data
 	unsigned char* rVal = inputImg.getFileStream()->getNextByte();
@@ -54,27 +62,38 @@ int main (int argc, char * const argv[]) {
 	int rScaled = (int)*rVal / 255 * (pow(2.0, (double)R_BITS) - 1);
 	int gScaled = (int)*gVal / 255 * (pow(2.0, (double)G_BITS) - 1);
 	int bScaled = (int)*bVal / 255 * (pow(2.0, (double)B_BITS) - 1);
+	//int rScaled = (int)(pow(2.0, (double)R_BITS) - 1);
+	//int gScaled = (int)(pow(2.0, (double)G_BITS) - 1);
+	//int bScaled = (int)(pow(2.0, (double)B_BITS) - 1);
 	int outputVal  = rScaled<<(G_BITS+B_BITS);
 	outputVal += gScaled<<(B_BITS);
 	outputVal += bScaled;
 	
-	sprintf(buffer, "short		BG_COLOR = 0x%04x\n", outputVal);
+	
+	/*sprintf(buffer, "short		BG_COLOR = 0x%04x\n", outputVal);
+	strBuffer = new string(buffer);
+	outputDat.write(strBuffer->c_str(), strBuffer->length());
+	delete strBuffer;*/
+	
+	//outputDat.write("short	image[HEIGHT][WIDTH] = {\n", 32);
+	sprintf(buffer, "short image[%d][%d] = {\n", height, width);
 	strBuffer = new string(buffer);
 	outputDat.write(strBuffer->c_str(), strBuffer->length());
 	delete strBuffer;
-	
-	outputDat.write("short		image[HEIGHT][WIDTH] = {\n", 32);
-	
+
 	int countWidth = 0;
 	int countHeight = 0;
 	while (rVal != NULL && gVal != NULL && bVal != NULL) {
 		
-		if ((int)*rVal < 200)
-			cout << "Hi!";
+		//if ((int)*rVal < 200)
+		//	cout << "Hi!";
 		// Convert 24-bit pixel to 16-bit pixel (RGB: 5,6,5)
 		rScaled = ((int)*rVal / 255.0) * (pow(2.0, (double)R_BITS) - 1);
 		gScaled = ((int)*gVal / 255.0) * (pow(2.0, (double)G_BITS) - 1);
 		bScaled = ((int)*bVal / 255.0) * (pow(2.0, (double)B_BITS) - 1);
+	    //rScaled = (int)(pow(2.0, (double)R_BITS) - 1);
+	    //gScaled = (int)(pow(2.0, (double)G_BITS) - 1);
+	    //bScaled = (int)(pow(2.0, (double)B_BITS) - 1);
 		
 		// Generate single 16-bit int representation
 		outputVal  = rScaled<<(G_BITS+B_BITS);
@@ -88,9 +107,9 @@ int main (int argc, char * const argv[]) {
 			sprintf(buffer, ",0x%04x", outputVal);
 		}
 		
-		printf("rOrig:   %d gOrig:   %d, bOrig:   %d\n", (int)*rVal, (int)*gVal, (int)*bVal);
-		printf("rScaled: %d gScaled: %d, bScaled: %d\n", rScaled, gScaled, bScaled);
-		printf("0x%04x\n", outputVal);
+		//printf("rOrig:   %d gOrig:   %d, bOrig:   %d\n", (int)*rVal, (int)*gVal, (int)*bVal);
+		//printf("rScaled: %d gScaled: %d, bScaled: %d\n", rScaled, gScaled, bScaled);
+		//printf("0x%04x\n", outputVal);
 	
 		strBuffer = new string(buffer);
 		outputDat.write(strBuffer->c_str(), strBuffer->length());
