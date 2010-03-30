@@ -57,6 +57,7 @@ insert_b_std   = std(double(insert_b_array));
 %% Apply blending to insert image
 for i=1:w
 	for j=1:h
+	 if insert_lab(i,j,1) ~= INSERT_BG_LAB(1,1,1) && insert_lab(i,j,2) ~= INSERT_BG_LAB(1,1,2) && insert_lab(i,j,3) ~= INSERT_BG_LAB(1,1,3)
 		insert_lab(i,j,1) = insert_lab(i,j,1) - insert_L_mean;
 		insert_lab(i,j,1) = bg_L_std / insert_L_std * insert_lab(i,j,1);
 		insert_lab(i,j,1) = insert_lab(i,j,1) + bg_L_mean;
@@ -66,6 +67,7 @@ for i=1:w
 		insert_lab(i,j,3) = insert_lab(i,j,3) - insert_b_mean;
 		insert_lab(i,j,3) = bg_b_std / insert_b_std * insert_lab(i,j,3);
 		insert_lab(i,j,3) = insert_lab(i,j,3) + bg_b_mean;
+		end
 	end
 end
 
@@ -81,8 +83,8 @@ new_insert_rgb = Lab2RGB(insert_lab);
 % ----------------
 
 
-originImage = imresize(insert_image,0.25);
-adjustImage = imresize(new_insert_rgb, 0.25);
+originImage = imresize(insert_image,0.75);
+adjustImage = imresize(new_insert_rgb, 0.75);
 adjustImage_gaussian = imnoise(adjustImage, 'gaussian');
 
 [wi he de] = size(adjustImage);
@@ -91,11 +93,12 @@ new_bg_rgb_with_origin = new_bg_rgb;
 new_bg_rgb_with_adjust = new_bg_rgb;
 new_bg_rgb_with_gussian = new_bg_rgb;
 
+
 for i = 1:wi
     for j = 1:he
         for k = 1:de
             if (originImage(i,j,k) > 0)
-                new_bg_rgb_with_origin(i+153,j+200,k) = originImage(i,j,k);
+                new_bg_rgb_with_origin(i+140,j+180,k) = originImage(i,j,k);
             end
         end
     end
@@ -105,7 +108,7 @@ for i = 1:wi
     for j = 1:he
         for k = 1:de
             if (adjustImage(i,j,k) > 100)
-                new_bg_rgb_with_adjust(i+153,j+200,k) = adjustImage(i,j,k);
+                new_bg_rgb_with_adjust(i+140,j+180,k) = adjustImage(i,j,k);
             end
         end
     end
@@ -115,7 +118,7 @@ for i = 1:wi
     for j = 1:he
         for k = 1:de
             if (adjustImage_gaussian(i,j,k) > 100)
-                new_bg_rgb_with_gussian(i+153,j+200,k) = adjustImage_gaussian(i,j,k);
+                new_bg_rgb_with_gussian(i+140,j+180,k) = adjustImage_gaussian(i,j,k);
             end
         end
     end

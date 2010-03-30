@@ -57,7 +57,7 @@ unsigned char* InputFileStream::getNextByte() {
 		unsigned char* val = new unsigned char; //  - create a pointer to a new unsigned char
 		*val = getc(p_file);                    //  - read in the value from the file
 		
-		if ( posCurrent < m_numBytes ) {            // If the current position is less than the number of bytes in the file
+		if ( posCurrent.__pos < m_numBytes ) {            // If the current position is less than the number of bytes in the file
 			m_fileOpen = !feof(p_file);             //  - set the fileOpen flag noting if the file has ended
 			return val;                             //  - return the value obtained from 
 		}
@@ -81,7 +81,7 @@ unsigned char* InputFileStream::getByte(long int position) {
 			fseek(p_file, position, SEEK_SET);
 			unsigned char* val = new unsigned char;
 			*val = fgetc(p_file);
-			fseek(p_file, posOriginal, SEEK_SET);   // Seek back to the previous position and return
+			fseek(p_file, posOriginal.__pos, SEEK_SET);   // Seek back to the previous position and return
 			return val;
 		}
 	}
