@@ -276,8 +276,10 @@ void main()
 				lcd[j][i+1]=rgb[y1][u0][v0];
 			}
 
-			//============================Change Here
-
+			//============================Capture Image Intruction
+			//1. Set the breakpoint in scaleImage(), runs until back to the breakpoint. 
+			//2. Run this routine several times
+			//3. Then you can see the written imag.
             scaleImage();
 			outputDat = fopen("Z:\\david On My Mac\\Desktop\\output.dat", "wb");
 			/*
