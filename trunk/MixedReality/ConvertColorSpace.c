@@ -123,10 +123,13 @@ float RGB2HSV(unsigned short rgbColor){
 // Yossi Rubner
 // Last modified 2/24/98
 //=================================================================== LAB_GEL Function
-void RGB2Lab(float R, float G, float B,
-	     int *L, int *a, int *b)
-{
-  float X, Y, Z, fX, fY, fZ;
+void RGB2Lab(unsigned short rgbColor,
+	     int *L, int *a, int *b){
+  	
+  	float X, Y, Z, fX, fY, fZ;
+	float R = (((rgbColor & 0xf800) >> 11) * 255 / 31);
+	float G = (((rgbColor & 0x07e0) >> 5) * 255 / 63);
+	float B = ((rgbColor & 0x001f) * 255 / 31);
 
   X = 0.412453*R + 0.357580*G + 0.180423*B;
   Y = 0.212671*R + 0.715160*G + 0.072169*B;

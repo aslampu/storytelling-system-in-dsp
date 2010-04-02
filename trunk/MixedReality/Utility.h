@@ -59,12 +59,13 @@ typedef struct{
 	short   yTo;
 } Filter;
 
-//void DrawBox(int xFrom, int xTo, int yFrom, int yTo, int boxBorder, int boxPadding, float ary3_imgFrame[XLCD][YLCD][3]);
-//void TrackBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], float ary2_rgb2hsvTable[NUM_RGB]);
-void TrackBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD]);
+void DrawBox(int xFrom, int xTo, int yFrom, int yTo, int boxBorder, int boxPadding,unsigned short ary2_imgFrame[XLCD][YLCD]);
+void TrackBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], float ary2_rgb2hsvTable[NUM_RGB]);
+//void TrackBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD]);
 //void RGB2HSV(unsigned short rgbColor, float *ptr_hValue, float *ptr_sValue, float *ptr_vValue);
 float RGB2HSV(unsigned short rgbColor);
 //unsigned short HSV2RGB(float hValue, float sValue, float vValue);
+void RGB2Lab(unsigned short rgbColor, int *L, int *a, int *b);
 void InitializeFilter(int ballColor, Filter *ptr_newFilter);
 void PLL6713();
 unsigned short	ybr_565(short y,short u,short v);
