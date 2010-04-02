@@ -1,24 +1,24 @@
 #include "Utility.h"
 
 float 			rhThreshold = 0;
-float 			rhBias = 20;				
-unsigned short 	rLowerBound = 5000;
+float 			rhBias = 40;				
+unsigned short 	rLowerBound = 1000;
 unsigned short 	rUpperBound = 40000;
 unsigned short 	rQuantifiedLevel = 10;
 unsigned short 	rBoxPadding = 100;		
 unsigned short 	rBoxBorder = 2;			
 
 float 			ghThreshold = 110;			
-float 			ghBias = 20;			
-unsigned short 	gLowerBound = 5000;
+float 			ghBias = 40;			
+unsigned short 	gLowerBound = 1000;
 unsigned short  gUpperBound = 40000;
 unsigned short  gQuantifiedLevel = 10;
 unsigned short  gBoxPadding = 100;			
 unsigned short  gBoxBorder = 2;				
 
 float 			bhThreshold = 240;		
-float 			bhBias = 20;			
-unsigned short 	bLowerBound = 5000;
+float 			bhBias = 40;			
+unsigned short 	bLowerBound = 1000;
 unsigned short 	bUpperBound = 40000;
 unsigned short 	bQuantifiedLevel = 10;
 unsigned short 	bBoxPadding = 100;			

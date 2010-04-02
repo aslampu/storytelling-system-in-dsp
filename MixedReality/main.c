@@ -30,8 +30,8 @@
 short				ary2_imgCamera[XLCD][YLCD];
 unsigned short 		ary2_imgFrame[XLCD][YLCD]; 
 unsigned short     	ary3_yuv2rgbTable[64][32][32];
-//float       		ary2_rgb2hsvTable[NUM_RGB];
-//float       		ary2_rgb2labTable[NUM_RGB][3];
+float       		ary2_rgb2hsvTable[NUM_RGB];
+int  	     		ary2_rgb2labTable[NUM_RGB][3];
 
 void main()
 {
@@ -50,10 +50,10 @@ void main()
     for (i=0;i<32;i++)
     for (j=0;j<32;j++) ary3_yuv2rgbTable[k][i][j] = ybr_565(k<<2,i<<3,j<<3);
 
-    /*for (j=0;j<NUM_RGB;j++){ 
+    for (j=0;j<NUM_RGB;j++){ 
     	ary2_rgb2hsvTable[j] = RGB2HSV(j);
-		//RGB2LAB(j,&(ary2_rgb2labTable[j][1]),&(ary2_rgb2labTable[j][2]),&(ary2_rgb2labTable[j][3]));
-	}*/
+		RGB2Lab(j,&(ary2_rgb2labTable[j][1]),&(ary2_rgb2labTable[j][2]),&(ary2_rgb2labTable[j][3]));
+	}
 
 	QDMA_CNT 	= (239<<16)|320;
 	QDMA_IDX 	= 0x0000<<16;
@@ -89,12 +89,12 @@ void main()
 		
 		//Call track function, which modify the ary2_imgFrame array passed by a pointer
 		
-		TrackBall(&bFilter, ary2_imgFrame);
+		//TrackBall(&bFilter, ary2_imgFrame);
 		//TrackBall(&gFilter, ary2_imgFrame);
 		//TrackBall(&bFilter, ary2_imgFrame);
 
 		//TrackBall(&rFilter, ary2_imgFrame, ary2_rgb2hsvTable);
-		//TrackBall(&bFilter, ary2_imgFrame, ary2_rgb2hsvTable);
+		TrackBall(&bFilter, ary2_imgFrame, ary2_rgb2hsvTable);
 		if(bFilter.ballFound){
 			//Determine an imgInput to display, based on a computed orientation
 			//ModifyImage2D(&rFilter, &bFilter, ptr2_imgInput);

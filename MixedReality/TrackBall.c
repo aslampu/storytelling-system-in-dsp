@@ -1,8 +1,9 @@
 #include <math.h>
 #include "Utility.h"
 														
-//void TrackBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], float ary2_rgb2hsvTable[NUM_RGB]){
-void TrackBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD]){		
+
+//void TrackBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD]){		
+void TrackBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], float ary2_rgb2hsvTable[NUM_RGB]){
 	int i, j, xFrom, yFrom, xTo, yTo, hueFlag = 0;
 	float hTemp, hL, hU, hSwap;
 
@@ -17,8 +18,8 @@ void TrackBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD]){
 	//Sweep given image matrix for the color ball
 	for(j=xFrom;j<xTo;j++){
 		for(i=yFrom;i<yTo;i++){
-			hTemp = RGB2HSV(ary2_imgFrame[j][i]);
-			//hTemp = ary2_rgb2hsvTable[ary2_imgFrame[j][i]];
+			//hTemp = RGB2HSV(ary2_imgFrame[j][i]);
+			hTemp = ary2_rgb2hsvTable[ary2_imgFrame[j][i]];
 			//hTemp = ary2_rgb2hsvTable[ary2_imgFrame[j][i]][0];
 			//sTemp = ary2_rgb2hsvTable[ary2_imgFrame[j][i]][1];
 			//vTemp = ary2_rgb2hsvTable[ary2_imgFrame[j][i]][2];
@@ -52,10 +53,14 @@ void TrackBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD]){
 		newComer.ballFound = 1;
 		newComer.xCenter = newComer.xCenter/newComer.ballSize;
 		newComer.yCenter = newComer.yCenter/newComer.ballSize;
-		newComer.xFrom = Min(XLCD, Max(0, floor(ptr_oldFilter->xFrom + newComer.xCenter - ptr_oldFilter->xCenter)));
-		newComer.xTo = Min(XLCD, Max(0, floor(ptr_oldFilter->xTo + newComer.xCenter - ptr_oldFilter->xCenter)));
-		newComer.yFrom = Min(YLCD, Max(0, floor(ptr_oldFilter->yFrom + newComer.yCenter - ptr_oldFilter->yCenter)));
-		newComer.yTo = Min(YLCD, Max(0, floor(ptr_oldFilter->yTo + newComer.yCenter - ptr_oldFilter->yCenter)));
+		//newComer.xFrom = Min(XLCD, Max(0, floor(ptr_oldFilter->xFrom + newComer.xCenter - ptr_oldFilter->xCenter)));
+		//newComer.xTo = Min(XLCD, Max(0, floor(ptr_oldFilter->xTo + newComer.xCenter - ptr_oldFilter->xCenter)));
+		//newComer.yFrom = Min(YLCD, Max(0, floor(ptr_oldFilter->yFrom + newComer.yCenter - ptr_oldFilter->yCenter)));
+		//newComer.yTo = Min(YLCD, Max(0, floor(ptr_oldFilter->yTo + newComer.yCenter - ptr_oldFilter->yCenter)));
+		newComer.xFrom = Min(XLCD, Max(0, floor(ptr_oldFilter->xFrom)));
+		newComer.xTo = Min(XLCD, Max(0, floor(ptr_oldFilter->xTo)));
+		newComer.yFrom = Min(YLCD, Max(0, floor(ptr_oldFilter->yFrom)));
+		newComer.yTo = Min(YLCD, Max(0, floor(ptr_oldFilter->yTo)));
 		*ptr_oldFilter = newComer;
 		/*ptr_oldFilter->ballColor = newComer.ballColor;
 		ptr_oldFilter->ballFound = newComer.ballFound;

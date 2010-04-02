@@ -7,6 +7,7 @@ void OverlayImage1D(Filter *ptr_theFilter, unsigned short ary2_imgFrame[XLCD][YL
 	//int comLength = 10 * floor((70 + (210/75000) * (ptr_theFilter->ballSize-5000)) / 10);
 	int xStart = Min(XLCD, Max(0,floor(ptr_theFilter->xCenter)-40));
 	int yStart = Min(YLCD, Max(0,floor(ptr_theFilter->yCenter)-40));
+	//DrawBox(ptr_theFilter->xFrom, ptr_theFilter->xTo, ptr_theFilter->yFrom, ptr_theFilter->yTo, ptr_theFilter->boxBorder, ptr_theFilter->boxPadding, ary2_imgFrame);
 	for(j=40;j<160;j++){
 		if(xStart+j-40 >= XLCD)
 			break;
