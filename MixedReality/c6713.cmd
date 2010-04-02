@@ -16,7 +16,7 @@ SECTIONS { .vectors:    {} > 0h
            .bss:        {} > IDRAM
            .sysmem:     {} > IDRAM
            .cio:        {} > IDRAM
-           .far:        {} > IDRAM
+           .far:        {} > SDRAM
            .stack:      {} > IDRAM
            .sdram:		{} > SDRAM }
 

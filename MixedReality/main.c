@@ -15,39 +15,52 @@
 #include	"vm3224k.h"
 #include    "QDMA.h"
 #include    "Utility.h"
+#include    "AcrylicPaint.h"
+#include    "TeaPot.h"
+#include    "InputImage.h"
 
 #pragma 	DATA_SECTION ( ary2_imgCamera,".sdram" )
 #pragma 	DATA_SECTION ( ary2_imgFrame,".sdram" )
+#pragma 	DATA_SECTION ( ary2_imgOne,".sdram" )
+#pragma 	DATA_SECTION ( ary2_imgTwo,".sdram" )
+#pragma 	DATA_SECTION ( ary3_yuv2rgbTable,".sdram" )
+//#pragma 	DATA_SECTION ( ary3_rgb2hsvTable,".sdram" )
+//#pragma 	DATA_SECTION ( ary3_rgb2labTable,".sdram" )
 
-short		ary3_rgbTable[64][32][32];
-short		ary2_imgCamera[XLCD][YLCD];
-short 		ary2_imgFrame[XLCD][YLCD];
+short				ary2_imgCamera[XLCD][YLCD];
+unsigned short 		ary2_imgFrame[XLCD][YLCD]; 
+unsigned short     	ary3_yuv2rgbTable[64][32][32];
+//float       		ary2_rgb2hsvTable[NUM_RGB];
+//float       		ary2_rgb2labTable[NUM_RGB][3];
 
 void main()
 {
 	//Initialize
 	int	i=-1, j=-1, k=-1, y0=-1, y1=-1, v0=-1, u0=-1;
-	Filter rFormerFilter,rLatterFilter;
-	//Filter gFormerFilter, gLatterFilter;
-	Filter bFormerFilter, bLatterFilter;
+	
+	Filter rFilter, gFilter, bFilter;
 
 	PLL6713();	// Initialize C6713 PLL	
 	CE2CTL = (WSU|WST|WHD|RSU|RST|RHD|MTYPE);
 	vm3224init();
 	vm3224rate(3);
 	vm3224bl(15);
-
+	
     for (k=0;k<64;k++)
     for (i=0;i<32;i++)
-    for (j=0;j<32;j++) ary3_rgbTable[k][i][j] = ybr_565(k<<2,i<<3,j<<3);
+    for (j=0;j<32;j++) ary3_yuv2rgbTable[k][i][j] = ybr_565(k<<2,i<<3,j<<3);
+
+    /*for (j=0;j<NUM_RGB;j++){ 
+    	ary2_rgb2hsvTable[j] = RGB2HSV(j);
+		//RGB2LAB(j,&(ary2_rgb2labTable[j][1]),&(ary2_rgb2labTable[j][2]),&(ary2_rgb2labTable[j][3]));
+	}*/
 
 	QDMA_CNT 	= (239<<16)|320;
 	QDMA_IDX 	= 0x0000<<16;
 	
-	InitializeFilter(rColor, &rFormerFilter);
-	InitializeFilter(rColor, &rLatterFilter);
-	InitializeFilter(bColor, &bFormerFilter);
-	InitializeFilter(bColor, &bLatterFilter);
+	InitializeFilter(rColor, &rFilter);
+	InitializeFilter(gColor, &gFilter);
+	InitializeFilter(bColor, &bFilter);
 
 	//Read input video
 	while (1) {
@@ -70,22 +83,27 @@ void main()
 			y1 =  y1>>2;
 			u0 =  u0>>3;
 			v0 =  v0>>3;
-			ary2_imgFrame[j][i] = ary3_rgbTable[y0][u0][v0];
-			ary2_imgFrame[j][i+1] = ary3_rgbTable[y1][u0][v0];
+			ary2_imgFrame[j][i] = ary3_yuv2rgbTable[y0][u0][v0];
+			ary2_imgFrame[j][i+1] = ary3_yuv2rgbTable[y1][u0][v0];
 		}
 		
 		//Call track function, which modify the ary2_imgFrame array passed by a pointer
-		TrackBall(&rFormerFilter, &bLatterFilter, ary2_imgFrame);
-		//TrackBall(&gFormerFilter, &gLatterFilter, ary2_imgFrame);
-		TrackBall(&bFormerFilter, &bLatterFilter, ary2_imgFrame);
-		if(rLatterFilter.ballFound || bLatterFilter.ballFound)
-		//Include resize and rotation
-		//OverlayImage2D(&rLatterFilter, &bLatterFilter, ary2_imgFrame);
 		
+		TrackBall(&bFilter, ary2_imgFrame);
+		//TrackBall(&gFilter, ary2_imgFrame);
+		//TrackBall(&bFilter, ary2_imgFrame);
+
+		//TrackBall(&rFilter, ary2_imgFrame, ary2_rgb2hsvTable);
+		//TrackBall(&bFilter, ary2_imgFrame, ary2_rgb2hsvTable);
+		if(bFilter.ballFound){
+			//Determine an imgInput to display, based on a computed orientation
+			//ModifyImage2D(&rFilter, &bFilter, ptr2_imgInput);
+			OverlayImage1D(&bFilter, ary2_imgFrame, ary2_imgTwo);
+		}
 		//Output Synthesized Frames
 		for(i=0;i<1000000;i++) if(EDMA_CIPR&0x200) break;
 		VM3224ADDH = 0x0000;		
-		EDMA_CIPR = 0x200;	
+		EDMA_CIPR = 0x200;			
 		QDMA_SRC	= (int)ary2_imgFrame;
 		QDMA_DST 	= (int)&VM3224DATA;		
 		QDMA_S_OPT 	= OptionField_1;				

@@ -1,24 +1,37 @@
 #include "Utility.h"
-#include "Image.h"
-#include "ScaleImage.h"
-#include "SubImage.h"
-#include "LAB.h"
 
-#define PERCENT 100
-
-void OverlayImage2D(Filter *ptr_leftFilter, Filter *ptr_rightFilter, short ary2_imgFrame[XLCD][YLCD]){
+void OverlayImage2D(Filter *ptr_leftFilter, Filter *ptr_rightFilter, unsigned short ary2_imgFrame[XLCD][YLCD], unsigned short ary2_imgInput[HEIGHT][WIDTH]){
+	int i,j;
+	unsigned short tmpColor;
 	//short *rotatedImage;
-	int j,i,xFrom,xTo,yFrom,yTo,totalNumber;
-	int imageScaleFactor=PERCENT, leftScaleFactor=PERCENT, rightScaleFactor=PERCENT;
-	float comXCenter = (ptr_leftFilter->xCenter + ptr_rightFilter->xCenter)/2;
-	float comYCenter = (ptr_leftFilter->yCenter + ptr_rightFilter->yCenter)/2;
-	short rgbAdj;
-	float rTemp, gTemp, bTemp;
-	int *ptr_lValue, *ptr_aValue, *ptr_bValue;
-	float avgL=0,avgA=0,avgB=0;
-	float varL=0,varA=0,varB=0;
+	//int j,i,xFrom,xTo,yFrom,yTo,totalNumber;
+	//int imageScaleFactor=PERCENT, leftScaleFactor=PERCENT, rightScaleFactor=PERCENT;
+	int comXCenter = floor((ptr_leftFilter->xCenter + ptr_rightFilter->xCenter)/2);
+	int comYCenter = floor((ptr_leftFilter->yCenter + ptr_rightFilter->yCenter)/2);
+	int comSize = Max(ptr_leftFilter->ballSize, ptr_rightFilter->ballSize) * 2;
+	/*70 + (comSize - ptr_leftFilter->lowerBound)/ ptr_leftFilter->quantifiedLevel
+	ptr_leftFilter->quantifiedLevel*/
+	int comLength = 10 * floor((70 + (210/75000) * (comSize-5000)) / 10);
+	int xstart = Min(XLCD, Max(0, comXCenter));
+	int ystart = Min(YLCD, Max(0, comYCenter));
+	for(j=40;j<160;j++){
+		for(i=30;i<180;i++){
+			if(xstart+j > XLCD)
+				break;
+			tmpColor = ary2_imgInput[j][i];
+			if(((tmpColor & 0xf800) >> 11) < 28 && ((tmpColor & 0x07e0) >> 5) < 58 && (tmpColor & 0x001f) < 28)
+				ary2_imgFrame[xstart+j-40][ystart+i-30] = tmpColor;
+		}
+		if(ystart+i > YLCD)
+			break;
+	}
+	//short rgbAdj;
+	//float rTemp, gTemp, bTemp;
+	//int *ptr_lValue, *ptr_aValue, *ptr_bValue;
+	//float avgL=0,avgA=0,avgB=0;
+	//float varL=0,varA=0,varB=0;
 	//quantifiedLevel
-	if(ptr_leftFilter->ballSize < ptr_leftFilter->upperBound){
+	/*if(ptr_leftFilter->ballSize < ptr_leftFilter->upperBound){
 		leftScaleFactor = (floor((ptr_leftFilter->ballSize * ptr_leftFilter->quantifiedLevel) / ptr_leftFilter->upperBound) * PERCENT) / ptr_leftFilter->quantifiedLevel;		
 	}
 	if(ptr_rightFilter->ballSize < ptr_rightFilter->upperBound){
@@ -30,7 +43,7 @@ void OverlayImage2D(Filter *ptr_leftFilter, Filter *ptr_rightFilter, short ary2_
 		imageScaleFactor = PERCENT;
 
 	scaleImage(imageScaleFactor);
-	
+	*/
 	//select rotated images
 	/*if(leftScaleFactor == rightScaleFactor)
 		rotatedImage = ary2_subImage; //0 degree
@@ -56,7 +69,7 @@ void OverlayImage2D(Filter *ptr_leftFilter, Filter *ptr_rightFilter, short ary2_
 	}*/
 
 	//adjust LAB
-	xFrom = int_min(XLCD, int_max(0, floor(comXCenter - (subImageHeight / 2))));
+	/*xFrom = int_min(XLCD, int_max(0, floor(comXCenter - (subImageHeight / 2))));
 	yFrom = int_min(YLCD, int_max(0, floor(comYCenter - (subImageWidth / 2))));
 	xTo = int_min(XLCD, int_max(0, floor(comXCenter + (subImageHeight / 2))));
 	yTo = int_min(YLCD, int_max(0, floor(comYCenter + (subImageWidth / 2))));
@@ -97,9 +110,9 @@ void OverlayImage2D(Filter *ptr_leftFilter, Filter *ptr_rightFilter, short ary2_
 				bTemp = (float)((ary2_subImage[j][i]&0x1F) * 255 / 31);
 						
 				RGB2Lab(rTemp,gTemp,bTemp,ptr_lValue,ptr_aValue,ptr_bValue);
-				//*ptr_lValue = (varL/subVarL) * (*ptr_lValue - subAvgL) + avgL;
-				//*ptr_aValue = (varA/subVarA) * (*ptr_aValue - subAvgA) + avgA;
-				//*ptr_bValue = (varB/subVarB) * (*ptr_bValue - subAvgB) + avgB;
+				*ptr_lValue = (varL/subVarL) * (*ptr_lValue - subAvgL) + avgL;
+				*ptr_aValue = (varA/subVarA) * (*ptr_aValue - subAvgA) + avgA;
+				*ptr_bValue = (varB/subVarB) * (*ptr_bValue - subAvgB) + avgB;
 
 				Lab2RGB(*ptr_lValue, *ptr_aValue, *ptr_bValue, &rTemp, &gTemp, &bTemp);
 	
@@ -111,6 +124,6 @@ void OverlayImage2D(Filter *ptr_leftFilter, Filter *ptr_rightFilter, short ary2_
 				ary2_imgFrame[int_min(XLCD, int_max(0, floor(j + comXCenter - (subImageHeight / 2))))][int_min(YLCD, int_max(0, floor(i + comYCenter - (subImageWidth / 2))))] = rgbAdj;						
 			}
 		}
-	}
+	}*/
 }
 
