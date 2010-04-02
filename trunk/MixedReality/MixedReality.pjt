@@ -1,7 +1,7 @@
 ; Code Composer Project File, Version 2.0 (do not modify or remove this line)
 
 [Project Settings]
-ProjectDir="C:\CCStudio_v3.1\MyProjects\MCHproj\storytelling-system-in-dsp\MixedReality\"
+ProjectDir="C:\CCStudio_v3.1\MCHproj\storytelling-system-in-dsp\MixedReality\"
 ProjectType=Executable
 CPUFamily=TMS320C67XX
 Tool="Compiler"
@@ -12,10 +12,10 @@ Config="Debug"
 Config="Release"
 
 [Source Files]
-Source="..\..\..\..\C6000\cgtools\lib\rts6700.lib"
-Source="DrawBox.c"
-Source="HSV.c"
+Source="..\..\..\C6000\cgtools\lib\rts6700.lib"
+Source="ConvertColorSpace.c"
 Source="main.c"
+Source="OverlayImage1D.c"
 Source="TrackBall.c"
 Source="Utility.c"
 Source="vm3224k.c"

@@ -1,6 +1,6 @@
 #include "Utility.h"
 
-void DrawBox(int xFrom, int xTo, int yFrom, int yTo, int boxBorder, int boxPadding, short ary2_imgFrame[XLCD][YLCD]){
+void DrawBox(int xFrom, int xTo, int yFrom, int yTo, int boxBorder, int boxPadding, float ary3_hsvFrame[XLCD][YLCD][3]){
 	//xFrom, xTo, yFrom, yTo are integers and includes boxBorder and boxPadding
 	int i,j;
 	int tmpXStart1, tmpYStart1, tmpXEnd1, tmpYEnd1, tmpXStart2, tmpYStart2, tmpXEnd2, tmpYEnd2;
@@ -19,19 +19,31 @@ void DrawBox(int xFrom, int xTo, int yFrom, int yTo, int boxBorder, int boxPaddi
 	//show box in ary2_imgFrame
 	//add black:0 UP
 	for(j=tmpXStart1;j<tmpXStart2;j++)
-		for(i=tmpYStart1;i<tmpYEnd1;i++)
-			ary2_imgFrame[j][i] = 0;
+		for(i=tmpYStart1;i<tmpYEnd1;i++){
+			ary3_hsvFrame[j][i][0] = 0.0;
+			ary3_hsvFrame[j][i][0] = 1.0;
+			ary3_hsvFrame[j][i][0] = 1.0;
+		}
 	//Down
 	for(j=tmpXEnd2;j<tmpXEnd1;j++)
-		for(i=tmpYStart1;i<tmpYEnd1;i++)
-			ary2_imgFrame[j][i] = 0;
+		for(i=tmpYStart1;i<tmpYEnd1;i++){
+			ary3_hsvFrame[j][i][0] = 0.0;
+			ary3_hsvFrame[j][i][0] = 1.0;
+			ary3_hsvFrame[j][i][0] = 1.0;
+		}
 	//Left
 	for(i=tmpYStart1;i<tmpYStart2;i++)
-		for(j=tmpXStart1;j<tmpXEnd1;j++)
-			ary2_imgFrame[j][i] = 0;
+		for(j=tmpXStart1;j<tmpXEnd1;j++){
+			ary3_hsvFrame[j][i][0] = 0.0;
+			ary3_hsvFrame[j][i][0] = 1.0;
+			ary3_hsvFrame[j][i][0] = 1.0;
+		}
 	//Right
 	for(i=tmpYEnd2;i<tmpYEnd1;i++)
-		for(j=tmpXStart1;j<tmpXEnd1;j++)
-			ary2_imgFrame[j][i] = 0;
+		for(j=tmpXStart1;j<tmpXEnd1;j++){
+			ary3_hsvFrame[j][i][0] = 0.0;
+			ary3_hsvFrame[j][i][0] = 1.0;
+			ary3_hsvFrame[j][i][0] = 1.0;
+		}
 }
 
