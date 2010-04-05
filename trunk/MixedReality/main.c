@@ -29,8 +29,8 @@
 short				ary2_imgCamera[XLCD][YLCD];
 unsigned short 		ary2_imgFrame[XLCD][YLCD]; 
 unsigned short     	ary3_yuv2rgbTable[64][32][32];
-float       		ary2_rgb2hsvTable[NUM_RGB][3];
-int  	     		ary2_rgb2labTable[NUM_RGB][3];
+unsigned short	    ary3_rgb2hsvTable[NUM_RGB][3];
+//int  	     		ary2_rgb2labTable[NUM_RGB][3];
 
 void main()
 {
@@ -52,8 +52,8 @@ void main()
 
     for (j=0;j<NUM_RGB;j++){ 
     	//ary2_rgb2hueTable[j] = RGB2Hue(j);
-		RGB2HSV(j,&(ary2_rgb2hsvTable[j][0]),&(ary2_rgb2hsvTable[j][1]),&(ary2_rgb2hsvTable[j][2]));
-		//RGB2Lab(j,&(ary2_rgb2labTable[j][1]),&(ary2_rgb2labTable[j][2]),&(ary2_rgb2labTable[j][3]));
+		RGB2HSV(j,&(ary3_rgb2hsvTable[j][0]),&(ary3_rgb2hsvTable[j][1]),&(ary3_rgb2hsvTable[j][2]));
+		//RGB2Lab(j,&(ary2_rgb2labTable[j][0]),&(ary2_rgb2labTable[j][1]),&(ary2_rgb2labTable[j][2]));
 	}
 
 	QDMA_CNT 	= (239<<16)|320;
@@ -65,13 +65,13 @@ void main()
 
 	//Read input video
 	while (1) {
-		/*outputRGBData = fopen("C:/CCStudio_v3.1/MCHproj/MixedReality0404/MixedReality/outputRGBData.raw", "wb");
+		outputRGBData = fopen("C:/CCStudio_v3.1/MCHproj/MixedReality0404/MixedReality/outputRGBData.raw", "wb");
 		if(!outputRGBData)
 			printf("Cannot open outputRGBData");
 		outputHueData = fopen("C:/CCStudio_v3.1/MCHproj/MixedReality0404/MixedReality/outputHueData.raw", "wb");
 		if(!outputHueData)
 			printf("Cannot open outputHueData");
-		*/
+		
 		//Get Input Frames
 		for(i=0;i<1000000;i++) if(EDMA_CIPR&0x200) break;		
 		VM3224ADDH = 0x08000;		
@@ -97,8 +97,8 @@ void main()
 		
 		//Call track function, which modify the ary2_imgFrame array passed by a pointer
 		
-		TrackBall(&gFilter, ary2_imgFrame, ary2_rgb2hsvTable);
-		TrackBall(&bFilter, ary2_imgFrame, ary2_rgb2hsvTable);
+		TrackBall(&gFilter, ary2_imgFrame, ary3_rgb2hsvTable);
+		TrackBall(&bFilter, ary2_imgFrame, ary3_rgb2hsvTable);
 
 		switch(rFilter.ballFound * 4 + gFilter.ballFound * 2 + bFilter.ballFound){
 			case 1: //only find blue one
@@ -113,6 +113,7 @@ void main()
 			default:
 				;
 		}
+
 		//Output Synthesized Frames
 		for(i=0;i<1000000;i++) if(EDMA_CIPR&0x200) break;
 		VM3224ADDH = 0x0000;		
@@ -121,19 +122,22 @@ void main()
 		QDMA_DST 	= (int)&VM3224DATA;		
 		QDMA_S_OPT 	= OptionField_1;
 		
-		/*if(ok){
+		if(ok){
 			for (j=0;j<XLCD;j++)
 			for (i=0;i<YLCD;i++) {
 				fputc( (int)(((ary2_imgFrame[j][i]&0xF800)>>11) / 31.0 * 255.0), outputRGBData);
 				fputc( (int)(((ary2_imgFrame[j][i]&0x7E0)>>5) / 63.0 * 255.0), outputRGBData);
-				fputc( (int)(((ary2_imgFrame[j][i]&0x1F)) / 31.0 * 255.0), outputRGBData);			
-				fprintf(outputHueData, "%f ", ary2_rgb2hsvTable[ary2_imgFrame[j][i]][0]);
+				fputc( (int)(((ary2_imgFrame[j][i]&0x1F)) / 31.0 * 255.0), outputRGBData);
+				fputc( (int)(ary3_rgb2hsvTable[ary2_imgFrame[j][i]][0]), outputHueData);
+				fputc( (int)(ary3_rgb2hsvTable[ary2_imgFrame[j][i]][1]), outputHueData);
+				fputc( (int)(ary3_rgb2hsvTable[ary2_imgFrame[j][i]][2]), outputHueData);			
+				//fprintf(outputHueData, "%f ", ary2_rgb2hsvTable[ary2_imgFrame[j][i]][0]);
 				//fprintf(outputHueData, "%f ", ary2_rgb2hsvTable[ary2_imgFrame[j][i]][1]);
 				//fprintf(outputHueData, "%f ", ary2_rgb2hsvTable[ary2_imgFrame[j][i]][2]);
 			}
 		}
 		fclose(outputRGBData);
-		fclose(outputHueData);*/
+		fclose(outputHueData);
 	}
 }
 

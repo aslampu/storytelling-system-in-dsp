@@ -1,9 +1,9 @@
 #include <math.h>
 #include "Utility.h"
 																
-void TrackBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], float ary2_rgb2hsvTable[NUM_RGB][3]){
+void TrackBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], unsigned short ary3_rgb2hsvTable[NUM_RGB][3]){
 	int i, j, xFrom, yFrom, xTo, yTo, hueFlag = 0;
-	float hTemp, hL, hU, hSwap;
+	unsigned short hTemp, hL, hU, hSwap;
 
 	Filter newComer;
 	InitializeFilter(ptr_oldFilter->ballColor, &newComer);
@@ -17,7 +17,7 @@ void TrackBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], 
 	for(j=xFrom;j<xTo;j++){
 		for(i=yFrom;i<yTo;i++){
 			//hTemp = RGB2HSV(ary2_imgFrame[j][i]);
-			hTemp = ary2_rgb2hsvTable[ary2_imgFrame[j][i]][0];
+			hTemp = ary3_rgb2hsvTable[ary2_imgFrame[j][i]][0];
 			//hTemp = ary2_rgb2hsvTable[ary2_imgFrame[j][i]][0];
 			//sTemp = ary2_rgb2hsvTable[ary2_imgFrame[j][i]][1];
 			//vTemp = ary2_rgb2hsvTable[ary2_imgFrame[j][i]][2];
