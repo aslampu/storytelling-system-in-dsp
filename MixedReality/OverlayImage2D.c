@@ -8,22 +8,22 @@ void OverlayImage2D(Filter *ptr_leftFilter, Filter *ptr_rightFilter, unsigned sh
 	//int imageScaleFactor=PERCENT, leftScaleFactor=PERCENT, rightScaleFactor=PERCENT;
 	int comXCenter = floor((ptr_leftFilter->xCenter + ptr_rightFilter->xCenter)/2);
 	int comYCenter = floor((ptr_leftFilter->yCenter + ptr_rightFilter->yCenter)/2);
-	int comSize = Max(ptr_leftFilter->ballSize, ptr_rightFilter->ballSize) * 2;
+	//int comSize = Max(ptr_leftFilter->ballSize, ptr_rightFilter->ballSize);
 	/*70 + (comSize - ptr_leftFilter->lowerBound)/ ptr_leftFilter->quantifiedLevel
 	ptr_leftFilter->quantifiedLevel*/
-	int comLength = 10 * floor((70 + (210/75000) * (comSize-5000)) / 10);
-	int xstart = Min(XLCD, Max(0, comXCenter));
-	int ystart = Min(YLCD, Max(0, comYCenter));
+	//int comLength = 10 * floor((70 + (210/75000) * (comSize-5000)) / 10);
+	int xStart = Min(XLCD, Max(0, comXCenter-40));
+	int yStart = Min(YLCD, Max(0, comYCenter-40));
 	for(j=40;j<160;j++){
+		if(xStart+j > XLCD)
+			break;
 		for(i=30;i<180;i++){
-			if(xstart+j > XLCD)
+			if(yStart+i-30 > YLCD)
 				break;
 			tmpColor = ary2_imgInput[j][i];
 			if(((tmpColor & 0xf800) >> 11) < 28 && ((tmpColor & 0x07e0) >> 5) < 58 && (tmpColor & 0x001f) < 28)
-				ary2_imgFrame[xstart+j-40][ystart+i-30] = tmpColor;
+				ary2_imgFrame[xStart+j-40][yStart+i-30] = tmpColor;
 		}
-		if(ystart+i > YLCD)
-			break;
 	}
 	//short rgbAdj;
 	//float rTemp, gTemp, bTemp;

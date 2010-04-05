@@ -1,51 +1,101 @@
 #include <math.h>
 #include "Utility.h"
 
-//void RGB2HSV(unsigned short rgbColor, float *ptr_hValue, float *ptr_sValue, float *ptr_vValue){
-float RGB2HSV(unsigned short rgbColor){
+float RGB2Hue(unsigned short rgbColor){
+	float rTemp = (((rgbColor & 0xf800) >> 11) * 255 / 31);
+	float gTemp = (((rgbColor & 0x07e0) >> 5) * 255 / 63);
+	float bTemp = ((rgbColor & 0x001f) * 255 / 31);
+	float RGB_Min = Min(rTemp,Min(gTemp,bTemp));
+	float hValue = 0;
+	float RGB_Max = Max(rTemp,Max(gTemp,bTemp)); //v
+	float Difference = RGB_Max - RGB_Min;	//s
+	float zMatlab = Difference ? 0 : 1;
+	
+	Difference += zMatlab;
+	//if(Difference == 0)
+	//	return hValue;
+
+	//H_value
+	if(rTemp == RGB_Max)
+		hValue = (gTemp - bTemp) / Difference;
+	else if(gTemp == RGB_Max)
+		hValue = 2 + ( bTemp - rTemp ) / Difference;
+	else if(bTemp == RGB_Max)
+		hValue = 4 + ( rTemp - gTemp ) / Difference;
+
+	hValue /= 6;
+	if(hValue < 0)
+		hValue += 1;
+	hValue *= zMatlab ? 0 : 1;
+	hValue *= 360;
+
+	return hValue;
+}
+
+void RGB2HSV(unsigned short rgbColor, float *ptr_hValue, float *ptr_sValue, float *ptr_vValue){
+	float zMatlab, sMatlab;
+	float rTemp = (((rgbColor & 0xf800) >> 11) * 255 / 31);
+	float gTemp = (((rgbColor & 0x07e0) >> 5) * 255 / 63);
+	float bTemp = ((rgbColor & 0x001f) * 255 / 31);
+	//float RGB_Min = Min(rTemp,Min(gTemp,bTemp));
+	*ptr_vValue = Max(rTemp,Max(gTemp,bTemp)); //v
+	*ptr_hValue = 0;
+	*ptr_sValue = *ptr_vValue - Min(rTemp,Min(gTemp,bTemp));
+	
+	zMatlab = (*ptr_sValue) ? 0 : 1;
+	sMatlab = zMatlab ? 0 : 1;
+	(*ptr_sValue) += zMatlab;
+
+	//H_value
+	if(rTemp == (*ptr_vValue))
+		*ptr_hValue = (gTemp - bTemp) / (*ptr_sValue);
+	else if(gTemp == (*ptr_vValue))
+		*ptr_hValue = 2 + ( bTemp - rTemp ) / (*ptr_sValue);
+	else if(bTemp == (*ptr_vValue))
+		*ptr_hValue = 4 + ( rTemp - gTemp ) / (*ptr_sValue);
+
+	(*ptr_hValue) /= 6;
+	if((*ptr_hValue) < 0)
+		(*ptr_hValue) += 1;
+	(*ptr_hValue) *= sMatlab;
+	
+	if(*ptr_vValue > 0)	
+		(*ptr_sValue) *= (sMatlab / *ptr_vValue);
+	else
+		*ptr_sValue = 0;
+}
+/*void RGB2HSV(unsigned short rgbColor, float *ptr_hValue, float *ptr_sValue, float *ptr_vValue){
 	float rTemp = (((rgbColor & 0xf800) >> 11) * 255 / 31);
 	float gTemp = (((rgbColor & 0x07e0) >> 5) * 255 / 63);
 	float bTemp = ((rgbColor & 0x001f) * 255 / 31);
 	float RGB_Min = Min(rTemp,Min(gTemp,bTemp));
 	float RGB_Max = Max(rTemp,Max(gTemp,bTemp));
 	float Difference = RGB_Max - RGB_Min;
-	float hValue = 0;
 
 	// V_value
-	//*ptr_vValue = RGB_Max;
+	*ptr_vValue = RGB_Max;
 
 	// S_value
-	/*if(RGB_Max != 0)
+	if(RGB_Max != 0)
 		*ptr_sValue = Difference/RGB_Max;
 	else{
 		*ptr_sValue = 0;
 		*ptr_hValue = 0;
 		return;
-	}*/
-	if(Difference == 0)
-		return hValue;
+	}
 
 	//H_value
 	if(rTemp == RGB_Max)
-		hValue = (gTemp - bTemp) / Difference;
-		//*ptr_hValue = (gTemp - bTemp)/Difference;
+		*ptr_hValue = (gTemp - bTemp)/Difference;
 	else if(gTemp == RGB_Max)
-		hValue = 2 + ( bTemp - rTemp ) / Difference;
-		//*ptr_hValue = 2 + ( bTemp - rTemp ) / Difference;
+		*ptr_hValue = 2 + ( bTemp - rTemp ) / Difference;
 	else
-		hValue = 4 + ( rTemp - gTemp ) / Difference;
-		//*ptr_hValue = 4 + ( rTemp - gTemp ) / Difference;
+		*ptr_hValue = 4 + ( rTemp - gTemp ) / Difference;
 		
-	/*(*ptr_hValue) *= 60;
+	(*ptr_hValue) *= 60;
 	if( *ptr_hValue < 0 )
-    	*ptr_hValue += 360; */
-
-	hValue *= 60;
-	if(hValue < 0)
-    	hValue += 360;
-
-	return hValue;
-}
+    	*ptr_hValue += 360;
+}*/
 
 /*unsigned short HSV2RGB(float hValue, float sValue, float vValue){
 	 int rTemp,gTemp,bTemp;
