@@ -1,9 +1,7 @@
 #include <math.h>
 #include "Utility.h"
-														
-
-//void TrackBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD]){		
-void TrackBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], float ary2_rgb2hsvTable[NUM_RGB]){
+																
+void TrackBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], float ary2_rgb2hsvTable[NUM_RGB][3]){
 	int i, j, xFrom, yFrom, xTo, yTo, hueFlag = 0;
 	float hTemp, hL, hU, hSwap;
 
@@ -19,7 +17,7 @@ void TrackBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], 
 	for(j=xFrom;j<xTo;j++){
 		for(i=yFrom;i<yTo;i++){
 			//hTemp = RGB2HSV(ary2_imgFrame[j][i]);
-			hTemp = ary2_rgb2hsvTable[ary2_imgFrame[j][i]];
+			hTemp = ary2_rgb2hsvTable[ary2_imgFrame[j][i]][0];
 			//hTemp = ary2_rgb2hsvTable[ary2_imgFrame[j][i]][0];
 			//sTemp = ary2_rgb2hsvTable[ary2_imgFrame[j][i]][1];
 			//vTemp = ary2_rgb2hsvTable[ary2_imgFrame[j][i]][2];
@@ -62,22 +60,6 @@ void TrackBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], 
 		newComer.yFrom = Min(YLCD, Max(0, floor(ptr_oldFilter->yFrom)));
 		newComer.yTo = Min(YLCD, Max(0, floor(ptr_oldFilter->yTo)));
 		*ptr_oldFilter = newComer;
-		/*ptr_oldFilter->ballColor = newComer.ballColor;
-		ptr_oldFilter->ballFound = newComer.ballFound;
-		ptr_oldFilter->ballSize = newComer.ballSize;
-		ptr_oldFilter->boxBorder = newComer.boxBorder;
-		ptr_oldFilter->boxPadding = newComer.boxPadding;
-		ptr_oldFilter->hBias = newComer.hBias;
-		ptr_oldFilter->hThreshold = newComer.hThreshold;
-		ptr_oldFilter->lowerBound = newComer.lowerBound;
-		ptr_oldFilter->quantifiedLevel = newComer.quantifiedLevel;
-		ptr_oldFilter->upperBound = newComer.upperBound;
-		ptr_oldFilter->xCenter = newComer.xCenter;
-		ptr_oldFilter->xFrom = newComer.xFrom;
-		ptr_oldFilter->xTo = newComer.xTo;
-		ptr_oldFilter->yCenter = newComer.yCenter;
-		ptr_oldFilter->yFrom = newComer.yFrom;
-		ptr_oldFilter->yTo = newComer.yTo;*/
 
 		/*Draw if necessary
 		if(newComer.ballSize < newComer.upperBound){

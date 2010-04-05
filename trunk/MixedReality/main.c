@@ -12,32 +12,32 @@
 /* in somewhere in your code.                                               */
 /* ======================================================================== */
 
-#include	"vm3224k.h"
-#include    "QDMA.h"
 #include    "Utility.h"
-#include    "AcrylicPaint.h"
-#include    "TeaPot.h"
 #include    "InputImage.h"
+#include    "TeaPot.h"
+#include    "AcrylicPaint.h"
+#include    "QDMA.h"
+#include	"vm3224k.h"
+#include    <stdio.h>
 
 #pragma 	DATA_SECTION ( ary2_imgCamera,".sdram" )
 #pragma 	DATA_SECTION ( ary2_imgFrame,".sdram" )
 #pragma 	DATA_SECTION ( ary2_imgOne,".sdram" )
 #pragma 	DATA_SECTION ( ary2_imgTwo,".sdram" )
 #pragma 	DATA_SECTION ( ary3_yuv2rgbTable,".sdram" )
-//#pragma 	DATA_SECTION ( ary3_rgb2hsvTable,".sdram" )
-//#pragma 	DATA_SECTION ( ary3_rgb2labTable,".sdram" )
 
 short				ary2_imgCamera[XLCD][YLCD];
 unsigned short 		ary2_imgFrame[XLCD][YLCD]; 
 unsigned short     	ary3_yuv2rgbTable[64][32][32];
-float       		ary2_rgb2hsvTable[NUM_RGB];
+float       		ary2_rgb2hsvTable[NUM_RGB][3];
 int  	     		ary2_rgb2labTable[NUM_RGB][3];
 
 void main()
 {
 	//Initialize
 	int	i=-1, j=-1, k=-1, y0=-1, y1=-1, v0=-1, u0=-1;
-	
+	FILE *outputRGBData, *outputHueData;
+	int ok=0;
 	Filter rFilter, gFilter, bFilter;
 
 	PLL6713();	// Initialize C6713 PLL	
@@ -51,8 +51,9 @@ void main()
     for (j=0;j<32;j++) ary3_yuv2rgbTable[k][i][j] = ybr_565(k<<2,i<<3,j<<3);
 
     for (j=0;j<NUM_RGB;j++){ 
-    	ary2_rgb2hsvTable[j] = RGB2HSV(j);
-		RGB2Lab(j,&(ary2_rgb2labTable[j][1]),&(ary2_rgb2labTable[j][2]),&(ary2_rgb2labTable[j][3]));
+    	//ary2_rgb2hueTable[j] = RGB2Hue(j);
+		RGB2HSV(j,&(ary2_rgb2hsvTable[j][0]),&(ary2_rgb2hsvTable[j][1]),&(ary2_rgb2hsvTable[j][2]));
+		//RGB2Lab(j,&(ary2_rgb2labTable[j][1]),&(ary2_rgb2labTable[j][2]),&(ary2_rgb2labTable[j][3]));
 	}
 
 	QDMA_CNT 	= (239<<16)|320;
@@ -64,6 +65,13 @@ void main()
 
 	//Read input video
 	while (1) {
+		/*outputRGBData = fopen("C:/CCStudio_v3.1/MCHproj/MixedReality0404/MixedReality/outputRGBData.raw", "wb");
+		if(!outputRGBData)
+			printf("Cannot open outputRGBData");
+		outputHueData = fopen("C:/CCStudio_v3.1/MCHproj/MixedReality0404/MixedReality/outputHueData.raw", "wb");
+		if(!outputHueData)
+			printf("Cannot open outputHueData");
+		*/
 		//Get Input Frames
 		for(i=0;i<1000000;i++) if(EDMA_CIPR&0x200) break;		
 		VM3224ADDH = 0x08000;		
@@ -89,16 +97,21 @@ void main()
 		
 		//Call track function, which modify the ary2_imgFrame array passed by a pointer
 		
-		//TrackBall(&bFilter, ary2_imgFrame);
-		//TrackBall(&gFilter, ary2_imgFrame);
-		//TrackBall(&bFilter, ary2_imgFrame);
-
-		//TrackBall(&rFilter, ary2_imgFrame, ary2_rgb2hsvTable);
+		TrackBall(&gFilter, ary2_imgFrame, ary2_rgb2hsvTable);
 		TrackBall(&bFilter, ary2_imgFrame, ary2_rgb2hsvTable);
-		if(bFilter.ballFound){
-			//Determine an imgInput to display, based on a computed orientation
-			//ModifyImage2D(&rFilter, &bFilter, ptr2_imgInput);
-			OverlayImage1D(&bFilter, ary2_imgFrame, ary2_imgTwo);
+
+		switch(rFilter.ballFound * 4 + gFilter.ballFound * 2 + bFilter.ballFound){
+			case 1: //only find blue one
+				OverlayImage1D(&bFilter, ary2_imgFrame, ary2_imgTwo);		
+				break;		
+			case 2: //only find green one
+				OverlayImage1D(&gFilter, ary2_imgFrame, ary2_imgTwo);
+				break;
+			case 3: //find both green and blue ones
+				OverlayImage2D(&gFilter, &bFilter, ary2_imgFrame, ary2_imgTwo);	
+				break;
+			default:
+				;
 		}
 		//Output Synthesized Frames
 		for(i=0;i<1000000;i++) if(EDMA_CIPR&0x200) break;
@@ -106,7 +119,21 @@ void main()
 		EDMA_CIPR = 0x200;			
 		QDMA_SRC	= (int)ary2_imgFrame;
 		QDMA_DST 	= (int)&VM3224DATA;		
-		QDMA_S_OPT 	= OptionField_1;				
+		QDMA_S_OPT 	= OptionField_1;
+		
+		/*if(ok){
+			for (j=0;j<XLCD;j++)
+			for (i=0;i<YLCD;i++) {
+				fputc( (int)(((ary2_imgFrame[j][i]&0xF800)>>11) / 31.0 * 255.0), outputRGBData);
+				fputc( (int)(((ary2_imgFrame[j][i]&0x7E0)>>5) / 63.0 * 255.0), outputRGBData);
+				fputc( (int)(((ary2_imgFrame[j][i]&0x1F)) / 31.0 * 255.0), outputRGBData);			
+				fprintf(outputHueData, "%f ", ary2_rgb2hsvTable[ary2_imgFrame[j][i]][0]);
+				//fprintf(outputHueData, "%f ", ary2_rgb2hsvTable[ary2_imgFrame[j][i]][1]);
+				//fprintf(outputHueData, "%f ", ary2_rgb2hsvTable[ary2_imgFrame[j][i]][2]);
+			}
+		}
+		fclose(outputRGBData);
+		fclose(outputHueData);*/
 	}
 }
 
