@@ -281,7 +281,8 @@ void main()
 			//2. Run this routine several times
 			//3. Then you can see the written imag.
             scaleImage();
-			outputDat = fopen("Z:\\david On My Mac\\Desktop\\output.dat", "wb");
+			//outputDat = fopen("Z:\\david On My Mac\\Desktop\\output.dat", "wb");
+			outputDat = fopen("C:\\Shadow_Anaylsis\\output.dat", "wb");
 			/*
 			for(i = 0; i < subImageWidth; i++)
 			{

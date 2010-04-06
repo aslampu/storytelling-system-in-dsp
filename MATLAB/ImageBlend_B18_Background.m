@@ -1,7 +1,7 @@
 %% Load Image
 % Read BackGround Raw File From Lab Camera
 clear all; close all;clc;
-fid = fopen('output.raw', 'rb');
+fid = fopen('table_half_shadow.dat', 'rb');
 bg_matrix = fread(fid, 'uchar');
 
 %% Load Test Insert Images

@@ -1,7 +1,7 @@
 %% Load Image
 % Read BackGround Raw File From Lab Camera
 clear all; close all;clc;
-fid = fopen('output.raw', 'rb');
+fid = fopen('table_half_shadow.dat', 'rb');
 bg_matrix = fread(fid, 'uchar');
 
 %% Transfer Raw File Format (230400x1 - RGBRGBRGB...) To Image File Format (320x240x3)
@@ -41,3 +41,8 @@ figure(2);
 hist(bg_S_array, 0:1:100);  title('S Channel');
 figure(3); 
 hist(bg_V_array, 0:1:100); title('V Channel');
+figure(4); image(bg_imageRGB./255);
+
+imwrite(bg_imageRGB./255,'test.jpg','jpeg');
+
+
