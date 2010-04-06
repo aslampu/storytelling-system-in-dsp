@@ -60,9 +60,6 @@ void RGB2HSV(unsigned short rgbColor, unsigned short *ptr_hValue, unsigned short
 
 	sMatlab = zMatlab ? 0 : 1; //sMatlab = not zMatlab
 	h = sMatlab * h;
-	
-	if(s==0)
-		h = 0.5;
 
 	if(v > 0)	
 		s = sMatlab * s / v;
