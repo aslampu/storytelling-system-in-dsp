@@ -30,27 +30,28 @@ short				ary2_imgCamera[XLCD][YLCD];
 unsigned short 		ary2_imgFrame[XLCD][YLCD]; 
 unsigned short     	ary3_yuv2rgbTable[64][32][32];
 unsigned short		ary2_rgb2hsvTable[NUM_RGB][3];
+//float				ary2_rgb2hsvTable[NUM_RGB][3];
 int  	     		ary2_rgb2labTable[NUM_RGB][3];
 //unsigned short  	ary3_lab2rgbTable[NUM_LAB][NUM_LAB][NUM_LAB];
 
-float 			rhThreshold = 0;
-float 			rhBias = 36;				
+unsigned short 	rhThreshold = 0;
+unsigned short	rhBias = 36;				
 unsigned short 	rLowerBound = 3000;
 unsigned short 	rUpperBound = 40000;
 unsigned short 	rQuantifiedLevel = 10;
 unsigned short 	rBoxPadding = 100;		
 unsigned short 	rBoxBorder = 2;			
 
-float 			ghThreshold = 110;			
-float 			ghBias = 40;			
+unsigned short	ghThreshold = 110;//0.3055			
+unsigned short	ghBias = 36;		
 unsigned short 	gLowerBound = 500;
 unsigned short  gUpperBound = 40000;
 unsigned short  gQuantifiedLevel = 10;
 unsigned short  gBoxPadding = 100;			
 unsigned short  gBoxBorder = 2;				
 
-float 			bhThreshold = 234;		
-float 			bhBias = 36;			
+unsigned short 	bhThreshold = 234;//0.65;		
+unsigned short	bhBias = 36;			
 unsigned short 	bLowerBound = 500;
 unsigned short 	bUpperBound = 40000;
 unsigned short 	bQuantifiedLevel = 10;
@@ -97,12 +98,12 @@ void main()
 
 	//Read input video
 	while (1) {
-		outputRGBData = fopen("C:/CCStudio_v3.1/MCHproj/MixedReality0404/MixedReality/outputRGBData.raw", "wb");
+		/*outputRGBData = fopen("C:/CCStudio_v3.1/MCHproj/MixedReality0404/MixedReality/outputHSVData.raw", "wb");
 		if(!outputRGBData)
-			printf("Cannot open outputRGBData");
-		/*outputHueData = fopen("C:/CCStudio_v3.1/MCHproj/MixedReality0404/MixedReality/outputHueData.raw", "wb");
+			printf("Cannot open outputRGBData");*/
+		outputHueData = fopen("C:/CCStudio_v3.1/MCHproj/MixedReality0404/MixedReality/outputHueData.raw", "wb");
 		if(!outputHueData)
-			printf("Cannot open outputHueData");*/
+			printf("Cannot open outputHueData");
 		
 		//Get Input Frames
 		for(i=0;i<1000000;i++) if(EDMA_CIPR&0x200) break;		
@@ -128,34 +129,34 @@ void main()
 		}
 		
 		//Call track function, which modify the ary2_imgFrame array passed by a pointer		
-		//TrackBall(&rFilter, ary2_imgFrame, ary2_rgb2hsvTable);
-		//TrackBall(&bFilter, ary2_imgFrame, ary2_rgb2hsvTable);
+		TrackBall(&rFilter, ary2_imgFrame, ary2_rgb2hsvTable);
+		TrackBall(&bFilter, ary2_imgFrame, ary2_rgb2hsvTable);
 		
-		DebugBall(&rFilter, ary2_imgFrame, ary2_rgb2hsvTable);
+		//DebugBall(&rFilter, ary2_imgFrame, ary2_rgb2hsvTable);
 		//DebugBall(&bFilter, ary2_imgFrame, ary2_rgb2hsvTable);
 
 		//Compute Rotation and choose the coresponding image
 		//Resize Image
 		//Labequalize Image
-		/*switch(rFilter.ballFound * 4 + gFilter.ballFound * 2 + bFilter.ballFound){
+		switch(rFilter.ballFound * 4 + gFilter.ballFound * 2 + bFilter.ballFound){
 			case 1: //only find blue one
 				scaleImage(imgSize, ary2_imgTwo, ary2_imgInput);
 				OverlayImage1D(&bFilter, ary2_imgFrame, ary2_imgInput);
 				//OverlayImage1D(&bFilter, ary2_imgFrame, ary2_imgTwo);
 				break;		
-			case 4: //only find green one
+			case 4: //only find red one
 				scaleImage(imgSize, ary2_imgOne, ary2_imgInput);
 				OverlayImage1D(&rFilter, ary2_imgFrame, ary2_imgInput);
 				//OverlayImage1D(&rFilter, ary2_imgFrame, ary2_imgOne);
 				break;
-			case 5: //find both green and blue ones
+			case 5: //find both red and blue ones
 				scaleImage(imgSize, ary2_imgTwo, ary2_imgInput);
 				OverlayImage2D(&rFilter, &bFilter, ary2_imgFrame, ary2_imgInput);	
 				//OverlayImage2D(&rFilter, &bFilter, ary2_imgFrame, ary2_imgTwo);
 				break;
 			default:
 				;
-		}*/
+		}
 
 		//Output Synthesized Frames
 		for(i=0;i<1000000;i++) if(EDMA_CIPR&0x200) break;
@@ -168,16 +169,16 @@ void main()
 		if(ok){
 			for (j=0;j<XLCD;j++)
 			for (i=0;i<YLCD;i++) {
-				fputc( (int)(((ary2_imgFrame[j][i]&0xF800)>>11) / 31.0 * 255.0), outputRGBData);
-				fputc( (int)(((ary2_imgFrame[j][i]&0x7E0)>>5) / 63.0 * 255.0), outputRGBData);
-				fputc( (int)(((ary2_imgFrame[j][i]&0x1F)) / 31.0 * 255.0), outputRGBData);		
-				//fprintf(outputHueData, "%d ", ary3_rgb2hsvTable[ary2_imgFrame[j][i]][0]);
-				//fprintf(outputHueData, "%d ", ary3_rgb2hsvTable[ary2_imgFrame[j][i]][1]);
-				//fprintf(outputHueData, "%d ", ary3_rgb2hsvTable[ary2_imgFrame[j][i]][2]);
+				//fputc( (int)(((ary2_imgFrame[j][i]&0xF800)>>11) / 31.0 * 255.0), outputRGBData);
+				//fputc( (int)(((ary2_imgFrame[j][i]&0x7E0)>>5) / 63.0 * 255.0), outputRGBData);
+				//fputc( (int)(((ary2_imgFrame[j][i]&0x1F)) / 31.0 * 255.0), outputRGBData);		
+				fprintf(outputHueData, "%f ", ary2_rgb2hsvTable[ary2_imgFrame[j][i]][0]);
+				fprintf(outputHueData, "%f ", ary2_rgb2hsvTable[ary2_imgFrame[j][i]][1]);
+				fprintf(outputHueData, "%f ", ary2_rgb2hsvTable[ary2_imgFrame[j][i]][2]);
 			}
 		}
-		fclose(outputRGBData);
-		//fclose(outputHueData);
+		//fclose(outputRGBData);
+		fclose(outputHueData);
 	}
 }
 
