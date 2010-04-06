@@ -29,7 +29,7 @@
 short				ary2_imgCamera[XLCD][YLCD];
 unsigned short 		ary2_imgFrame[XLCD][YLCD]; 
 unsigned short     	ary3_yuv2rgbTable[64][32][32];
-unsigned short	    ary3_rgb2hsvTable[NUM_RGB][3];
+unsigned short		ary3_rgb2hsvTable[NUM_RGB][3];
 //int  	     		ary2_rgb2labTable[NUM_RGB][3];
 
 void main()
@@ -50,6 +50,14 @@ void main()
     for (i=0;i<32;i++)
     for (j=0;j<32;j++) ary3_yuv2rgbTable[k][i][j] = ybr_565(k<<2,i<<3,j<<3);
 
+
+	/*RGB2HSV(j,&(ary3_rgb2hsvTable[0][0]),&(ary3_rgb2hsvTable[0][1]),&(ary3_rgb2hsvTable[0][2]));
+	RGB2HSV(j,&(ary3_rgb2hsvTable[j][0]),&(ary3_rgb2hsvTable[j][1]),&(ary3_rgb2hsvTable[j][2]));
+	RGB2HSV(j,&(ary3_rgb2hsvTable[j][0]),&(ary3_rgb2hsvTable[j][1]),&(ary3_rgb2hsvTable[j][2]));
+	RGB2HSV(j,&(ary3_rgb2hsvTable[j][0]),&(ary3_rgb2hsvTable[j][1]),&(ary3_rgb2hsvTable[j][2]));
+	RGB2HSV(j,&(ary3_rgb2hsvTable[j][0]),&(ary3_rgb2hsvTable[j][1]),&(ary3_rgb2hsvTable[j][2]));
+	RGB2HSV(j,&(ary3_rgb2hsvTable[65535][0]),&(ary3_rgb2hsvTable[65535][1]),&(ary3_rgb2hsvTable[65535][2]));*/
+
     for (j=0;j<NUM_RGB;j++){ 
     	//ary2_rgb2hueTable[j] = RGB2Hue(j);
 		RGB2HSV(j,&(ary3_rgb2hsvTable[j][0]),&(ary3_rgb2hsvTable[j][1]),&(ary3_rgb2hsvTable[j][2]));
@@ -68,9 +76,9 @@ void main()
 		outputRGBData = fopen("C:/CCStudio_v3.1/MCHproj/MixedReality0404/MixedReality/outputRGBData.raw", "wb");
 		if(!outputRGBData)
 			printf("Cannot open outputRGBData");
-		outputHueData = fopen("C:/CCStudio_v3.1/MCHproj/MixedReality0404/MixedReality/outputHueData.raw", "wb");
+		/*outputHueData = fopen("C:/CCStudio_v3.1/MCHproj/MixedReality0404/MixedReality/outputHueData.raw", "wb");
 		if(!outputHueData)
-			printf("Cannot open outputHueData");
+			printf("Cannot open outputHueData");*/
 		
 		//Get Input Frames
 		for(i=0;i<1000000;i++) if(EDMA_CIPR&0x200) break;		
@@ -97,18 +105,18 @@ void main()
 		
 		//Call track function, which modify the ary2_imgFrame array passed by a pointer
 		
-		TrackBall(&gFilter, ary2_imgFrame, ary3_rgb2hsvTable);
+		TrackBall(&rFilter, ary2_imgFrame, ary3_rgb2hsvTable);
 		TrackBall(&bFilter, ary2_imgFrame, ary3_rgb2hsvTable);
 
 		switch(rFilter.ballFound * 4 + gFilter.ballFound * 2 + bFilter.ballFound){
 			case 1: //only find blue one
-				OverlayImage1D(&bFilter, ary2_imgFrame, ary2_imgTwo);		
+				OverlayImage1D(&bFilter, ary2_imgFrame, ary2_imgTwo);
 				break;		
-			case 2: //only find green one
-				OverlayImage1D(&gFilter, ary2_imgFrame, ary2_imgTwo);
+			case 4: //only find green one
+				OverlayImage1D(&rFilter, ary2_imgFrame, ary2_imgTwo);
 				break;
-			case 3: //find both green and blue ones
-				OverlayImage2D(&gFilter, &bFilter, ary2_imgFrame, ary2_imgTwo);	
+			case 5: //find both green and blue ones
+				OverlayImage2D(&rFilter, &bFilter, ary2_imgFrame, ary2_imgTwo);	
 				break;
 			default:
 				;
@@ -128,16 +136,16 @@ void main()
 				fputc( (int)(((ary2_imgFrame[j][i]&0xF800)>>11) / 31.0 * 255.0), outputRGBData);
 				fputc( (int)(((ary2_imgFrame[j][i]&0x7E0)>>5) / 63.0 * 255.0), outputRGBData);
 				fputc( (int)(((ary2_imgFrame[j][i]&0x1F)) / 31.0 * 255.0), outputRGBData);
-				fputc( (int)(ary3_rgb2hsvTable[ary2_imgFrame[j][i]][0]), outputHueData);
-				fputc( (int)(ary3_rgb2hsvTable[ary2_imgFrame[j][i]][1]), outputHueData);
-				fputc( (int)(ary3_rgb2hsvTable[ary2_imgFrame[j][i]][2]), outputHueData);			
-				//fprintf(outputHueData, "%f ", ary2_rgb2hsvTable[ary2_imgFrame[j][i]][0]);
-				//fprintf(outputHueData, "%f ", ary2_rgb2hsvTable[ary2_imgFrame[j][i]][1]);
-				//fprintf(outputHueData, "%f ", ary2_rgb2hsvTable[ary2_imgFrame[j][i]][2]);
+				//fputc( (int)(ary3_rgb2hsvTable[ary2_imgFrame[j][i]][0]), outputHueData);
+				//fputc( (int)(ary3_rgb2hsvTable[ary2_imgFrame[j][i]][1]), outputHueData);
+				//fputc( (int)(ary3_rgb2hsvTable[ary2_imgFrame[j][i]][2]), outputHueData);			
+				//fprintf(outputHueData, "%d ", ary3_rgb2hsvTable[ary2_imgFrame[j][i]][0]);
+				//fprintf(outputHueData, "%d ", ary3_rgb2hsvTable[ary2_imgFrame[j][i]][1]);
+				//fprintf(outputHueData, "%d ", ary3_rgb2hsvTable[ary2_imgFrame[j][i]][2]);
 			}
 		}
 		fclose(outputRGBData);
-		fclose(outputHueData);
+		//fclose(outputHueData);
 	}
 }
 

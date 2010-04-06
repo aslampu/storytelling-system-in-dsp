@@ -1,4 +1,5 @@
 #include "Utility.h"
+#include <math.h>
 
 void OverlayImage2D(Filter *ptr_leftFilter, Filter *ptr_rightFilter, unsigned short ary2_imgFrame[XLCD][YLCD], unsigned short ary2_imgInput[HEIGHT][WIDTH]){
 	int i,j;
@@ -12,7 +13,7 @@ void OverlayImage2D(Filter *ptr_leftFilter, Filter *ptr_rightFilter, unsigned sh
 	/*70 + (comSize - ptr_leftFilter->lowerBound)/ ptr_leftFilter->quantifiedLevel
 	ptr_leftFilter->quantifiedLevel*/
 	//int comLength = 10 * floor((70 + (210/75000) * (comSize-5000)) / 10);
-	int xStart = Min(XLCD, Max(0, comXCenter-40));
+	/*int xStart = Min(XLCD, Max(0, comXCenter-40));
 	int yStart = Min(YLCD, Max(0, comYCenter-40));
 	for(j=40;j<160;j++){
 		if(xStart+j > XLCD)
@@ -23,6 +24,20 @@ void OverlayImage2D(Filter *ptr_leftFilter, Filter *ptr_rightFilter, unsigned sh
 			tmpColor = ary2_imgInput[j][i];
 			if(((tmpColor & 0xf800) >> 11) < 28 && ((tmpColor & 0x07e0) >> 5) < 58 && (tmpColor & 0x001f) < 28)
 				ary2_imgFrame[xStart+j-40][yStart+i-30] = tmpColor;
+		}
+	}*/
+
+	int xStart = Min(XLCD, comXCenter-100);
+	int yStart = Min(YLCD, comYCenter-100);
+	for(j=0;j<HEIGHT;j++){
+		if(xStart+j > XLCD || xStart+j < 0)
+			continue;
+		for(i=0;i<WIDTH;i++){
+			if(yStart+i > YLCD || yStart+i < 0)
+				continue;
+			tmpColor = ary2_imgInput[j][i];
+			if(((tmpColor & 0xf800) >> 11) < 28 && ((tmpColor & 0x07e0) >> 5) < 58 && (tmpColor & 0x001f) < 28)
+				ary2_imgFrame[xStart+j][yStart+i] = tmpColor;
 		}
 	}
 	//short rgbAdj;
