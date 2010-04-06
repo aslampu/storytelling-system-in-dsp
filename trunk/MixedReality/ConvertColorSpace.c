@@ -32,15 +32,16 @@
 	return hValue;
 }*/
 
+//void RGB2HSV(unsigned short rgbColor, float *ptr_hValue, float *ptr_sValue, float *ptr_vValue){
 void RGB2HSV(unsigned short rgbColor, unsigned short *ptr_hValue, unsigned short *ptr_sValue, unsigned short *ptr_vValue){
-	int zMatlab, sMatlab;
+	float zMatlab, sMatlab;
 	int rTemp = (int)((((rgbColor & 0xf800) >> 11) * 255 / 31));
 	int gTemp = (int)((((rgbColor & 0x07e0) >> 5) * 255 / 63));
 	int bTemp = (int)(((rgbColor & 0x001f) * 255 / 31));
 	//float RGB_Min = Min(rTemp,Min(gTemp,bTemp));
-	int v = Max(rTemp,Max(gTemp,bTemp));
-	int h = 0;
-	int s = v - Min(rTemp,Min(gTemp,bTemp));
+	float v = Max(rTemp,Max(gTemp,bTemp));
+	float h = 0;
+	float s = v - Min(rTemp,Min(gTemp,bTemp));
 	
 	zMatlab = s ? 0 : 1;
 	s = s + zMatlab;
@@ -60,14 +61,18 @@ void RGB2HSV(unsigned short rgbColor, unsigned short *ptr_hValue, unsigned short
 	sMatlab = zMatlab ? 0 : 1; //sMatlab = not zMatlab
 	h = sMatlab * h;
 	
+	if(s==0)
+		h = 0.5;
+
 	if(v > 0)	
 		s = sMatlab * s / v;
 	else
 		s = 0;
+	
 
-	*ptr_hValue = h * 360;
-	*ptr_sValue = s * 360;
-	*ptr_vValue = v;
+	*ptr_hValue = (int)(h * 360);
+	*ptr_sValue = (int)(s * 360);
+	*ptr_vValue = (int)v;
 }
 /*void RGB2HSV(unsigned short rgbColor, float *ptr_hValue, float *ptr_sValue, float *ptr_vValue){
 	float rTemp = (((rgbColor & 0xf800) >> 11) * 255 / 31);

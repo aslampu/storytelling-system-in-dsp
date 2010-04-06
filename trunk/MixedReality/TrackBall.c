@@ -3,7 +3,7 @@
 																
 void TrackBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], unsigned short ary3_rgb2hsvTable[NUM_RGB][3]){
 	int i, j, xFrom, yFrom, xTo, yTo, hueFlag = 0;
-	unsigned short hTemp, hL, hU, hSwap;
+	int hTemp, hL, hU, hSwap, sTemp, vTemp;
 
 	Filter newComer;
 	InitializeFilter(ptr_oldFilter->ballColor, &newComer);
@@ -18,6 +18,8 @@ void TrackBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], 
 		for(i=yFrom;i<yTo;i++){
 			//hTemp = RGB2HSV(ary2_imgFrame[j][i]);
 			hTemp = ary3_rgb2hsvTable[ary2_imgFrame[j][i]][0];
+			sTemp = ary3_rgb2hsvTable[ary2_imgFrame[j][i]][1];
+			vTemp = ary3_rgb2hsvTable[ary2_imgFrame[j][i]][2];
 			//hTemp = ary2_rgb2hsvTable[ary2_imgFrame[j][i]][0];
 			//sTemp = ary2_rgb2hsvTable[ary2_imgFrame[j][i]][1];
 			//vTemp = ary2_rgb2hsvTable[ary2_imgFrame[j][i]][2];
@@ -35,9 +37,9 @@ void TrackBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], 
 				hU = hSwap;
 			}
 			if(ptr_oldFilter->ballColor)	//not Red
-				hueFlag = hTemp>hL && hTemp<hU;
+				hueFlag = hTemp>hL && hTemp<hU && sTemp > 216 && vTemp > 64;
 			else
-				hueFlag = hTemp<hL || hTemp>hU;
+				hueFlag = hTemp<hL || hTemp>hU && sTemp > 216 && vTemp > 64;
 			
 			if(hueFlag){
 				hueFlag = 0;

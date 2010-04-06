@@ -34,6 +34,7 @@ typedef struct{
 } Filter;
 
 void DrawBox(int xFrom, int xTo, int yFrom, int yTo, int boxBorder, int boxPadding,unsigned short ary2_imgFrame[XLCD][YLCD]);
+//void TrackBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], float ary3_rgb2hsvTable[NUM_RGB][3]);
 void TrackBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], unsigned short ary3_rgb2hsvTable[NUM_RGB][3]);
 //float RGB2Hue(unsigned short rgbColor);
 void RGB2HSV(unsigned short rgbColor, unsigned short *h, unsigned short *s, unsigned short *v);
