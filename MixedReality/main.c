@@ -29,8 +29,9 @@
 short				ary2_imgCamera[XLCD][YLCD];
 unsigned short 		ary2_imgFrame[XLCD][YLCD]; 
 unsigned short     	ary3_yuv2rgbTable[64][32][32];
-unsigned short		ary3_rgb2hsvTable[NUM_RGB][3];
-//int  	     		ary2_rgb2labTable[NUM_RGB][3];
+unsigned short		ary2_rgb2hsvTable[NUM_RGB][3];
+int  	     		ary2_rgb2labTable[NUM_RGB][3];
+unsigned short  	ary3_lab2rgbTable[NUM_LAB][NUM_LAB][NUM_LAB];
 
 float 			rhThreshold = 0;
 float 			rhBias = 36;				
@@ -63,6 +64,7 @@ void main()
 	FILE *outputRGBData, *outputHueData;
 	int ok=0;
 	Filter rFilter, gFilter, bFilter;
+	short scaleFactor100=100;
 
 	PLL6713();	// Initialize C6713 PLL	
 	CE2CTL = (WSU|WST|WHD|RSU|RST|RHD|MTYPE);
@@ -74,19 +76,15 @@ void main()
     for (i=0;i<32;i++)
     for (j=0;j<32;j++) ary3_yuv2rgbTable[k][i][j] = ybr_565(k<<2,i<<3,j<<3);
 
-
-	/*RGB2HSV(j,&(ary3_rgb2hsvTable[0][0]),&(ary3_rgb2hsvTable[0][1]),&(ary3_rgb2hsvTable[0][2]));
-	RGB2HSV(j,&(ary3_rgb2hsvTable[j][0]),&(ary3_rgb2hsvTable[j][1]),&(ary3_rgb2hsvTable[j][2]));
-	RGB2HSV(j,&(ary3_rgb2hsvTable[j][0]),&(ary3_rgb2hsvTable[j][1]),&(ary3_rgb2hsvTable[j][2]));
-	RGB2HSV(j,&(ary3_rgb2hsvTable[j][0]),&(ary3_rgb2hsvTable[j][1]),&(ary3_rgb2hsvTable[j][2]));
-	RGB2HSV(j,&(ary3_rgb2hsvTable[j][0]),&(ary3_rgb2hsvTable[j][1]),&(ary3_rgb2hsvTable[j][2]));
-	RGB2HSV(j,&(ary3_rgb2hsvTable[65535][0]),&(ary3_rgb2hsvTable[65535][1]),&(ary3_rgb2hsvTable[65535][2]));*/
-
     for (j=0;j<NUM_RGB;j++){ 
     	//ary2_rgb2hueTable[j] = RGB2Hue(j);
-		RGB2HSV(j,&(ary3_rgb2hsvTable[j][0]),&(ary3_rgb2hsvTable[j][1]),&(ary3_rgb2hsvTable[j][2]));
-		//RGB2Lab(j,&(ary2_rgb2labTable[j][0]),&(ary2_rgb2labTable[j][1]),&(ary2_rgb2labTable[j][2]));
+		RGB2HSV(j,&(ary2_rgb2hsvTable[j][0]),&(ary2_rgb2hsvTable[j][1]),&(ary2_rgb2hsvTable[j][2]));
+		RGB2Lab(j,&(ary2_rgb2labTable[j][0]),&(ary2_rgb2labTable[j][1]),&(ary2_rgb2labTable[j][2]));
 	}
+
+	for (k=0;k<NUM_LAB;k++)
+    for (i=0;i<NUM_LAB;i++)
+    for (j=0;j<NUM_LAB;j++) ary3_lab2rgbTable[k][i][j] = Lab2RGB(k,i,j);	
 
 	QDMA_CNT 	= (239<<16)|320;
 	QDMA_IDX 	= 0x0000<<16;
@@ -127,20 +125,25 @@ void main()
 			ary2_imgFrame[j][i+1] = ary3_yuv2rgbTable[y1][u0][v0];
 		}
 		
-		//Call track function, which modify the ary2_imgFrame array passed by a pointer
-		
-		TrackBall(&rFilter, ary2_imgFrame, ary3_rgb2hsvTable);
-		TrackBall(&bFilter, ary2_imgFrame, ary3_rgb2hsvTable);
+		//Call track function, which modify the ary2_imgFrame array passed by a pointer		
+		TrackBall(&rFilter, ary2_imgFrame, ary2_rgb2hsvTable);
+		TrackBall(&bFilter, ary2_imgFrame, ary2_rgb2hsvTable);
 
+		//Compute Rotation and choose the coresponding image
+		//Resize Image
+		//Labequalize Image
 		switch(rFilter.ballFound * 4 + gFilter.ballFound * 2 + bFilter.ballFound){
 			case 1: //only find blue one
-				OverlayImage1D(&bFilter, ary2_imgFrame, ary2_imgTwo);
+				scaleImage(scaleFactor100, ary2_imgTwo, ary2_imgInput);
+				OverlayImage1D(&bFilter, ary2_imgFrame, ary2_imgInput);
 				break;		
 			case 4: //only find green one
-				OverlayImage1D(&rFilter, ary2_imgFrame, ary2_imgTwo);
+				scaleImage(scaleFactor100, ary2_imgOne, ary2_imgInput);
+				OverlayImage1D(&rFilter, ary2_imgFrame, ary2_imgInput);
 				break;
 			case 5: //find both green and blue ones
-				OverlayImage2D(&rFilter, &bFilter, ary2_imgFrame, ary2_imgTwo);	
+				scaleImage(scaleFactor100, ary2_imgTwo, ary2_imgInput);
+				OverlayImage2D(&rFilter, &bFilter, ary2_imgFrame, ary2_imgInput);	
 				break;
 			default:
 				;
@@ -159,10 +162,7 @@ void main()
 			for (i=0;i<YLCD;i++) {
 				fputc( (int)(((ary2_imgFrame[j][i]&0xF800)>>11) / 31.0 * 255.0), outputRGBData);
 				fputc( (int)(((ary2_imgFrame[j][i]&0x7E0)>>5) / 63.0 * 255.0), outputRGBData);
-				fputc( (int)(((ary2_imgFrame[j][i]&0x1F)) / 31.0 * 255.0), outputRGBData);
-				//fputc( (int)(ary3_rgb2hsvTable[ary2_imgFrame[j][i]][0]), outputHueData);
-				//fputc( (int)(ary3_rgb2hsvTable[ary2_imgFrame[j][i]][1]), outputHueData);
-				//fputc( (int)(ary3_rgb2hsvTable[ary2_imgFrame[j][i]][2]), outputHueData);			
+				fputc( (int)(((ary2_imgFrame[j][i]&0x1F)) / 31.0 * 255.0), outputRGBData);		
 				//fprintf(outputHueData, "%d ", ary3_rgb2hsvTable[ary2_imgFrame[j][i]][0]);
 				//fprintf(outputHueData, "%d ", ary3_rgb2hsvTable[ary2_imgFrame[j][i]][1]);
 				//fprintf(outputHueData, "%d ", ary3_rgb2hsvTable[ary2_imgFrame[j][i]][2]);
