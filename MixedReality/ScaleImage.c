@@ -60,15 +60,44 @@ float getPixelValueBilinear(float pPrime, float qPrime, unsigned short ary2_imgS
 void scaleImage(short scaleFactor100, unsigned short ary2_imgSample[HEIGHT][WIDTH], unsigned short ary2_imgInput[HEIGHT][WIDTH]) {
 	int j,k;
 	double pPrime, qPrime;
+	int scaledHeight, scaledWidth;
+	int offsetHeight, offsetWidth;
 	
-	subImageHeight = HEIGHT * scaleFactor100 / 100.0;
-	subImageWidth = WIDTH * scaleFactor100 / 100.0;
+	scaledHeight = HEIGHT * scaleFactor100 / 100.0;
+	scaledWidth = WIDTH * scaleFactor100 / 100.0;
 	
-	for (j=0; j < HEIGHT; j++) {
-		for (k=0; k < WIDTH; k++) {
+	offsetHeight = (int)((HEIGHT-scaledHeight) / 2);
+	offsetWidth = (int)((WIDTH-scaledWidth) / 2);
+
+	for (j=0; j < scaledHeight; j++) {
+		for (k=0; k < scaledWidth; k++) {
 			pPrime = (double)j / (scaleFactor100 / 100.0);
 			qPrime = (double)k / (scaleFactor100 / 100.0);
-			ary2_imgInput[j][k] = getPixelValueBilinear(pPrime, qPrime, ary2_imgSample);
+			ary2_imgInput[j+offsetHeight][k+offsetWidth] = getPixelValueBilinear(pPrime, qPrime, ary2_imgSample);
+		}
+	}
+	//up
+	for (j=0; j < offsetHeight; j++) {
+		for (k=0; k < WIDTH; k++) {
+			ary2_imgInput[j][k] = 0xffff;
+		}
+	}
+	//down
+	for (j=scaledHeight + offsetHeight; j < HEIGHT; j++) {
+		for (k=0; k < WIDTH; k++) {
+			ary2_imgInput[j][k] = 0xffff;
+		}
+	}
+	//left
+	for (j=0; j < HEIGHT; j++) {
+		for (k=0; k < offsetWidth; k++) {
+			ary2_imgInput[j][k] = 0xffff;
+		}
+	}
+	//right
+	for (j=0; j < HEIGHT; j++) {
+		for (k=scaledHeight + offsetWidth; k < WIDTH; k++) {
+			ary2_imgInput[j][k] = 0xffff;
 		}
 	}
 }
