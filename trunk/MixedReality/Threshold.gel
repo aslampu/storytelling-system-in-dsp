@@ -2,6 +2,10 @@
 /*modifed from program sine8_LED.c*/
 
 menuitem "Threshold"
+slider Image_Size(0,100,10,1,size)	//incr by 10, up to 100
+{
+	imgSize = size;			//vary size of Image_Size
+}
 
 slider RH_Thres(0,360,10,1,rParameter)	//incr by 10, up to 360
 {

@@ -31,11 +31,11 @@ unsigned short 		ary2_imgFrame[XLCD][YLCD];
 unsigned short     	ary3_yuv2rgbTable[64][32][32];
 unsigned short		ary2_rgb2hsvTable[NUM_RGB][3];
 int  	     		ary2_rgb2labTable[NUM_RGB][3];
-unsigned short  	ary3_lab2rgbTable[NUM_LAB][NUM_LAB][NUM_LAB];
+//unsigned short  	ary3_lab2rgbTable[NUM_LAB][NUM_LAB][NUM_LAB];
 
 float 			rhThreshold = 0;
 float 			rhBias = 36;				
-unsigned short 	rLowerBound = 500;
+unsigned short 	rLowerBound = 3000;
 unsigned short 	rUpperBound = 40000;
 unsigned short 	rQuantifiedLevel = 10;
 unsigned short 	rBoxPadding = 100;		
@@ -55,7 +55,9 @@ unsigned short 	bLowerBound = 500;
 unsigned short 	bUpperBound = 40000;
 unsigned short 	bQuantifiedLevel = 10;
 unsigned short 	bBoxPadding = 100;			
-unsigned short 	bBoxBorder = 2;	
+unsigned short 	bBoxBorder = 2;
+
+int				imgSize = 100;	
 
 void main()
 {
@@ -64,7 +66,7 @@ void main()
 	FILE *outputRGBData, *outputHueData;
 	int ok=0;
 	Filter rFilter, gFilter, bFilter;
-	short scaleFactor100=100;
+	//short scaleFactor100=100;
 
 	PLL6713();	// Initialize C6713 PLL	
 	CE2CTL = (WSU|WST|WHD|RSU|RST|RHD|MTYPE);
@@ -82,9 +84,9 @@ void main()
 		RGB2Lab(j,&(ary2_rgb2labTable[j][0]),&(ary2_rgb2labTable[j][1]),&(ary2_rgb2labTable[j][2]));
 	}
 
-	for (k=0;k<NUM_LAB;k++)
+	/*for (k=0;k<NUM_LAB;k++)
     for (i=0;i<NUM_LAB;i++)
-    for (j=0;j<NUM_LAB;j++) ary3_lab2rgbTable[k][i][j] = Lab2RGB(k,i,j);	
+    for (j=0;j<NUM_LAB;j++) ary3_lab2rgbTable[k][i][j] = Lab2RGB(k,i,j);*/
 
 	QDMA_CNT 	= (239<<16)|320;
 	QDMA_IDX 	= 0x0000<<16;
@@ -126,28 +128,34 @@ void main()
 		}
 		
 		//Call track function, which modify the ary2_imgFrame array passed by a pointer		
-		TrackBall(&rFilter, ary2_imgFrame, ary2_rgb2hsvTable);
-		TrackBall(&bFilter, ary2_imgFrame, ary2_rgb2hsvTable);
+		//TrackBall(&rFilter, ary2_imgFrame, ary2_rgb2hsvTable);
+		//TrackBall(&bFilter, ary2_imgFrame, ary2_rgb2hsvTable);
+		
+		DebugBall(&rFilter, ary2_imgFrame, ary2_rgb2hsvTable);
+		//DebugBall(&bFilter, ary2_imgFrame, ary2_rgb2hsvTable);
 
 		//Compute Rotation and choose the coresponding image
 		//Resize Image
 		//Labequalize Image
-		switch(rFilter.ballFound * 4 + gFilter.ballFound * 2 + bFilter.ballFound){
+		/*switch(rFilter.ballFound * 4 + gFilter.ballFound * 2 + bFilter.ballFound){
 			case 1: //only find blue one
-				scaleImage(scaleFactor100, ary2_imgTwo, ary2_imgInput);
+				scaleImage(imgSize, ary2_imgTwo, ary2_imgInput);
 				OverlayImage1D(&bFilter, ary2_imgFrame, ary2_imgInput);
+				//OverlayImage1D(&bFilter, ary2_imgFrame, ary2_imgTwo);
 				break;		
 			case 4: //only find green one
-				scaleImage(scaleFactor100, ary2_imgOne, ary2_imgInput);
+				scaleImage(imgSize, ary2_imgOne, ary2_imgInput);
 				OverlayImage1D(&rFilter, ary2_imgFrame, ary2_imgInput);
+				//OverlayImage1D(&rFilter, ary2_imgFrame, ary2_imgOne);
 				break;
 			case 5: //find both green and blue ones
-				scaleImage(scaleFactor100, ary2_imgTwo, ary2_imgInput);
+				scaleImage(imgSize, ary2_imgTwo, ary2_imgInput);
 				OverlayImage2D(&rFilter, &bFilter, ary2_imgFrame, ary2_imgInput);	
+				//OverlayImage2D(&rFilter, &bFilter, ary2_imgFrame, ary2_imgTwo);
 				break;
 			default:
 				;
-		}
+		}*/
 
 		//Output Synthesized Frames
 		for(i=0;i<1000000;i++) if(EDMA_CIPR&0x200) break;
