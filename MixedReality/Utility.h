@@ -13,6 +13,30 @@
 
 enum colorID {rColor, gColor, bColor};
 
+extern float 			rhThreshold;
+extern float 			rhBias;				
+extern unsigned short 	rLowerBound;
+extern unsigned short 	rUpperBound;
+extern unsigned short 	rQuantifiedLevel;
+extern unsigned short 	rBoxPadding;		
+extern unsigned short 	rBoxBorder;			
+
+extern float 			ghThreshold;			
+extern float 			ghBias;			
+extern unsigned short 	gLowerBound;
+extern unsigned short  gUpperBound;
+extern unsigned short  gQuantifiedLevel;
+extern unsigned short  gBoxPadding;			
+extern unsigned short  gBoxBorder;				
+
+extern float 			bhThreshold;		
+extern float 			bhBias;			
+extern unsigned short 	bLowerBound;
+extern unsigned short 	bUpperBound;
+extern unsigned short 	bQuantifiedLevel;
+extern unsigned short 	bBoxPadding;			
+extern unsigned short 	bBoxBorder;	
+
 typedef struct{
 	int		ballFound;
 	int 	ballColor;

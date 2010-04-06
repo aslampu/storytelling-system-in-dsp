@@ -3,42 +3,42 @@
 
 menuitem "Threshold"
 
-slider RH_Thres(0,359,10,1,rParameter)	//incr by 10, up to 359
+slider RH_Thres(0,360,10,1,rParameter)	//incr by 10, up to 360
 {
 	rhThreshold = rParameter;			//vary rhThreshold of RH_Thres
 }
 
-slider RS_Thres(0,10,1,1,rParameter) 	//incr by 0.1, up to 1
+/*slider RS_Thres(0,360,10,1,rParameter) //incr by 10, up to 360
 {
 	rsThreshold = rParameter/10; 		//vary rsThreshold of RS_Thres
 }
 
-slider RV_Thres(0,10,1,1,rParameter) 	//incr by 0.1, up to 1
+slider RV_Thres(0,360,10,1,rParameter) 	//incr by 10, up to 360
 {
 	rvThreshold = rParameter/10;    	//vary rvThreshold of RV_Thres
-}
+}*/
 
-slider RH_Bia(0,359,10,1,rParameter)  	//incr by 10, up to 359
+slider RH_Bia(0,60,6,1,rParameter)  	//incr by 6, up to 60
 {
 	rhBias = rParameter;				//vary rhBias of RH_Bia
 }
 
-slider RS_Bia(0,10,1,1,rParameter) 		//incr by 0.1, up to 1
+/*slider RS_Bia(0,60,6,1,rParameter) 	//incr by 6, up to 60
 {
 	rsBias = rParameter/10;      		//vary rsBias of RS_Bia
 }
 
-slider RV_Bia(0,10,1,1,rParameter) 		//incr by 0.1, up to 1
+slider RV_Bia(0,60,6,1,rParameter) 		//incr by 6, up to 60
 {
     rvBias = rParameter/10;       		//vary rvBias of RV_Bia
-}
+}*/
 
-slider R_LB(0,1000,100,1,rParameter) 	//incr by 100, up to 1000
+slider R_LB(0,10000,1000,1,rParameter) 	//incr by 1000, up to 10000
 {
 	rLowerBound = rParameter; 			//vary rLowerBound of R_LB
 }
 
-slider R_UB(0,1000,100,1,rParameter)	//incr by 100, up to 1000
+slider R_UB(0,60000,1000,1,rParameter)	//incr by 1000, up to 60000
 {
 	rUpperBound = rParameter;    		//vary rUpperBound of R_UB
 }
@@ -48,7 +48,7 @@ slider R_Lvl(0,100,10,1,rParameter)  	//incr by 10, up to 100
 	rQuantifiedLevel = rParameter;		//vary rQuantifiedLevel of R_Lvl
 }
 
-slider R_Pad(0,100,10,1,rParameter) 	//incr by 10, up to 100
+slider R_Pad(0,1000,10,1,rParameter) 	//incr by 10, up to 1000
 {
 	rBoxPadding = rParameter;      		//vary rBoxPadding of R_Pad
 }
@@ -57,5 +57,116 @@ slider R_Brd(0,10,1,1,rParameter) 		//incr by 1, up to 10
 {
     rBoxBorder = rParameter;       		//vary rBoxBorder of R_Brd
 }
+
+slider GH_Thres(0,360,10,1,gParameter)	//incr by 10, up to 360
+{
+	ghThreshold = gParameter;			//vary ghThreshold of GH_Thres
+}
+
+/*slider GS_Thres(0,360,10,1,gParameter) //incr by 10, up to 360
+{
+	gsThreshold = gParameter/10; 		//vary gsThreshold of GS_Thres
+}
+
+slider GV_Thres(0,360,10,1,gParameter) 	//incr by 10, up to 360
+{
+	gvThreshold = gParameter/10;    	//vary gvThreshold of GV_Thres
+}*/
+
+slider GH_Bia(0,60,6,1,gParameter)  	//incr by 6, up to 60
+{
+	ghBias = gParameter;				//vary ghBias of GH_Bia
+}
+
+/*slider GS_Bia(0,60,6,1,rParameter) 	//incr by 6, up to 60
+{
+	gsBias = gParameter/10;      		//vary gsBias of GS_Bia
+}
+
+slider GV_Bia(0,60,6,1,gParameter) 		//incr by 6, up to 60
+{
+    gvBias = gParameter/10;       		//vary gvBias of GV_Bia
+}*/
+
+slider G_LB(0,10000,1000,1,gParameter) 	//incr by 1000, up to 10000
+{
+	gLowerBound = gParameter; 			//vary gLowerBound of G_LB
+}
+
+slider G_UB(0,60000,1000,1,gParameter)	//incr by 1000, up to 60000
+{
+	gUpperBound = gParameter;    		//vary gUpperBound of G_UB
+}
+
+slider G_Lvl(0,100,10,1,gParameter)  	//incr by 10, up to 100
+{
+	gQuantifiedLevel = gParameter;		//vary gQuantifiedLevel of G_Lvl
+}
+
+slider G_Pad(0,1000,10,1,gParameter) 	//incr by 10, up to 1000
+{
+	gBoxPadding = gParameter;      		//vary gBoxPadding of G_Pad
+}
+
+slider G_Brd(0,10,1,1,gParameter) 		//incr by 1, up to 10
+{
+    gBoxBorder = gParameter;       		//vary gBoxBorder of G_Brd
+}
+
+slider BH_Thres(0,360,10,1,bParameter)	//incr by 10, up to 360
+{
+	bhThreshold = bParameter;			//vary bhThreshold of BH_Thres
+}
+
+/*slider BS_Thres(0,360,10,1,bParameter) //incr by 10, up to 360
+{
+	bsThreshold = bParameter/10; 		//vary bsThreshold of BS_Thres
+}
+
+slider BV_Thres(0,360,10,1,bParameter) 	//incr by 10, up to 360
+{
+	bvThreshold = bParameter/10;    	//vary bvThreshold of BV_Thres
+}*/
+
+slider BH_Bia(0,60,6,1,bParameter)  	//incr by 6, up to 60
+{
+	bhBias = bParameter;				//vary bhBias of BH_Bia
+}
+
+/*slider BS_Bia(0,60,6,1,bParameter) 	//incr by 6, up to 60
+{
+	bsBias = bParameter/10;      		//vary bsBias of BS_Bia
+}
+
+slider BV_Bia(0,60,6,1,bParameter) 		//incr by 6, up to 60
+{
+    bvBias = bParameter/10;       		//vary bvBias of BV_Bia
+}*/
+
+slider B_LB(0,10000,1000,1,bParameter) 	//incr by 1000, up to 10000
+{
+	bLowerBound = bParameter; 			//vary bLowerBound of B_LB
+}
+
+slider B_UB(0,60000,1000,1,bParameter)	//incr by 1000, up to 60000
+{
+	bUpperBound = bParameter;    		//vary bUpperBound of B_UB
+}
+
+slider B_Lvl(0,100,10,1,bParameter)  	//incr by 10, up to 100
+{
+	bQuantifiedLevel = bParameter;		//vary bQuantifiedLevel of B_Lvl
+}
+
+slider B_Pad(0,1000,10,1,bParameter) 	//incr by 10, up to 1000
+{
+	bBoxPadding = bParameter;      		//vary bBoxPadding of B_Pad
+}
+
+slider B_Brd(0,10,1,1,bParameter) 		//incr by 1, up to 10
+{
+    bBoxBorder = bParameter;       		//vary bBoxBorder of B_Brd
+}
+
 
 

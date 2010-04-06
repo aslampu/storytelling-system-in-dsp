@@ -37,9 +37,9 @@ void TrackBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], 
 				hU = hSwap;
 			}
 			if(ptr_oldFilter->ballColor)	//not Red
-				hueFlag = hTemp>hL && hTemp<hU && sTemp > 216 && vTemp > 64;
+				hueFlag = hTemp>hL && hTemp<hU && sTemp > 144 && vTemp > 102;
 			else
-				hueFlag = hTemp<hL || hTemp>hU && sTemp > 216 && vTemp > 64;
+				hueFlag = hTemp<hL || hTemp>hU && sTemp > 144 && vTemp > 102;
 			
 			if(hueFlag){
 				hueFlag = 0;
