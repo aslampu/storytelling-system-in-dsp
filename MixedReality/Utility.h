@@ -14,24 +14,24 @@
 
 enum colorID {rColor, gColor, bColor};
 
-extern float 			rhThreshold;
-extern float 			rhBias;				
+extern unsigned short 	rhThreshold;
+extern unsigned short 	rhBias;				
 extern unsigned short 	rLowerBound;
 extern unsigned short 	rUpperBound;
 extern unsigned short 	rQuantifiedLevel;
 extern unsigned short 	rBoxPadding;		
 extern unsigned short 	rBoxBorder;			
 
-extern float 			ghThreshold;			
-extern float 			ghBias;			
+extern unsigned short 	ghThreshold;			
+extern unsigned short 	ghBias;			
 extern unsigned short 	gLowerBound;
 extern unsigned short   gUpperBound;
 extern unsigned short   gQuantifiedLevel;
 extern unsigned short   gBoxPadding;			
 extern unsigned short   gBoxBorder;				
 
-extern float 			bhThreshold;		
-extern float 			bhBias;			
+extern unsigned short 	bhThreshold;		
+extern unsigned short	bhBias;			
 extern unsigned short 	bLowerBound;
 extern unsigned short 	bUpperBound;
 extern unsigned short 	bQuantifiedLevel;
@@ -60,12 +60,10 @@ typedef struct{
 
 void DrawBox(int xFrom, int xTo, int yFrom, int yTo, int boxBorder, int boxPadding,unsigned short ary2_imgFrame[XLCD][YLCD]);
 void DebugBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], unsigned short ary2_rgb2hsvTable[NUM_RGB][3]);
-//void TrackBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], float ary3_rgb2hsvTable[NUM_RGB][3]);
-void TrackBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], unsigned short ary2_rgb2hsvTable[NUM_RGB][3]);
-//float RGB2Hue(unsigned short rgbColor);
+//void DebugBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], float ary2_rgb2hsvTable[NUM_RGB][3]);
+//void TrackBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], unsigned short ary2_rgb2hsvTable[NUM_RGB][3]);
 void RGB2HSV(unsigned short rgbColor, unsigned short *h, unsigned short *s, unsigned short *v);
 //void RGB2HSV(unsigned short rgbColor, float *ptr_hValue, float *ptr_sValue, float *ptr_vValue);
-//unsigned short HSV2RGB(float hValue, float sValue, float vValue);
 void RGB2Lab(unsigned short rgbColor, int *L, int *a, int *b);
 void InitializeFilter(int ballColor, Filter *ptr_newFilter);
 void PLL6713();

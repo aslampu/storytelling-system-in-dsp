@@ -1,6 +1,7 @@
 #include <math.h>
 #include "Utility.h"
 																
+//void DebugBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], float ary2_rgb2hsvTable[NUM_RGB][3]){
 void DebugBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], unsigned short ary2_rgb2hsvTable[NUM_RGB][3]){
 	int i, j, xFrom, yFrom, xTo, yTo, hueFlag = 0;
 	int hTemp, hL, hU, hSwap, sTemp, vTemp;
@@ -38,15 +39,15 @@ void DebugBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], 
 				hU = hSwap;
 			}
 			if(ptr_oldFilter->ballColor){	//Blue
-				//hueFlag = hTemp>hL && hTemp<hU;
-				hueFlag = hTemp>hL && hTemp<hU && sTemp > 144 && vTemp > 102 && rTemp > 50 && rTemp < 90 && gTemp > 95 && gTemp < 130 && bTemp > 130 && bTemp < 180;
+				//hueFlag = hTemp>hL && hTemp<hU; //144->0.4 102->0.4
+				hueFlag = hTemp > hL && hTemp < hU && sTemp > 144 && vTemp > 102;// && rTemp > 50 && rTemp < 90 && gTemp > 95 && gTemp < 130 && bTemp > 130 && bTemp < 180;
 				if(hueFlag) ary2_imgFrame[j][i] = 0x001f;
-				else ary2_imgFrame[j][i] = 0x0000;
+				//else ary2_imgFrame[j][i] = 0x0000;
 				//hueFlag = hTemp>hL && hTemp<hU && sTemp > 144 && vTemp > 102;
 			}else{							//Red
-				hueFlag = hTemp<hL || hTemp>hU && sTemp > 144 && vTemp > 102 && rTemp > 190 && rTemp < 225 && gTemp > 100 && gTemp < 150 && bTemp > 60 && bTemp < 120;
+				hueFlag = (hTemp < hL || hTemp > hU) && sTemp > 144 && vTemp > 102;// && rTemp > 190 && rTemp < 225 && gTemp > 100 && gTemp < 150 && bTemp > 60 && bTemp < 120;
 				if(hueFlag) ary2_imgFrame[j][i] = 0xf800;
-				else ary2_imgFrame[j][i] = 0x0000;
+				//else ary2_imgFrame[j][i] = 0x0000;
 				//hueFlag = hTemp<hL || hTemp>hU && sTemp > 144 && vTemp > 102;
 			}
 			if(hueFlag){
