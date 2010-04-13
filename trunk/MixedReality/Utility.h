@@ -62,6 +62,7 @@ void DebugBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], 
 //void DebugBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], float ary2_rgb2hsvTable[NUM_RGB][3]);
 //void TrackBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], unsigned short ary2_rgb2hsvTable[NUM_RGB][3]);
 void RGB2HSV(unsigned short rgbColor, unsigned short *h, unsigned short *s, unsigned short *v);
+unsigned short HSV2RGB(unsigned short hValue, unsigned short sValue, unsigned short vValue);
 //void RGB2HSV(unsigned short rgbColor, float *ptr_hValue, float *ptr_sValue, float *ptr_vValue);
 //void RGB2Lab(unsigned short rgbColor, int *L, int *a, int *b);
 void InitializeFilter(int ballColor, Filter *ptr_newFilter);
