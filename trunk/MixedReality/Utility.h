@@ -6,7 +6,6 @@
 #define HEIGHT	200
 #define WIDTH	200
 #define NUM_RGB 65536
-#define NUM_LAB 256
 #define PERCENT 100
 
 #define Min(A,B)(A<B ? A:B)
@@ -64,7 +63,7 @@ void DebugBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], 
 //void TrackBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], unsigned short ary2_rgb2hsvTable[NUM_RGB][3]);
 void RGB2HSV(unsigned short rgbColor, unsigned short *h, unsigned short *s, unsigned short *v);
 //void RGB2HSV(unsigned short rgbColor, float *ptr_hValue, float *ptr_sValue, float *ptr_vValue);
-void RGB2Lab(unsigned short rgbColor, int *L, int *a, int *b);
+//void RGB2Lab(unsigned short rgbColor, int *L, int *a, int *b);
 void InitializeFilter(int ballColor, Filter *ptr_newFilter);
 void PLL6713();
 unsigned short	ybr_565(short y,short u,short v);
@@ -72,5 +71,7 @@ void scaleImage(short scaleFactor100, unsigned short ary2_imgSample[HEIGHT][WIDT
 float getPixelValueBilinear(float pPrime, float qPrime, unsigned short ary2_imgSample[HEIGHT][WIDTH]); 
 void OverlayImage1D(Filter *ptr_theFilter, unsigned short ary2_imgFrame[XLCD][YLCD], unsigned short ary2_imgInput[HEIGHT][WIDTH]);
 void OverlayImage2D(Filter *ptr_leftFilter, Filter *ptr_rightFilter, unsigned short ary3_imgFrame[XLCD][YLCD], unsigned short ary2_imgInput[HEIGHT][WIDTH]);
+unsigned int RGB2Lab(unsigned short rgbColor);
+unsigned short Lab2RGB(unsigned int labColor);
 #endif /* INC_UTILITY_H */
 

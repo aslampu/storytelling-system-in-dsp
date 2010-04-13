@@ -36,7 +36,7 @@ void OverlayImage2D(Filter *ptr_leftFilter, Filter *ptr_rightFilter, unsigned sh
 			if(yStart+i > YLCD || yStart+i < 0)
 				continue;
 			tmpColor = ary2_imgInput[j][i];
-			if(((tmpColor & 0xf800) >> 11) < 28 && ((tmpColor & 0x07e0) >> 5) < 58 && (tmpColor & 0x001f) < 28)
+			if(((tmpColor & 0xf800) >> 11) < 30 && ((tmpColor & 0x07e0) >> 5) < 62 && (tmpColor & 0x001f) < 30)
 				ary2_imgFrame[xStart+j][yStart+i] = tmpColor;
 		}
 	}
