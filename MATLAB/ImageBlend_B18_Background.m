@@ -1,7 +1,7 @@
 %% Load Image
 % Read BackGround Raw File From Lab Camera
 clear all; close all;clc;
-fid = fopen('table_half_shadow.dat', 'rb');
+fid = fopen('output.filtered.raw', 'rb');
 bg_matrix = fread(fid, 'uchar');
 
 %% Load Test Insert Images
@@ -92,6 +92,8 @@ adjustImage_gaussian = imnoise(adjustImage, 'gaussian');
 new_bg_rgb_with_origin = new_bg_rgb;
 new_bg_rgb_with_adjust = new_bg_rgb;
 new_bg_rgb_with_gussian = new_bg_rgb;
+
+%imwrite(new_bg_rgb_with_adjust,'');
 
 
 for i = 1:wi
