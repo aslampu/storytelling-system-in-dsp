@@ -2,7 +2,8 @@
 #include "Utility.h"
 
 void OverlayImage1D(Filter *ptr_theFilter, unsigned short ary2_imgFrame[XLCD][YLCD], unsigned short ary2_imgInput[HEIGHT][WIDTH]){
-	int i,j,k,m;
+	int i,j;
+	//int k,m;
 	unsigned short tmpColor,tmpRed,tmpGreen,tmpBlue;
 	//int comLength = 10 * floor((70 + (210/75000) * (ptr_theFilter->ballSize-5000)) / 10);
 	/*int xStart = Min(XLCD, Max(0,floor(ptr_theFilter->xCenter-40)));

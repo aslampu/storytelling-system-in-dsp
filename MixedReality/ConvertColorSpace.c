@@ -1,37 +1,7 @@
 #include <math.h>
 #include "Utility.h"
 
-/*float RGB2Hue(unsigned short rgbColor){
-	float rTemp = (((rgbColor & 0xf800) >> 11) * 255 / 31);
-	float gTemp = (((rgbColor & 0x07e0) >> 5) * 255 / 63);
-	float bTemp = ((rgbColor & 0x001f) * 255 / 31);
-	float RGB_Min = Min(rTemp,Min(gTemp,bTemp));
-	float hValue = 0;
-	float RGB_Max = Max(rTemp,Max(gTemp,bTemp)); //v
-	float Difference = RGB_Max - RGB_Min;	//s
-	float zMatlab = Difference ? 0 : 1;
-	
-	Difference += zMatlab;
-	//if(Difference == 0)
-	//	return hValue;
-
-	//H_value
-	if(rTemp == RGB_Max)
-		hValue = (gTemp - bTemp) / Difference;
-	else if(gTemp == RGB_Max)
-		hValue = 2 + ( bTemp - rTemp ) / Difference;
-	else if(bTemp == RGB_Max)
-		hValue = 4 + ( rTemp - gTemp ) / Difference;
-
-	hValue /= 6;
-	if(hValue < 0)
-		hValue += 1;
-	hValue *= zMatlab ? 0 : 1;
-	hValue *= 360;
-
-	return hValue;
-}*/
-
+// modifed version
 void RGB2HSV(unsigned short rgbColor, unsigned short *ptr_hValue, unsigned short *ptr_sValue, unsigned short *ptr_vValue){
 //void RGB2HSV(unsigned short rgbColor, float *ptr_hValue, float *ptr_sValue, float *ptr_vValue){
 	float zMatlab, sMatlab;
@@ -73,6 +43,170 @@ void RGB2HSV(unsigned short rgbColor, unsigned short *ptr_hValue, unsigned short
 	*ptr_sValue = (int)(s * 360);
 	*ptr_vValue = (int)(v);
 }
+
+unsigned short HSV2RGB(unsigned short hValue, unsigned short sValue, unsigned short vValue){
+	 float hTemp = hValue, sTemp = sValue/360, vTemp = vValue;
+	 int rTemp,gTemp,bTemp,i;
+     float f, p, q, t;
+
+	
+    if( sTemp == 0 ) 
+    {    	
+    // achromatic (grey)
+        rTemp = floor(vTemp);
+        gTemp = floor(vTemp);
+        bTemp = floor(vTemp);
+        return ((rTemp&0x0f8)<<8)|((gTemp&0x0fc)<<3)|((bTemp&0x0f8)>>3);
+    }
+
+	hTemp /= 60;                        // sector 0 to 5
+    i = floor(hTemp); 
+    f = hTemp - i;                      // factorial part of h
+    p = floor(vValue * ( 1 - sTemp ));
+    q = floor(vValue * ( 1 - sTemp * f ));
+    t = floor(vValue * ( 1 - sTemp * ( 1 - f )));
+
+	switch( i ) {
+		case 0:
+		        rTemp = vTemp;
+		        gTemp = t;
+		        bTemp = p;
+		        break;
+		case 1:
+		        rTemp = q;
+		        gTemp = vTemp;
+		        bTemp = p;
+		        break;
+		case 2:
+		        rTemp = p;
+		        gTemp = vTemp;
+		        bTemp = t;
+		        break;
+		case 3:
+		        rTemp = p;
+		        gTemp = q;
+		        bTemp = vTemp;
+		        break;
+		case 4:
+		        rTemp = t;
+		        gTemp = p;
+		        bTemp = vTemp;
+		        break;
+		default:                // case 5:
+		        rTemp = vTemp;
+		        gTemp = p;
+		        bTemp = q;
+		        break;
+		}
+
+	return ((rTemp&0x0f8)<<8)|((gTemp&0x0fc)<<3)|((bTemp&0x0f8)>>3);
+}
+
+unsigned int RGB2Lab(unsigned short rgbColor){
+  	
+	//unsigned int labColor=0;
+	float X, Y, Z, fX, fY, fZ;
+	int L,a,b;
+	float R = (((rgbColor & 0xf800) >> 11) * 255 / 31);
+	float G = (((rgbColor & 0x07e0) >> 5) * 255 / 63);
+	float B = ((rgbColor & 0x001f) * 255 / 31);
+
+  	X = 0.412453 * R + 0.357580 * G + 0.180423 * B;
+  	Y = 0.212671 * R + 0.715160 * G + 0.072169 * B;
+  	Z = 0.019334 * R + 0.119193 * G + 0.950227 * B;
+
+	X /= (255 * 0.950456);
+  	Y /=  255;
+  	Z /= (255 * 1.088754);
+
+  	if (Y > 0.008856){
+    	fY = pow(Y, 1.0 / 3.0);
+      	L = (int)(116.0 * fY - 16.0 + 0.5);
+    }else{
+      fY = 7.787 * Y + 16.0 / 116.0;
+      L = (int)(903.3 * Y + 0.5);
+    }
+
+  	if (X > 0.008856)
+    	fX = pow(X, 1.0 / 3.0);
+  	else
+      	fX = 7.787 * X + 16.0 / 116.0;
+
+  	if (Z > 0.008856)
+    	fZ = pow(Z, 1.0 / 3.0);
+  	else
+    	fZ = 7.787 * Z + 16.0 / 116.0;
+
+  	a = (int)(500.0 * (fX - fY) + 0.5);
+  	b = (int)(200.0 * (fY - fZ) + 0.5);
+	//-128~127
+
+	return ((0&0x0ff)<<24|(L&0x0ff)<<16|(a&0x0ff)<<8|b&0x0ff);
+//printf("RGB=(%d,%d,%d) ==> Lab(%d,%d,%d)\n",R,G,B,*L,*a,*b);
+}
+
+unsigned short Lab2RGB(unsigned int labColor){
+	
+	int L;
+	int a;
+	int b;
+	float X, Y, Z, fX, fY, fZ;
+  	int RR, GG, BB, R, G, B;
+
+	if((labColor & 0x00800000) >> 23)//negative
+		L = (labColor | 0xffffffffff00ffff) >>16;
+	else
+		L = (labColor & 0x00ff0000) >>16;
+
+	if((labColor & 0x00008000) >> 15)//negative
+		a = (labColor | 0xffffffffffff00ff) >>8;
+	else
+		a = (labColor & 0x0000ff00) >>8;
+		
+	if((labColor & 0x00000080) >> 7)//negative
+		b = (labColor | 0xffffffffffffff00);
+	else
+		b = (labColor & 0x000000ff);
+		
+	fY = pow((L + 16.0) / 116.0, 3.0);
+  	if (fY < 0.008856)
+    	fY = L / 903.3;
+  	Y = fY;
+
+  	if (fY > 0.008856)
+    	fY = pow(fY, 1.0/3.0);
+  	else
+    	fY = 7.787 * fY + 16.0/116.0;
+	
+ 	fX = a / 500.0 + fY;      
+  	if (fX > 0.206893)
+      	X = pow(fX, 3.0);
+  	else
+      	X = (fX - 16.0/116.0) / 7.787;
+ 
+  	fZ = fY - b /200.0;      
+  	if (fZ > 0.206893)
+    	Z = pow(fZ, 3.0);
+  	else
+      	Z = (fZ - 16.0/116.0) / 7.787;
+
+  	X *= (0.950456 * 255);
+  	Y *=             255;
+  	Z *= (1.088754 * 255);
+
+	RR =  (int)(3.240479 * X - 1.537150 * Y - 0.498535 * Z + 0.5);
+  	GG = (int)(-0.969256 * X + 1.875992 * Y + 0.041556 * Z + 0.5);
+  	BB =  (int)(0.055648 * X - 0.204043 * Y + 1.057311 * Z + 0.5);
+
+  	R = (int)(RR < 0 ? 0 : RR > 255 ? 255 : RR);
+  	G = (int)(GG < 0 ? 0 : GG > 255 ? 255 : GG);
+  	B = (int)(BB < 0 ? 0 : BB > 255 ? 255 : BB);
+
+	return ((R&0x0f8)<<8)|((G&0x0fc)<<3)|((B&0x0f8)>>3);
+
+//printf("Lab=(%f,%f,%f) ==> RGB(%f,%f,%f)\n",L,a,b,*R,*G,*B);
+}
+
 /*void RGB2HSV(unsigned short rgbColor, float *ptr_hValue, float *ptr_sValue, float *ptr_vValue){
 	float rTemp = (((rgbColor & 0xf800) >> 11) * 255 / 31);
 	float gTemp = (((rgbColor & 0x07e0) >> 5) * 255 / 63);
@@ -174,100 +308,6 @@ void RGB2HSV(unsigned short rgbColor, unsigned short *ptr_hValue, unsigned short
 
 	return ((rTemp&0x0f8)<<8)|((gTemp&0x0fc)<<3)|((bTemp&0x0f8)>>3);
 }*/
-
-// modifed version
-unsigned int RGB2Lab(unsigned short rgbColor){
-  	
-	//unsigned int labColor=0;
-	float X, Y, Z, fX, fY, fZ;
-	int L,a,b;
-	float R = (((rgbColor & 0xf800) >> 11) * 255 / 31);
-	float G = (((rgbColor & 0x07e0) >> 5) * 255 / 63);
-	float B = ((rgbColor & 0x001f) * 255 / 31);
-
-  	X = 0.412453 * R + 0.357580 * G + 0.180423 * B;
-  	Y = 0.212671 * R + 0.715160 * G + 0.072169 * B;
-  	Z = 0.019334 * R + 0.119193 * G + 0.950227 * B;
-
-	X /= (255 * 0.950456);
-  	Y /=  255;
-  	Z /= (255 * 1.088754);
-
-  	if (Y > 0.008856){
-    	fY = pow(Y, 1.0 / 3.0);
-      	L = (int)(116.0 * fY - 16.0 + 0.5);
-    }else{
-      fY = 7.787 * Y + 16.0 / 116.0;
-      L = (int)(903.3 * Y + 0.5);
-    }
-
-  	if (X > 0.008856)
-    	fX = pow(X, 1.0 / 3.0);
-  	else
-      	fX = 7.787 * X + 16.0 / 116.0;
-
-  	if (Z > 0.008856)
-    	fZ = pow(Z, 1.0 / 3.0);
-  	else
-    	fZ = 7.787 * Z + 16.0 / 116.0;
-
-  	a = (int)(500.0 * (fX - fY) + 0.5);
-  	b = (int)(200.0 * (fY - fZ) + 0.5);
-	//-128~127
-
-	return ((0&0x0ff)<<24|(L&0x0ff)<<16|(a&0x0ff)<<8|b&0x0ff);
-//printf("RGB=(%d,%d,%d) ==> Lab(%d,%d,%d)\n",R,G,B,*L,*a,*b);
-}
-
-unsigned short Lab2RGB(unsigned int labColor){
-	
-	int L = (int)((labColor >> 16) & 0x0ff);
-	int a = (int)((labColor >> 8) & 0x0ff);
-	int b = (int)(labColor & 0x0ff);
-
-  	float X, Y, Z, fX, fY, fZ;
-  	int RR, GG, BB, R, G, B;
-
-	fY = pow((L + 16.0) / 116.0, 3.0);
-  	if (fY < 0.008856)
-    	fY = L / 903.3;
-  	Y = fY;
-
-  	if (fY > 0.008856)
-    	fY = pow(fY, 1.0/3.0);
-  	else
-    	fY = 7.787 * fY + 16.0/116.0;
-	
- 	fX = a / 500.0 + fY;      
-  	if (fX > 0.206893)
-      	X = pow(fX, 3.0);
-  	else
-      	X = (fX - 16.0/116.0) / 7.787;
- 
-  	fZ = fY - b /200.0;      
-  	if (fZ > 0.206893)
-    	Z = pow(fZ, 3.0);
-  	else
-      	Z = (fZ - 16.0/116.0) / 7.787;
-
-  	X *= (0.950456 * 255);
-  	Y *=             255;
-  	Z *= (1.088754 * 255);
-
-	RR =  (int)(3.240479 * X - 1.537150 * Y - 0.498535 * Z + 0.5);
-  	GG = (int)(-0.969256 * X + 1.875992 * Y + 0.041556 * Z + 0.5);
-  	BB =  (int)(0.055648 * X - 0.204043 * Y + 1.057311 * Z + 0.5);
-
-  	R = (int)(RR < 0 ? 0 : RR > 255 ? 255 : RR);
-  	G = (int)(GG < 0 ? 0 : GG > 255 ? 255 : GG);
-  	B = (int)(BB < 0 ? 0 : BB > 255 ? 255 : BB);
-
-	return ((R&0x0f8)<<8)|((G&0x0fc)<<3)|((B&0x0f8)>>3);
-
-//printf("Lab=(%f,%f,%f) ==> RGB(%f,%f,%f)\n",L,a,b,*R,*G,*B);
-}
-
-
 
 //Reference: Mr.Mark Ruzon
 /* Color.c */

@@ -4,7 +4,7 @@
 void TrackBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], unsigned short ary2_rgb2hsvTable[NUM_RGB][3]){
 	int i, j, xFrom, yFrom, xTo, yTo, hueFlag = 0;
 	int hTemp, hL, hU, hSwap, sTemp, vTemp;
-	int rTemp, gTemp, bTemp;
+	//int rTemp, gTemp, bTemp;
 
 	Filter newComer;
 	InitializeFilter(ptr_oldFilter->ballColor, &newComer);
@@ -21,9 +21,9 @@ void TrackBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], 
 			hTemp = ary2_rgb2hsvTable[ary2_imgFrame[j][i]][0];
 			sTemp = ary2_rgb2hsvTable[ary2_imgFrame[j][i]][1];
 			vTemp = ary2_rgb2hsvTable[ary2_imgFrame[j][i]][2];
-			rTemp = (int)((((ary2_imgFrame[j][i] & 0xf800) >> 11) * 255 / 31));
-			gTemp = (int)((((ary2_imgFrame[j][i] & 0x07e0) >> 5) * 255 / 63));
-			bTemp = (int)(((ary2_imgFrame[j][i] & 0x001f) * 255 / 31));
+			//rTemp = (int)((((ary2_imgFrame[j][i] & 0xf800) >> 11) * 255 / 31));
+			//gTemp = (int)((((ary2_imgFrame[j][i] & 0x07e0) >> 5) * 255 / 63));
+			//bTemp = (int)(((ary2_imgFrame[j][i] & 0x001f) * 255 / 31));
 
 			hL = ptr_oldFilter->hThreshold-ptr_oldFilter->hBias;
 			hU = ptr_oldFilter->hThreshold+ptr_oldFilter->hBias;			
