@@ -175,6 +175,100 @@ void RGB2HSV(unsigned short rgbColor, unsigned short *ptr_hValue, unsigned short
 	return ((rTemp&0x0f8)<<8)|((gTemp&0x0fc)<<3)|((bTemp&0x0f8)>>3);
 }*/
 
+// modifed version
+unsigned int RGB2Lab(unsigned short rgbColor){
+  	
+	//unsigned int labColor=0;
+	float X, Y, Z, fX, fY, fZ;
+	int L,a,b;
+	float R = (((rgbColor & 0xf800) >> 11) * 255 / 31);
+	float G = (((rgbColor & 0x07e0) >> 5) * 255 / 63);
+	float B = ((rgbColor & 0x001f) * 255 / 31);
+
+  	X = 0.412453 * R + 0.357580 * G + 0.180423 * B;
+  	Y = 0.212671 * R + 0.715160 * G + 0.072169 * B;
+  	Z = 0.019334 * R + 0.119193 * G + 0.950227 * B;
+
+	X /= (255 * 0.950456);
+  	Y /=  255;
+  	Z /= (255 * 1.088754);
+
+  	if (Y > 0.008856){
+    	fY = pow(Y, 1.0 / 3.0);
+      	L = (int)(116.0 * fY - 16.0 + 0.5);
+    }else{
+      fY = 7.787 * Y + 16.0 / 116.0;
+      L = (int)(903.3 * Y + 0.5);
+    }
+
+  	if (X > 0.008856)
+    	fX = pow(X, 1.0 / 3.0);
+  	else
+      	fX = 7.787 * X + 16.0 / 116.0;
+
+  	if (Z > 0.008856)
+    	fZ = pow(Z, 1.0 / 3.0);
+  	else
+    	fZ = 7.787 * Z + 16.0 / 116.0;
+
+  	a = (int)(500.0 * (fX - fY) + 0.5);
+  	b = (int)(200.0 * (fY - fZ) + 0.5);
+	//-128~127
+
+	return ((0&0x0ff)<<24|(L&0x0ff)<<16|(a&0x0ff)<<8|b&0x0ff);
+//printf("RGB=(%d,%d,%d) ==> Lab(%d,%d,%d)\n",R,G,B,*L,*a,*b);
+}
+
+unsigned short Lab2RGB(unsigned int labColor){
+	
+	int L = (int)((labColor >> 16) & 0x0ff);
+	int a = (int)((labColor >> 8) & 0x0ff);
+	int b = (int)(labColor & 0x0ff);
+
+  	float X, Y, Z, fX, fY, fZ;
+  	int RR, GG, BB, R, G, B;
+
+	fY = pow((L + 16.0) / 116.0, 3.0);
+  	if (fY < 0.008856)
+    	fY = L / 903.3;
+  	Y = fY;
+
+  	if (fY > 0.008856)
+    	fY = pow(fY, 1.0/3.0);
+  	else
+    	fY = 7.787 * fY + 16.0/116.0;
+	
+ 	fX = a / 500.0 + fY;      
+  	if (fX > 0.206893)
+      	X = pow(fX, 3.0);
+  	else
+      	X = (fX - 16.0/116.0) / 7.787;
+ 
+  	fZ = fY - b /200.0;      
+  	if (fZ > 0.206893)
+    	Z = pow(fZ, 3.0);
+  	else
+      	Z = (fZ - 16.0/116.0) / 7.787;
+
+  	X *= (0.950456 * 255);
+  	Y *=             255;
+  	Z *= (1.088754 * 255);
+
+	RR =  (int)(3.240479 * X - 1.537150 * Y - 0.498535 * Z + 0.5);
+  	GG = (int)(-0.969256 * X + 1.875992 * Y + 0.041556 * Z + 0.5);
+  	BB =  (int)(0.055648 * X - 0.204043 * Y + 1.057311 * Z + 0.5);
+
+  	R = (int)(RR < 0 ? 0 : RR > 255 ? 255 : RR);
+  	G = (int)(GG < 0 ? 0 : GG > 255 ? 255 : GG);
+  	B = (int)(BB < 0 ? 0 : BB > 255 ? 255 : BB);
+
+	return ((R&0x0f8)<<8)|((G&0x0fc)<<3)|((B&0x0f8)>>3);
+
+//printf("Lab=(%f,%f,%f) ==> RGB(%f,%f,%f)\n",L,a,b,*R,*G,*B);
+}
+
+
+
 //Reference: Mr.Mark Ruzon
 /* Color.c */
 // Convert between RGB and CIE-Lab color spaces
@@ -182,7 +276,7 @@ void RGB2HSV(unsigned short rgbColor, unsigned short *ptr_hValue, unsigned short
 // Yossi Rubner
 // Last modified 2/24/98
 //=================================================================== LAB_GEL Function
-void RGB2Lab(unsigned short rgbColor,
+/*void RGB2Lab(unsigned short rgbColor,
 	     int *L, int *a, int *b){
   	
 	float X, Y, Z, fX, fY, fZ;
@@ -264,7 +358,7 @@ unsigned short Lab2RGB(int L, int a, int b){
 	return ((R&0x0f8)<<8)|((G&0x0fc)<<3)|((B&0x0f8)>>3);
 
 //printf("Lab=(%f,%f,%f) ==> RGB(%f,%f,%f)\n",L,a,b,*R,*G,*B);
-}
+}*/
 
 
 
