@@ -177,6 +177,7 @@ void main()
 				scaleImage(imgSize, ary2_imgSeven, ary2_imgInput);
 				OverlayImage1D(&bFilter, ary2_imgFrame, ary2_imgInput);
 				//OverlayImage1D(&bFilter, ary2_imgFrame, ary2_imgSeven);
+				DrawShadow1D(&bFilter, ary2_imgFrame);
 				break;		
 			case 4: //only find red one
 				scaleImage(imgSize, ary2_imgFive, ary2_imgInput);

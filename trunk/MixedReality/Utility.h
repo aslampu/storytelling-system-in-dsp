@@ -57,6 +57,14 @@ typedef struct{
 	short   yTo;
 } Filter;
 
+typedef struct {
+	int		xCenter;
+	int		yCenter;
+	int		a;
+	int		b;
+	double	eccentricity;
+} Shadow;
+
 void DrawBox(int xFrom, int xTo, int yFrom, int yTo, int boxBorder, int boxPadding,unsigned short ary2_imgFrame[XLCD][YLCD]);
 void DebugBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], unsigned short ary2_rgb2hsvTable[NUM_RGB][3]);
 //void DebugBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], float ary2_rgb2hsvTable[NUM_RGB][3]);
@@ -72,6 +80,7 @@ void scaleImage(short scaleFactor100, unsigned short ary2_imgSample[HEIGHT][WIDT
 float getPixelValueBilinear(float pPrime, float qPrime, unsigned short ary2_imgSample[HEIGHT][WIDTH]); 
 void OverlayImage1D(Filter *ptr_theFilter, unsigned short ary2_imgFrame[XLCD][YLCD], unsigned short ary2_imgInput[HEIGHT][WIDTH]);
 void OverlayImage2D(Filter *ptr_leftFilter, Filter *ptr_rightFilter, unsigned short ary3_imgFrame[XLCD][YLCD], unsigned short ary2_imgInput[HEIGHT][WIDTH]);
+void DrawShadow1D(Filter *ptr_theFilter, unsigned short ary2_imgFrame[XLCD][YLCD]);
 unsigned int RGB2Lab(unsigned short rgbColor);
 unsigned short Lab2RGB(unsigned int labColor);
 #endif /* INC_UTILITY_H */
