@@ -37,7 +37,7 @@ slider RV_Bia(0,60,6,1,rParameter) 		//incr by 6, up to 60
     rvBias = rParameter/10;       		//vary rvBias of RV_Bia
 }*/
 
-slider R_LB(0,10000,1000,1,rParameter) 	//incr by 1000, up to 10000
+slider R_LB(0,1000,10,1,rParameter) 	//incr by 1000, up to 10000
 {
 	rLowerBound = rParameter; 			//vary rLowerBound of R_LB
 }
@@ -92,7 +92,7 @@ slider GV_Bia(0,60,6,1,gParameter) 		//incr by 6, up to 60
     gvBias = gParameter/10;       		//vary gvBias of GV_Bia
 }*/
 
-slider G_LB(0,10000,1000,1,gParameter) 	//incr by 1000, up to 10000
+slider G_LB(0,1000,10,1,gParameter) 	//incr by 1000, up to 10000
 {
 	gLowerBound = gParameter; 			//vary gLowerBound of G_LB
 }
@@ -147,7 +147,7 @@ slider BV_Bia(0,60,6,1,bParameter) 		//incr by 6, up to 60
     bvBias = bParameter/10;       		//vary bvBias of BV_Bia
 }*/
 
-slider B_LB(0,10000,1000,1,bParameter) 	//incr by 1000, up to 10000
+slider B_LB(0,1000,10,1,bParameter) 	//incr by 1000, up to 10000
 {
 	bLowerBound = bParameter; 			//vary bLowerBound of B_LB
 }
@@ -172,5 +172,8 @@ slider B_Brd(0,10,1,1,bParameter) 		//incr by 1, up to 10
     bBoxBorder = bParameter;       		//vary bBoxBorder of B_Brd
 }
 
+slider D_Thres(0,200,5,1, dThres){
+	displacementThreshold = dThres;
+}
 
 

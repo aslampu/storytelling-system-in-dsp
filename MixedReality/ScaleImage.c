@@ -79,25 +79,29 @@ void scaleImage(short scaleFactor100, unsigned short ary2_imgSample[HEIGHT][WIDT
 	//up
 	for (j=0; j < offsetHeight; j++) {
 		for (k=0; k < WIDTH; k++) {
-			ary2_imgInput[j][k] = 0xffff;
+			ary2_imgInput[j][k] = 0x0000;
+			//ary2_imgInput[j][k] = 0xffff;
 		}
 	}
 	//down
 	for (j=scaledHeight + offsetHeight; j < HEIGHT; j++) {
 		for (k=0; k < WIDTH; k++) {
-			ary2_imgInput[j][k] = 0xffff;
+			ary2_imgInput[j][k] = 0x0000;
+			//ary2_imgInput[j][k] = 0xffff;
 		}
 	}
 	//left
 	for (j=0; j < HEIGHT; j++) {
 		for (k=0; k < offsetWidth; k++) {
-			ary2_imgInput[j][k] = 0xffff;
+			ary2_imgInput[j][k] = 0x0000;
+			//ary2_imgInput[j][k] = 0xffff;
 		}
 	}
 	//right
 	for (j=0; j < HEIGHT; j++) {
 		for (k=scaledHeight + offsetWidth; k < WIDTH; k++) {
-			ary2_imgInput[j][k] = 0xffff;
+			ary2_imgInput[j][k] = 0x0000;
+			//ary2_imgInput[j][k] = 0xffff;
 		}
 	}
 }

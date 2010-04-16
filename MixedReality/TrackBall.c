@@ -78,6 +78,10 @@ void TrackBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], 
 		newComer.ballFound = 1;
 		newComer.xCenter = newComer.xCenter/newComer.ballSize;
 		newComer.yCenter = newComer.yCenter/newComer.ballSize;
+		if(pow(newComer.xCenter - ptr_oldFilter->xCenter,2) + pow(newComer.yCenter - ptr_oldFilter->yCenter,2) < 100){
+			newComer.xCenter = ptr_oldFilter->xCenter;
+			newComer.yCenter = ptr_oldFilter->yCenter;	
+		}
 		//newComer.xFrom = Min(XLCD, Max(0, floor(ptr_oldFilter->xFrom + newComer.xCenter - ptr_oldFilter->xCenter)));
 		//newComer.xTo = Min(XLCD, Max(0, floor(ptr_oldFilter->xTo + newComer.xCenter - ptr_oldFilter->xCenter)));
 		//newComer.yFrom = Min(YLCD, Max(0, floor(ptr_oldFilter->yFrom + newComer.yCenter - ptr_oldFilter->yCenter)));

@@ -36,7 +36,7 @@ void OverlayImage1D(float imgAvgL, float imgAvgA, float imgAvgB, float imgStdL, 
 			//tmpGreen = (tmpColor & 0x07e0) >> 5;
 			//tmpBlue = tmpColor & 0x001f;
 			//if(tmpRed != 31 && tmpGreen != 63 && tmpBlue != 31){//not pure white
-			if(ary2_imgInput[j][i] != 65535){
+			if(ary2_imgInput[j][i] != 0){
 				adjustedLValue = (ptr_theFilter->stdL / imgStdL) * (ary2_rgb2labTable[ary2_imgInput[j][i]][0] - imgAvgL) + ptr_theFilter->avgL;
 				adjustedAValue = (ptr_theFilter->stdA / imgStdA) * (ary2_rgb2labTable[ary2_imgInput[j][i]][1] - imgAvgA) + ptr_theFilter->avgA;
 				adjustedBValue = (ptr_theFilter->stdB / imgStdB) * (ary2_rgb2labTable[ary2_imgInput[j][i]][2] - imgAvgB) + ptr_theFilter->avgB;	

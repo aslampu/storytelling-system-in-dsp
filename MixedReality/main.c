@@ -21,6 +21,7 @@
 //#include    "AcrylicPaint.2.h"
 //#include    "AcrylicPaint.3.h"
 #include    "AcrylicPaint.4.h"
+#include    "plant_insert.2.h"
 #include    "QDMA.h"
 #include	"vm3224k.h"
 #include    <stdio.h>
@@ -42,7 +43,7 @@ short   	  	    ary2_rgb2labTable[NUM_RGB][3];
 
 unsigned short 	rhThreshold = 0;
 unsigned short	rhBias = 36;				
-unsigned short 	rLowerBound = 3000;
+unsigned short 	rLowerBound = 150;
 unsigned short 	rUpperBound = 10000;
 unsigned short 	rQuantifiedLevel = 10;
 unsigned short 	rBoxPadding = 100;		
@@ -50,7 +51,7 @@ unsigned short 	rBoxBorder = 2;
 
 unsigned short	ghThreshold = 110;//0.3055
 unsigned short	ghBias = 36;		
-unsigned short 	gLowerBound = 500;
+unsigned short 	gLowerBound = 100;
 unsigned short  gUpperBound = 10000;
 unsigned short  gQuantifiedLevel = 10;
 unsigned short  gBoxPadding = 100;			
@@ -58,11 +59,13 @@ unsigned short  gBoxBorder = 2;
 
 unsigned short 	bhThreshold = 234;//0.65;
 unsigned short	bhBias = 36;			
-unsigned short 	bLowerBound = 500;
+unsigned short 	bLowerBound = 100;
 unsigned short 	bUpperBound = 10000;
 unsigned short 	bQuantifiedLevel = 10;
 unsigned short 	bBoxPadding = 100;			
 unsigned short 	bBoxBorder = 2;
+
+unsigned short 	displacementThreshold = 50;
 
 void main()
 {
@@ -240,7 +243,7 @@ void main()
 		}
 		
 		//Call track function, which modify the ary2_imgFrame array passed by a pointer		
-		TrackBall(&rFilter, ary2_imgFrame, ary2_rgb2hsvTable, ary2_rgb2labTable);
+		TrackBall(&gFilter, ary2_imgFrame, ary2_rgb2hsvTable, ary2_rgb2labTable);
 		TrackBall(&bFilter, ary2_imgFrame, ary2_rgb2hsvTable, ary2_rgb2labTable);
 		
 		//DebugBall(&rFilter, ary2_imgFrame, ary2_rgb2hsvTable);
@@ -251,19 +254,34 @@ void main()
 		//Labequalize Image
 		switch(rFilter.ballFound * 4 + gFilter.ballFound * 2 + bFilter.ballFound){
 			case 1: //only find blue one
-				//tmpSize1 = imgSize1;				
-				imgSize = Min(100, (bFilter.quantifiedLevel * (bFilter.ballSize - bFilter.lowerBound) / bFilter.upperBound) * bFilter.quantifiedLevel);
+				//tmpSize1 = imgSize1;	                                                           			
+				imgSize = Min(100, (bFilter.quantifiedLevel * (bFilter.ballSize - bFilter.lowerBound) / bFilter.upperBound) * bFilter.quantifiedLevel + 50);
 				bFilter.scaleFactor = imgSize;
 				//if(tmpSize1 != imgSize1)
 				scaleImage(imgSize, ary2_imgSeven, ary2_imgInput);
 				OverlayImage1D(avgTeaPotL, avgTeaPotA, avgTeaPotB, stdTeaPotL, avgTeaPotA, avgTeaPotB, &bFilter, ary2_imgFrame, ary2_imgInput, ary2_rgb2labTable);
 				//OverlayImage1D(&bFilter, ary2_imgFrame, ary2_imgSeven);
 				DrawShadow1D(&bFilter, ary2_imgFrame);
-				break;		
+				break;
+			case 2:
+				imgSize = Min(100, (gFilter.quantifiedLevel * (gFilter.ballSize - gFilter.lowerBound) / gFilter.upperBound) * gFilter.quantifiedLevel + 50);
+				gFilter.scaleFactor = imgSize;
+				scaleImage(imgSize, ary2_imgEight, ary2_imgInput);
+				OverlayImage1D(avgAcrylicPaintL, avgAcrylicPaintA, avgAcrylicPaintB, stdAcrylicPaintL, stdAcrylicPaintA, stdAcrylicPaintB, &gFilter, ary2_imgFrame, ary2_imgInput, ary2_rgb2labTable);
+				//OverlayImage1D(&rFilter, ary2_imgFrame, ary2_imgFive);
+				DrawShadow1D(&rFilter, ary2_imgFrame);
+				break;
+			case 3:
+				//imgSize = Min(100, floor(((bFilter.ballSize - bFilter.lowerBound) / bFilter.upperBound) * bFilter.quantifiedLevel) * bFilter.quantifiedLevel + floor((rFilter.ballSize - rFilter.lowerBound) / rFilter.upperBound) * rFilter.quantifiedLevel) * rFilter.quantifiedLevel)/2;
+				imgSize = 100;
+				scaleImage(imgSize, ary2_imgSeven, ary2_imgInput);
+				OverlayImage2D(&gFilter, &bFilter, ary2_imgFrame, ary2_imgInput);	
+				//OverlayImage2D(&rFilter, &bFilter, ary2_imgFrame, ary2_imgSeven);
+				break;	
 			case 4: //only find red one
-				imgSize = Min(100, (bFilter.quantifiedLevel * (rFilter.ballSize - rFilter.lowerBound) / rFilter.upperBound) * rFilter.quantifiedLevel);
-				bFilter.scaleFactor = imgSize;
-				scaleImage(imgSize, ary2_imgFive, ary2_imgInput);
+				imgSize = Min(100, (rFilter.quantifiedLevel * (rFilter.ballSize - rFilter.lowerBound) / rFilter.upperBound) * rFilter.quantifiedLevel + 50);
+				rFilter.scaleFactor = imgSize;
+				scaleImage(imgSize, ary2_imgEight, ary2_imgInput);
 				OverlayImage1D(avgAcrylicPaintL, avgAcrylicPaintA, avgAcrylicPaintB, stdAcrylicPaintL, stdAcrylicPaintA, stdAcrylicPaintB, &rFilter, ary2_imgFrame, ary2_imgInput, ary2_rgb2labTable);
 				//OverlayImage1D(&rFilter, ary2_imgFrame, ary2_imgFive);
 				DrawShadow1D(&rFilter, ary2_imgFrame);
