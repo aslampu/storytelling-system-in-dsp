@@ -1,10 +1,11 @@
 #include <math.h>
 #include "Utility.h"
 
-void OverlayImage1D(Filter *ptr_theFilter, unsigned short ary2_imgFrame[XLCD][YLCD], unsigned short ary2_imgInput[HEIGHT][WIDTH]){
+void OverlayImage1D(float imgAvgL, float imgAvgA, float imgAvgB, float imgStdL, float imgStdA, float imgStdB, Filter *ptr_theFilter, unsigned short ary2_imgFrame[XLCD][YLCD], unsigned short ary2_imgInput[HEIGHT][WIDTH], short	ary2_rgb2labTable[NUM_RGB][3]){
 	int i,j;
+	int adjustedLValue, adjustedAValue, adjustedBValue;
 	//int k,m;
-	unsigned short tmpColor,tmpRed,tmpGreen,tmpBlue;
+	//unsigned short tmpColor,tmpRed,tmpGreen,tmpBlue;
 	//int comLength = 10 * floor((70 + (210/75000) * (ptr_theFilter->ballSize-5000)) / 10);
 	/*int xStart = Min(XLCD, Max(0,floor(ptr_theFilter->xCenter-40)));
 	int yStart = Min(YLCD, Max(0,floor(ptr_theFilter->yCenter-40)));
@@ -30,12 +31,19 @@ void OverlayImage1D(Filter *ptr_theFilter, unsigned short ary2_imgFrame[XLCD][YL
 		for(i=0;i<WIDTH;i++){
 			if(yStart+i >= YLCD || yStart+i < 0)
 				continue;
-			tmpColor = ary2_imgInput[j][i];
-			tmpRed = (tmpColor & 0xf800) >> 11;
-			tmpGreen = (tmpColor & 0x07e0) >> 5;
-			tmpBlue = tmpColor & 0x001f;
-			if(tmpRed != 31 && tmpGreen != 63 && tmpBlue != 31)//not pure white
-				ary2_imgFrame[xStart+j][yStart+i] = tmpColor;
+			//tmpColor = ary2_imgInput[j][i];
+			//tmpRed = (tmpColor & 0xf800) >> 11;
+			//tmpGreen = (tmpColor & 0x07e0) >> 5;
+			//tmpBlue = tmpColor & 0x001f;
+			//if(tmpRed != 31 && tmpGreen != 63 && tmpBlue != 31){//not pure white
+			if(ary2_imgInput[j][i] != 65535){
+				adjustedLValue = (ptr_theFilter->stdL / imgStdL) * (ary2_rgb2labTable[ary2_imgInput[j][i]][0] - imgAvgL) + ptr_theFilter->avgL;
+				adjustedAValue = (ptr_theFilter->stdA / imgStdA) * (ary2_rgb2labTable[ary2_imgInput[j][i]][1] - imgAvgA) + ptr_theFilter->avgA;
+				adjustedBValue = (ptr_theFilter->stdB / imgStdB) * (ary2_rgb2labTable[ary2_imgInput[j][i]][2] - imgAvgB) + ptr_theFilter->avgB;	
+
+				ary2_imgFrame[xStart+j][yStart+i] = Lab2RGB(adjustedLValue,adjustedAValue,adjustedBValue);
+				//ary2_imgFrame[xStart+j][yStart+i] = ary2_imgInput[j][i];
+			}
 			/*if(xStart+j>9 && yStart+i>9){//LowPass Filter for almost whole image
 				tmpRed=0;
 				tmpGreen=0;
