@@ -14,35 +14,36 @@
 
 #include    "Utility.h"
 #include    "InputImage.h"
-#include    "TeaPot.h"
-#include    "TeaPot.1.h"
+//#include    "TeaPot.h"
+//#include    "TeaPot.1.h"
 #include    "TeaPot.2.h"
-#include    "AcrylicPaint.h"
-#include    "AcrylicPaint.2.h"
-#include    "AcrylicPaint.3.h"
+//#include    "AcrylicPaint.h"
+//#include    "AcrylicPaint.2.h"
+//#include    "AcrylicPaint.3.h"
 #include    "AcrylicPaint.4.h"
 #include    "QDMA.h"
 #include	"vm3224k.h"
 #include    <stdio.h>
+#include    <math.h>
 
 #pragma 	DATA_SECTION ( ary2_imgCamera,".sdram" )
 #pragma 	DATA_SECTION ( ary2_imgFrame,".sdram" )
-#pragma 	DATA_SECTION ( ary2_imgOne,".sdram" )
-#pragma 	DATA_SECTION ( ary2_imgTwo,".sdram" )
-#pragma 	DATA_SECTION ( ary3_yuv2rgbTable,".sdram" )
+//#pragma 	DATA_SECTION ( ary2_imgOne,".sdram" )
+//#pragma 	DATA_SECTION ( ary2_imgTwo,".sdram" )
+//#pragma 	DATA_SECTION ( ary3_yuv2rgbTable,".sdram" )
 
 short				ary2_imgCamera[XLCD][YLCD];
 unsigned short 		ary2_imgFrame[XLCD][YLCD]; 
 unsigned short     	ary3_yuv2rgbTable[64][32][32];
 unsigned short		ary2_rgb2hsvTable[NUM_RGB][3];
-unsigned short		ary_hsv2rgbTable[NUM_RGB];
-unsigned int  	    ary_rgb2labTable[NUM_RGB];
-unsigned short  	ary_lab2rgbTable[NUM_RGB];
+//unsigned short		ary_hsv2rgbTable[NUM_RGB];
+short   	  	    ary2_rgb2labTable[NUM_RGB][3];
+//unsigned short  	ary_lab2rgbTable[NUM_RGB];
 
 unsigned short 	rhThreshold = 0;
 unsigned short	rhBias = 36;				
 unsigned short 	rLowerBound = 3000;
-unsigned short 	rUpperBound = 40000;
+unsigned short 	rUpperBound = 10000;
 unsigned short 	rQuantifiedLevel = 10;
 unsigned short 	rBoxPadding = 100;		
 unsigned short 	rBoxBorder = 2;			
@@ -50,7 +51,7 @@ unsigned short 	rBoxBorder = 2;
 unsigned short	ghThreshold = 110;//0.3055
 unsigned short	ghBias = 36;		
 unsigned short 	gLowerBound = 500;
-unsigned short  gUpperBound = 40000;
+unsigned short  gUpperBound = 10000;
 unsigned short  gQuantifiedLevel = 10;
 unsigned short  gBoxPadding = 100;			
 unsigned short  gBoxBorder = 2;				
@@ -58,18 +59,36 @@ unsigned short  gBoxBorder = 2;
 unsigned short 	bhThreshold = 234;//0.65;
 unsigned short	bhBias = 36;			
 unsigned short 	bLowerBound = 500;
-unsigned short 	bUpperBound = 40000;
+unsigned short 	bUpperBound = 10000;
 unsigned short 	bQuantifiedLevel = 10;
 unsigned short 	bBoxPadding = 100;			
 unsigned short 	bBoxBorder = 2;
-
-int				imgSize = 100;	
 
 void main()
 {
 	//Initialize
 	int	i=-1, j=-1, k=-1, y0=-1, y1=-1, v0=-1, u0=-1;
 	Filter rFilter, gFilter, bFilter;
+	//short check=0;
+	int imgSize = 0;
+	//int imgSize1 = 100, imgSize4 = 100, imgSize5 = 100;
+	//int tmpSize1 = 0, tmpSize4  = 0, tmpSize5 = 0;
+	int labTeaPotNumber = 0;
+	int L,a,b;
+	float avgTeaPotL = 0;
+	float avgTeaPotA = 0;
+	float avgTeaPotB = 0;
+	float stdTeaPotL = 0;
+	float stdTeaPotA = 0;
+	float stdTeaPotB = 0;
+	int labAcrylicPaintNumber = 0;
+	float avgAcrylicPaintL = 0;
+	float avgAcrylicPaintA = 0;
+	float avgAcrylicPaintB = 0;
+	float stdAcrylicPaintL = 0;
+	float stdAcrylicPaintA = 0;
+	float stdAcrylicPaintB = 0;
+
 	//FILE *outputRGBData, *outputHueData,*outputLData, *outputaData, *outputbData;
 	//int ok=0, check = 0;
 	//unsigned int testLAB;
@@ -93,11 +112,13 @@ void main()
 	outputbData = fopen("C:/CCStudio_v3.1/MCHproj/MixedReality0404/MixedReality/outputbData.dat", "wb");
 	if(!outputbData) printf("Cannot open outputbData");*/
 
+
     for (j=0;j<NUM_RGB;j++){ 
 		RGB2HSV(j,&(ary2_rgb2hsvTable[j][0]),&(ary2_rgb2hsvTable[j][1]),&(ary2_rgb2hsvTable[j][2]));
-		ary_hsv2rgbTable[j] = HSV2RGB(ary2_rgb2hsvTable[j][0], ary2_rgb2hsvTable[j][1], ary2_rgb2hsvTable[j][2]);
-		ary_rgb2labTable[j] = RGB2Lab(j);
-		ary_lab2rgbTable[j] = Lab2RGB(ary_rgb2labTable[j]);
+		//ary_hsv2rgbTable[j] = HSV2RGB(ary2_rgb2hsvTable[j][0], ary2_rgb2hsvTable[j][1], ary2_rgb2hsvTable[j][2]);
+		RGB2Lab(j,&(ary2_rgb2labTable[j][0]),&(ary2_rgb2labTable[j][1]),&(ary2_rgb2labTable[j][2]));
+		//ary_lab2rgbTable[j] = Lab2RGB(((0&0x0ff)<<24|(ary2_rgb2labTable[j][0]&0x0ff)<<16|(ary2_rgb2labTable[j][1]&0x0ff)<<8|ary2_rgb2labTable[j][2]&0x0ff));
+		//ary_rgb2labTable[j] = RGB2Lab(j);
 		/*if((ary_rgb2labTable[j] & 0x00800000) >> 23)//negative
 			check = (ary_rgb2labTable[j] | 0xffffffffff00ffff) >>16;
 			//fprintf(outputLData, "%d: %d\n", j, (int)((ary_rgb2labTable[j] | 0xffffffffff00ffff) >>16));
@@ -122,6 +143,62 @@ void main()
 	QDMA_CNT 	= (239<<16)|320;
 	QDMA_IDX 	= 0x0000<<16;
 	
+	
+	for(j=0; j<HEIGHT; j++){
+		for(i=0; i<WIDTH;i++){
+			//compute input images' Lab
+			if(ary2_imgSeven[j][i] != 65535){
+				labTeaPotNumber++;
+				L = ary2_rgb2labTable[ary2_imgSeven[j][i]][0];
+				a = ary2_rgb2labTable[ary2_imgSeven[j][i]][1];
+				b = ary2_rgb2labTable[ary2_imgSeven[j][i]][2];
+			}else{
+				L = 0;
+				a = 0;
+				b = 0;
+			}
+
+			avgTeaPotL += L;
+			avgTeaPotA += a;
+			avgTeaPotB += b;
+			stdTeaPotL += L * L;
+			stdTeaPotA += a * a;
+			stdTeaPotB += b * b;	
+			
+			if(ary2_imgFive[j][i] != 65535){
+				labAcrylicPaintNumber++;
+				L = ary2_rgb2labTable[ary2_imgFive[j][i]][0];
+				a = ary2_rgb2labTable[ary2_imgFive[j][i]][1];
+				b = ary2_rgb2labTable[ary2_imgFive[j][i]][2];
+			}else{
+				L = 0;
+				a = 0;
+				b = 0;
+			}
+
+			avgAcrylicPaintL += L;
+			avgAcrylicPaintA += a;
+			avgAcrylicPaintB += b;
+			stdAcrylicPaintL += L * L;
+			stdAcrylicPaintA += a * a;
+			stdAcrylicPaintB += b * b;		
+		}
+	}
+
+	avgTeaPotL = avgTeaPotL/labTeaPotNumber;
+	avgTeaPotA = avgTeaPotA/labTeaPotNumber;
+	avgTeaPotB = avgTeaPotB/labTeaPotNumber;
+	stdTeaPotL = sqrt(stdTeaPotL/labTeaPotNumber - avgTeaPotL * avgTeaPotL);
+	stdTeaPotA = sqrt(stdTeaPotA/labTeaPotNumber - avgTeaPotA * avgTeaPotA);
+	stdTeaPotB = sqrt(stdTeaPotB/labTeaPotNumber - avgTeaPotB * avgTeaPotB);
+
+	avgAcrylicPaintL = avgAcrylicPaintL/labAcrylicPaintNumber;
+	avgAcrylicPaintA = avgAcrylicPaintA/labAcrylicPaintNumber;
+	avgAcrylicPaintB = avgAcrylicPaintB/labAcrylicPaintNumber;
+	stdAcrylicPaintL = sqrt(stdAcrylicPaintL/labAcrylicPaintNumber - avgAcrylicPaintL * avgAcrylicPaintL);
+	stdAcrylicPaintA = sqrt(stdAcrylicPaintA/labAcrylicPaintNumber - avgAcrylicPaintA * avgAcrylicPaintA);
+	stdAcrylicPaintB = sqrt(stdAcrylicPaintB/labAcrylicPaintNumber - avgAcrylicPaintB * avgAcrylicPaintB);	
+
 	InitializeFilter(rColor, &rFilter);
 	InitializeFilter(gColor, &gFilter);
 	InitializeFilter(bColor, &bFilter);
@@ -163,8 +240,8 @@ void main()
 		}
 		
 		//Call track function, which modify the ary2_imgFrame array passed by a pointer		
-		TrackBall(&rFilter, ary2_imgFrame, ary2_rgb2hsvTable);
-		TrackBall(&bFilter, ary2_imgFrame, ary2_rgb2hsvTable);
+		TrackBall(&rFilter, ary2_imgFrame, ary2_rgb2hsvTable, ary2_rgb2labTable);
+		TrackBall(&bFilter, ary2_imgFrame, ary2_rgb2hsvTable, ary2_rgb2labTable);
 		
 		//DebugBall(&rFilter, ary2_imgFrame, ary2_rgb2hsvTable);
 		//DebugBall(&bFilter, ary2_imgFrame, ary2_rgb2hsvTable);
@@ -174,17 +251,26 @@ void main()
 		//Labequalize Image
 		switch(rFilter.ballFound * 4 + gFilter.ballFound * 2 + bFilter.ballFound){
 			case 1: //only find blue one
+				//tmpSize1 = imgSize1;				
+				imgSize = Min(100, (bFilter.quantifiedLevel * (bFilter.ballSize - bFilter.lowerBound) / bFilter.upperBound) * bFilter.quantifiedLevel);
+				bFilter.scaleFactor = imgSize;
+				//if(tmpSize1 != imgSize1)
 				scaleImage(imgSize, ary2_imgSeven, ary2_imgInput);
-				OverlayImage1D(&bFilter, ary2_imgFrame, ary2_imgInput);
+				OverlayImage1D(avgTeaPotL, avgTeaPotA, avgTeaPotB, stdTeaPotL, avgTeaPotA, avgTeaPotB, &bFilter, ary2_imgFrame, ary2_imgInput, ary2_rgb2labTable);
 				//OverlayImage1D(&bFilter, ary2_imgFrame, ary2_imgSeven);
 				DrawShadow1D(&bFilter, ary2_imgFrame);
 				break;		
 			case 4: //only find red one
+				imgSize = Min(100, (bFilter.quantifiedLevel * (rFilter.ballSize - rFilter.lowerBound) / rFilter.upperBound) * rFilter.quantifiedLevel);
+				bFilter.scaleFactor = imgSize;
 				scaleImage(imgSize, ary2_imgFive, ary2_imgInput);
-				OverlayImage1D(&rFilter, ary2_imgFrame, ary2_imgInput);
+				OverlayImage1D(avgAcrylicPaintL, avgAcrylicPaintA, avgAcrylicPaintB, stdAcrylicPaintL, stdAcrylicPaintA, stdAcrylicPaintB, &rFilter, ary2_imgFrame, ary2_imgInput, ary2_rgb2labTable);
 				//OverlayImage1D(&rFilter, ary2_imgFrame, ary2_imgFive);
+				DrawShadow1D(&rFilter, ary2_imgFrame);
 				break;
 			case 5: //find both red and blue ones
+				//imgSize = Min(100, floor(((bFilter.ballSize - bFilter.lowerBound) / bFilter.upperBound) * bFilter.quantifiedLevel) * bFilter.quantifiedLevel + floor((rFilter.ballSize - rFilter.lowerBound) / rFilter.upperBound) * rFilter.quantifiedLevel) * rFilter.quantifiedLevel)/2;
+				imgSize = 100;
 				scaleImage(imgSize, ary2_imgSeven, ary2_imgInput);
 				OverlayImage2D(&rFilter, &bFilter, ary2_imgFrame, ary2_imgInput);	
 				//OverlayImage2D(&rFilter, &bFilter, ary2_imgFrame, ary2_imgSeven);

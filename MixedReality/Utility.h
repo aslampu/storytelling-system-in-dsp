@@ -10,7 +10,7 @@
 
 #define Min(A,B)(A<B ? A:B)
 #define Max(A,B)(A>B ? A:B)
-
+//Min(100,floor((x-min/max)*lvl)*lvl)
 enum colorID {rColor, gColor, bColor};
 
 extern unsigned short 	rhThreshold;
@@ -50,11 +50,17 @@ typedef struct{
 	short 	quantifiedLevel;
 	short 	boxPadding;
 	short 	boxBorder;
-	// Predicted Search Range
 	short   xFrom;
 	short   xTo;
 	short   yFrom;
 	short   yTo;
+	float   avgL;
+	float   avgA;
+	float   avgB;
+	float   stdL;
+	float   stdA;
+	float   stdB;
+	int     scaleFactor;
 } Filter;
 
 typedef struct {
@@ -65,23 +71,23 @@ typedef struct {
 	double	eccentricity;
 } Shadow;
 
+void TrackBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], unsigned short ary2_rgb2hsvTable[NUM_RGB][3], short ary2_rgb2labTable[NUM_RGB][3]);
 void DrawBox(int xFrom, int xTo, int yFrom, int yTo, int boxBorder, int boxPadding,unsigned short ary2_imgFrame[XLCD][YLCD]);
 void DebugBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], unsigned short ary2_rgb2hsvTable[NUM_RGB][3]);
-//void DebugBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], float ary2_rgb2hsvTable[NUM_RGB][3]);
-//void TrackBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], unsigned short ary2_rgb2hsvTable[NUM_RGB][3]);
 void RGB2HSV(unsigned short rgbColor, unsigned short *h, unsigned short *s, unsigned short *v);
 unsigned short HSV2RGB(unsigned short hValue, unsigned short sValue, unsigned short vValue);
-//void RGB2HSV(unsigned short rgbColor, float *ptr_hValue, float *ptr_sValue, float *ptr_vValue);
-//void RGB2Lab(unsigned short rgbColor, int *L, int *a, int *b);
+void RGB2Lab(unsigned short rgbColor, short *ptr_LValue, short *ptr_aValue, short *ptr_bValue);
+unsigned short Lab2RGB(short LValue, short aValue, short bValue);
 void InitializeFilter(int ballColor, Filter *ptr_newFilter);
 void PLL6713();
 unsigned short	ybr_565(short y,short u,short v);
 void scaleImage(short scaleFactor100, unsigned short ary2_imgSample[HEIGHT][WIDTH], unsigned short ary2_imgInput[HEIGHT][WIDTH]);
 float getPixelValueBilinear(float pPrime, float qPrime, unsigned short ary2_imgSample[HEIGHT][WIDTH]); 
-void OverlayImage1D(Filter *ptr_theFilter, unsigned short ary2_imgFrame[XLCD][YLCD], unsigned short ary2_imgInput[HEIGHT][WIDTH]);
-void OverlayImage2D(Filter *ptr_leftFilter, Filter *ptr_rightFilter, unsigned short ary3_imgFrame[XLCD][YLCD], unsigned short ary2_imgInput[HEIGHT][WIDTH]);
+//void OverlayImage1D(float imgAvgL, float imgAvgA, float imgAvgB, float imgStdL, float imgStdA, float imgStdB, Filter *ptr_theFilter, unsigned short ary2_imgFrame[XLCD][YLCD], unsigned short ary2_imgInput[HEIGHT][WIDTH], unsigned short ary_lab2rgbTable[NUM_RGB], unsigned short ary_lab2rgbTable[NUM_RGB]);
+void OverlayImage1D(float imgAvgL, float imgAvgA, float imgAvgB, float imgStdL, float imgStdA, float imgStdB, Filter *ptr_theFilter, unsigned short ary2_imgFrame[XLCD][YLCD], unsigned short ary2_imgInput[HEIGHT][WIDTH],short	ary2_rgb2labTable[NUM_RGB][3]);
+//void OverlayImage2D(float imgAvgL, float imgAvgA, float imgAvgB, float imgStdL, float imgStdA, float imgStdB, Filter *ptr_leftFilter, Filter *ptr_rightFilter, unsigned short ary3_imgFrame[XLCD][YLCD], unsigned short ary2_imgInput[HEIGHT][WIDTH], unsigned short ary_lab2rgbTable[NUM_RGB], unsigned short ary_lab2rgbTable[NUM_RGB]);
+void OverlayImage2D(Filter *ptr_leftFilter, Filter *ptr_rightFilter, unsigned short ary2_imgFrame[XLCD][YLCD], unsigned short ary2_imgInput[HEIGHT][WIDTH]);
 void DrawShadow1D(Filter *ptr_theFilter, unsigned short ary2_imgFrame[XLCD][YLCD]);
-unsigned int RGB2Lab(unsigned short rgbColor);
-unsigned short Lab2RGB(unsigned int labColor);
+
 #endif /* INC_UTILITY_H */
 

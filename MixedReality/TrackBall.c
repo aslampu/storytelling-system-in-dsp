@@ -1,13 +1,22 @@
 #include <math.h>
 #include "Utility.h"
 																
-void TrackBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], unsigned short ary2_rgb2hsvTable[NUM_RGB][3]){
+void TrackBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], unsigned short ary2_rgb2hsvTable[NUM_RGB][3], short ary2_rgb2labTable[NUM_RGB][3]){
 	int i, j, xFrom, yFrom, xTo, yTo, hueFlag = 0;
 	int hTemp, hL, hU, hSwap, sTemp, vTemp;
+	int L,a,b;
+	int labNumber = 0;
+	float avgL = 0, avgA = 0, avgB = 0, stdL = 0, stdA = 0, stdB = 0;
 	//int rTemp, gTemp, bTemp;
 
 	Filter newComer;
 	InitializeFilter(ptr_oldFilter->ballColor, &newComer);
+	newComer.avgL = ptr_oldFilter->avgL;
+	newComer.avgA = ptr_oldFilter->avgA;
+	newComer.avgB = ptr_oldFilter->avgB;
+	newComer.stdL = ptr_oldFilter->stdL;
+	newComer.stdA = ptr_oldFilter->stdA;
+	newComer.stdB = ptr_oldFilter->stdB;
 	
 	xFrom = ptr_oldFilter->xFrom;
 	xTo = ptr_oldFilter->xTo;
@@ -50,10 +59,22 @@ void TrackBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], 
 				newComer.ballSize++;
 				newComer.xCenter += j;
 				newComer.yCenter += i;
-			}					
+			}else{
+				labNumber++;
+				L = ary2_rgb2labTable[ary2_imgFrame[j][i]][0];
+				a = ary2_rgb2labTable[ary2_imgFrame[j][i]][1];
+				b = ary2_rgb2labTable[ary2_imgFrame[j][i]][2];
+
+				avgL += L;
+				avgA += a;
+				avgB += b;
+				stdL += L * L;
+				stdA += a * a;
+				stdB += b * b;
+			}
 		}
 	}
-	if(newComer.ballSize > newComer.lowerBound){
+	if(newComer.ballSize > newComer.lowerBound){			
 		newComer.ballFound = 1;
 		newComer.xCenter = newComer.xCenter/newComer.ballSize;
 		newComer.yCenter = newComer.yCenter/newComer.ballSize;
@@ -68,5 +89,11 @@ void TrackBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], 
 		*ptr_oldFilter = newComer;
 	}else		
 		InitializeFilter(newComer.ballColor, ptr_oldFilter);
+		ptr_oldFilter->avgL = avgL/labNumber;
+		ptr_oldFilter->avgA = avgA/labNumber;
+		ptr_oldFilter->avgB = avgB/labNumber;
+		ptr_oldFilter->stdL = sqrt(stdL/labNumber - ptr_oldFilter->avgL * ptr_oldFilter->avgL);
+		ptr_oldFilter->stdA = sqrt(stdA/labNumber - ptr_oldFilter->avgA * ptr_oldFilter->avgA);
+		ptr_oldFilter->stdB = sqrt(stdB/labNumber - ptr_oldFilter->avgB * ptr_oldFilter->avgB);
 }
 

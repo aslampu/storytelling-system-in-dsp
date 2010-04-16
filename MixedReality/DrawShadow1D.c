@@ -17,15 +17,15 @@ void DrawShadow1D(Filter *ptr_theFilter, unsigned short ary2_imgFrame[XLCD][YLCD
 	tmpShadow.b		  = 30;	// Statically define elipse parameters until sizing is complete
 	tmpShadow.eccentricity = pow(1 - pow(((double)tmpShadow.b / (double)tmpShadow.a),2.0), 1.0 / 2.0);
 	//DrawBox(ptr_theFilter->xFrom, ptr_theFilter->xTo, ptr_theFilter->yFrom, ptr_theFilter->yTo, ptr_theFilter->boxBorder, ptr_theFilter->boxPadding, ary2_imgFrame);
-	for(j=tmpShadow.xCenter - tmpShadow.a;j<tmpShadow.xCenter + tmpShadow.a;j++){
+	for(j=tmpShadow.xCenter - tmpShadow.b;j<tmpShadow.xCenter + tmpShadow.b;j++){
 		if(j >= XLCD || j < 0)
 			continue;
-		for(i=tmpShadow.yCenter - tmpShadow.b;i<tmpShadow.yCenter + tmpShadow.b;i++){
+		for(i=tmpShadow.yCenter - tmpShadow.a;i<tmpShadow.yCenter + tmpShadow.a;i++){
 			if(i >= YLCD || i < 0)
 				continue;
 			
 			// Checks that the current pixel is within the shadow boundary
-			outcome = (pow((i - tmpShadow.yCenter),2))/(pow(tmpShadow.b,2)) + (pow((j - tmpShadow.xCenter),2))/(pow(tmpShadow.a,2));
+			outcome = (pow((i - tmpShadow.yCenter),2))/(pow(tmpShadow.a,2)) + (pow((j - tmpShadow.xCenter),2))/(pow(tmpShadow.b,2));
 			
 			// If the current pixel is within the ROI, adjust the shadow (V channel values)
 			if (outcome <= 1) {

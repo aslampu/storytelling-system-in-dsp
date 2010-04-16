@@ -43,6 +43,14 @@ void InitializeFilter(int ballColor, Filter *ptr_newFilter){
 	ptr_newFilter->xTo = XLCD;
 	ptr_newFilter->yFrom = 0;
 	ptr_newFilter->yTo = YLCD;
+	ptr_newFilter->avgL = 0;
+	ptr_newFilter->avgA = 0;
+	ptr_newFilter->avgB = 0;
+	ptr_newFilter->stdL = 0;
+	ptr_newFilter->stdA = 0;
+	ptr_newFilter->stdB = 0;
+	ptr_newFilter->scaleFactor = 100;
+
 	switch(ballColor){
 		case rColor:
 			ptr_newFilter->hThreshold = rhThreshold;
