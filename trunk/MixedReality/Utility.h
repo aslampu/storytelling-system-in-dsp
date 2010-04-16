@@ -35,7 +35,9 @@ extern unsigned short 	bLowerBound;
 extern unsigned short 	bUpperBound;
 extern unsigned short 	bQuantifiedLevel;
 extern unsigned short 	bBoxPadding;			
-extern unsigned short 	bBoxBorder;	
+extern unsigned short 	bBoxBorder;
+
+extern unsigned short 	displacementThreshold;	
 
 typedef struct{
 	int		ballFound;
