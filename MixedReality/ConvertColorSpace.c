@@ -2,7 +2,7 @@
 #include "Utility.h"
 
 // modifed version
-void RGB2HSV(unsigned short rgbColor, unsigned short *ptr_hValue, unsigned short *ptr_sValue, unsigned short *ptr_vValue){
+void RGB2HSV(unsigned short rgbColor, float *ptr_hValue, float *ptr_sValue, float *ptr_vValue){
 //void RGB2HSV(unsigned short rgbColor, float *ptr_hValue, float *ptr_sValue, float *ptr_vValue){
 	float zMatlab, sMatlab;
 	int rTemp = (int)((((rgbColor & 0xf800) >> 11) * 255 / 31));
@@ -39,12 +39,15 @@ void RGB2HSV(unsigned short rgbColor, unsigned short *ptr_hValue, unsigned short
 	//*ptr_hValue = h;
 	//*ptr_sValue = s;
 	//*ptr_vValue = v;
-	*ptr_hValue = (int)(h * 360);
-	*ptr_sValue = (int)(s * 360);
-	*ptr_vValue = (int)(v);
+	*ptr_hValue = h * 360;
+	*ptr_sValue = s * 360;
+	*ptr_vValue = v;
+	//*ptr_hValue = (int)(h * 360);
+	//*ptr_sValue = (int)(s * 360);
+	//*ptr_vValue = (int)(v);
 }
 
-unsigned short HSV2RGB(unsigned short hValue, unsigned short sValue, unsigned short vValue){
+unsigned short HSV2RGB(float hValue, float sValue, float vValue){
 	 float hTemp = hValue, sTemp = sValue/360, vTemp = vValue;
 	 int rTemp,gTemp,bTemp,i;
      float f, p, q, t;
