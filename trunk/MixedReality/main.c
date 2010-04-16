@@ -36,7 +36,7 @@
 short				ary2_imgCamera[XLCD][YLCD];
 unsigned short 		ary2_imgFrame[XLCD][YLCD]; 
 unsigned short     	ary3_yuv2rgbTable[64][32][32];
-unsigned short		ary2_rgb2hsvTable[NUM_RGB][3];
+float				ary2_rgb2hsvTable[NUM_RGB][3];
 //unsigned short		ary_hsv2rgbTable[NUM_RGB];
 short   	  	    ary2_rgb2labTable[NUM_RGB][3];
 //unsigned short  	ary_lab2rgbTable[NUM_RGB];
@@ -269,7 +269,7 @@ void main()
 				scaleImage(imgSize, ary2_imgEight, ary2_imgInput);
 				OverlayImage1D(avgAcrylicPaintL, avgAcrylicPaintA, avgAcrylicPaintB, stdAcrylicPaintL, stdAcrylicPaintA, stdAcrylicPaintB, &gFilter, ary2_imgFrame, ary2_imgInput, ary2_rgb2labTable);
 				//OverlayImage1D(&rFilter, ary2_imgFrame, ary2_imgFive);
-				DrawShadow1D(&rFilter, ary2_imgFrame);
+				DrawShadow1D(&gFilter, ary2_imgFrame);
 				break;
 			case 3:
 				//imgSize = Min(100, floor(((bFilter.ballSize - bFilter.lowerBound) / bFilter.upperBound) * bFilter.quantifiedLevel) * bFilter.quantifiedLevel + floor((rFilter.ballSize - rFilter.lowerBound) / rFilter.upperBound) * rFilter.quantifiedLevel) * rFilter.quantifiedLevel)/2;

@@ -1,9 +1,9 @@
 #include <math.h>
 #include "Utility.h"
 																
-void TrackBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], unsigned short ary2_rgb2hsvTable[NUM_RGB][3], short ary2_rgb2labTable[NUM_RGB][3]){
+void TrackBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], float ary2_rgb2hsvTable[NUM_RGB][3], short ary2_rgb2labTable[NUM_RGB][3]){
 	int i, j, xFrom, yFrom, xTo, yTo, hueFlag = 0;
-	int hTemp, hL, hU, hSwap, sTemp, vTemp;
+	float hTemp, hL, hU, hSwap, sTemp, vTemp;
 	int L,a,b;
 	int labNumber = 0;
 	float avgL = 0, avgA = 0, avgB = 0, stdL = 0, stdA = 0, stdB = 0;
