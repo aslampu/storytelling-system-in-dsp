@@ -49,6 +49,7 @@ extern float			noiseVariance;
 extern float			weightingS;
 extern float			weightingD;
 extern unsigned short 	displacementThreshold;	
+//extern int				randomNoise100;
 
 typedef struct{
 	int		ballFound;
@@ -98,7 +99,8 @@ void InitializeFilter(int ballColor, Filter *ptr_newFilter);
 void PLL6713();
 unsigned short	ybr_565(short y,short u,short v);
 void scaleImage(short scaleFactor100, unsigned short ary2_imgSample[HEIGHT][WIDTH], unsigned short ary2_imgInput[HEIGHT][WIDTH]);
-float getPixelValueBilinear(float pPrime, float qPrime, unsigned short ary2_imgSample[HEIGHT][WIDTH]); 
+int getPixelValueBilinear(float pPrime, float qPrime, unsigned short ary2_imgSample[HEIGHT][WIDTH]); 
+float getPixelValueBilinearOriginal(float pPrime, float qPrime, unsigned short ary2_imgSample[HEIGHT][WIDTH]);
 //void OverlayImage1D(float imgAvgL, float imgAvgA, float imgAvgB, float imgStdL, float imgStdA, float imgStdB, Filter *ptr_theFilter, unsigned short ary2_imgFrame[XLCD][YLCD], unsigned short ary2_imgInput[HEIGHT][WIDTH], unsigned short ary_lab2rgbTable[NUM_RGB], unsigned short ary_lab2rgbTable[NUM_RGB]);
 void OverlayImage1D(float imgAvgL, float imgAvgA, float imgAvgB, float imgStdL, float imgStdA, float imgStdB, Filter *ptr_theFilter, unsigned short ary2_imgFrame[XLCD][YLCD], unsigned short ary2_imgInput[HEIGHT][WIDTH],short	ary2_rgb2labTable[NUM_RGB][3]);
 //void OverlayImage2D(float imgAvgL, float imgAvgA, float imgAvgB, float imgStdL, float imgStdA, float imgStdB, Filter *ptr_leftFilter, Filter *ptr_rightFilter, unsigned short ary3_imgFrame[XLCD][YLCD], unsigned short ary2_imgInput[HEIGHT][WIDTH], unsigned short ary_lab2rgbTable[NUM_RGB], unsigned short ary_lab2rgbTable[NUM_RGB]);
