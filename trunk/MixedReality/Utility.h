@@ -51,6 +51,11 @@ extern float			weightingD;
 extern unsigned short 	displacementThreshold;	
 //extern int				randomNoise100;
 
+extern int				shadowA;
+extern int				shadowB;
+extern int				shadowAOffset;
+extern int				shadowBOffset;
+
 typedef struct{
 	int		ballFound;
 	int 	ballColor;

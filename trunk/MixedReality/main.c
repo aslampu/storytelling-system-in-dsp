@@ -80,6 +80,11 @@ int				imgSizeScale = 20;
 //int				randomNoise100;
 float noiseVariance = 0.001;
 
+int				shadowA = 50;
+int				shadowB = 30;
+int				shadowAOffset = 50;  // Value is offset by -50 in implementation -> Offset [-50,50]
+int				shadowBOffset = 50;  // Value is offset by -50 in implementation -> Offset [-50,50]
+
 void main()
 {
 	//Initialize
