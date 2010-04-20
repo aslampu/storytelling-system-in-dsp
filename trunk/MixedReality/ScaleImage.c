@@ -3,7 +3,52 @@
 
 #include "Utility.h"
 
-float getPixelValueBilinear(float pPrime, float qPrime, unsigned short ary2_imgSample[HEIGHT][WIDTH]) {
+int getPixelValueBilinear(float pPrime, float qPrime, unsigned short ary2_imgSample[HEIGHT][WIDTH]) {
+	// This function returns the pixel value at a non-integeral
+	// coordinates of the image using bilinear interpolation.
+	// If the values are outside of the bounds of the image,
+	// it returns white (255).
+	int lowerP = pPrime;
+	int lowerQ = qPrime;
+	float a = pPrime - lowerP;
+	float b = qPrime - lowerQ;
+
+	float rPrime, gPrime, bPrime;
+
+	//int randomNoise100 = rand() % 100; // Update random noise for each interpolated pixel
+	
+	// R
+	rPrime = (1-a) * (1-b) * ((ary2_imgSample[lowerP][lowerQ]&0xF800)>>11) +	    // r00
+			 (1-a) *   b   * ((ary2_imgSample[lowerP + 1][lowerQ]&0xF800)>>11) +    // r01
+			   a   * (1-b) * ((ary2_imgSample[lowerP][lowerQ + 1]&0xF800)>>11) +    // r10
+			   a   *   b   * ((ary2_imgSample[lowerP + 1][lowerQ + 1]&0xF800)>>11); // r11
+
+	// G
+	gPrime = (1-a) * (1-b) * ((ary2_imgSample[lowerP][lowerQ]&0x7E0)>>5) +		  // g00
+			 (1-a) *   b   * ((ary2_imgSample[lowerP + 1][lowerQ]&0x7E0)>>5) +	  // g01
+			   a   * (1-b) * ((ary2_imgSample[lowerP][lowerQ + 1]&0x7E0)>>5) +	  // g10
+			   a   *   b   * ((ary2_imgSample[lowerP + 1][lowerQ + 1]&0x7E0)>>5); // g11
+
+	// B
+	bPrime = (1-a) * (1-b) * (ary2_imgSample[lowerP][lowerQ]&0x1F) +		// b00
+			 (1-a) *   b   * (ary2_imgSample[lowerP + 1][lowerQ]&0x1F) +	// b01
+			   a   * (1-b) * (ary2_imgSample[lowerP][lowerQ + 1]&0x1F) +	// b10
+			   a   *   b   * (ary2_imgSample[lowerP + 1][lowerQ + 1]&0x1F);	// b11
+
+	if (rPrime != 0 && gPrime != 0 && bPrime != 0) {
+		rPrime += noiseVariance * (rand() % 100);
+		gPrime += noiseVariance * (rand() % 100);
+		bPrime += noiseVariance * (rand() % 100);
+	}
+
+	rPrime = Min(rPrime, 31);
+	gPrime = Min(gPrime, 63);
+	bPrime = Min(bPrime, 31);
+
+	return (((short)rPrime)<<11)|(((short)gPrime)<<5)|(((short)bPrime));
+}
+
+float getPixelValueBilinearOriginal(float pPrime, float qPrime, unsigned short ary2_imgSample[HEIGHT][WIDTH]) {
 	// This function returns the pixel value at a non-integeral
 	// coordinates of the image using bilinear interpolation.
 	// If the values are outside of the bounds of the image,

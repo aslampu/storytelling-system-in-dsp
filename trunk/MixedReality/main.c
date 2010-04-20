@@ -16,13 +16,13 @@
 #include    "InputImage.h"
 //#include    "TeaPot.h"
 //#include    "TeaPot.1.h"
-#include    "TeaPot.2.h"
+//#include    "TeaPot.2.h"
 #include	"mug.1.h"
 //#include    "AcrylicPaint.h"
 //#include    "AcrylicPaint.2.h"
 //#include    "AcrylicPaint.3.h"
-#include    "AcrylicPaint.4.h"
-#include    "plant_insert.2.h"
+//#include    "AcrylicPaint.4.h"
+//#include    "plant_insert.2.h"
 #include    "QDMA.h"
 #include	"vm3224k.h"
 #include    <stdio.h>
@@ -77,6 +77,7 @@ float           weightingS = 1;
 float			weightingD = 1;
 unsigned short 	displacementThreshold = 50;
 int				imgSizeScale = 20;
+//int				randomNoise100;
 float noiseVariance = 0.001;
 
 void main()
@@ -107,6 +108,8 @@ void main()
 	int xTrackCenter = XLCD / 2;
 	int yTrackCenter = YLCD / 2;
 	int trackRange = YLCD / 2;
+	FILE *outputRGBData;
+	int ok=0;
 
 	//FILE *outputRGBData, *outputHueData,*outputLData, *outputaData, *outputbData;
 	//int ok=0, check = 0;
@@ -166,11 +169,11 @@ void main()
 	for(j=0; j<HEIGHT; j++){
 		for(i=0; i<WIDTH;i++){
 			//compute input images' Lab
-			if(ary2_imgSeven[j][i] != 65535){
+			if(ary2_imgNine[j][i] != 65535){
 				labTeaPotNumber++;
-				L = ary2_rgb2labTable[ary2_imgSeven[j][i]][0];
-				a = ary2_rgb2labTable[ary2_imgSeven[j][i]][1];
-				b = ary2_rgb2labTable[ary2_imgSeven[j][i]][2];
+				L = ary2_rgb2labTable[ary2_imgNine[j][i]][0];
+				a = ary2_rgb2labTable[ary2_imgNine[j][i]][1];
+				b = ary2_rgb2labTable[ary2_imgNine[j][i]][2];
 			}else{
 				L = 0;
 				a = 0;
@@ -184,11 +187,11 @@ void main()
 			stdTeaPotA += a * a;
 			stdTeaPotB += b * b;	
 			
-			if(ary2_imgFive[j][i] != 65535){
+			if(ary2_imgNine[j][i] != 65535){
 				labAcrylicPaintNumber++;
-				L = ary2_rgb2labTable[ary2_imgFive[j][i]][0];
-				a = ary2_rgb2labTable[ary2_imgFive[j][i]][1];
-				b = ary2_rgb2labTable[ary2_imgFive[j][i]][2];
+				L = ary2_rgb2labTable[ary2_imgNine[j][i]][0];
+				a = ary2_rgb2labTable[ary2_imgNine[j][i]][1];
+				b = ary2_rgb2labTable[ary2_imgNine[j][i]][2];
 			}else{
 				L = 0;
 				a = 0;
@@ -228,10 +231,11 @@ void main()
 	
 	//Read input video
 	while (1) {
-		/*outputRGBData = fopen("C:/CCStudio_v3.1/MCHproj/MixedReality0404/MixedReality/outputHSVData.raw", "wb");
-		if(!outputRGBData)
-			printf("Cannot open outputRGBData");
-		outputHueData = fopen("C:/CCStudio_v3.1/MCHproj/MixedReality0404/MixedReality/outputHueData.raw", "wb");
+		//randomNoise100 = rand() % 100;
+		//outputRGBData = fopen("C:/CCStudio_v3.1/MCHproj/MixedReality0404/MixedReality/outputRGBData.raw", "wb");
+		//if(!outputRGBData)
+		//	printf("Cannot open outputRGBData");
+		/*outputHueData = fopen("C:/CCStudio_v3.1/MCHproj/MixedReality0404/MixedReality/outputHueData.raw", "wb");
 		if(!outputHueData)
 			printf("Cannot open outputHueData");*/
 		
@@ -282,7 +286,7 @@ void main()
 				imgSize = Min(100, (bFilter.quantifiedLevel * (bFilter.ballSize - bFilter.lowerBound) / bFilter.upperBound) * bFilter.quantifiedLevel + 50);
 				bFilter.scaleFactor = imgSize;
 				//if(tmpSize1 != imgSize1)
-				scaleImage(imgSize, ary2_imgSeven, ary2_imgInput);
+				scaleImage(imgSize, ary2_imgNine, ary2_imgInput);
 				
 				DrawShadow1D(&bFilter, ary2_imgFrame);
 				
@@ -311,7 +315,7 @@ void main()
 				trackRange = floor(sqrt(bFilter.ballSize + gFilter.ballSize));
 				//imgSize = Min(100, floor(((bFilter.ballSize - bFilter.lowerBound) / bFilter.upperBound) * bFilter.quantifiedLevel) * bFilter.quantifiedLevel + floor((rFilter.ballSize - rFilter.lowerBound) / rFilter.upperBound) * rFilter.quantifiedLevel) * rFilter.quantifiedLevel)/2;
 				imgSize = 100;
-				scaleImage(imgSize, ary2_imgSeven, ary2_imgInput);
+				scaleImage(imgSize, ary2_imgNine, ary2_imgInput);
 				OverlayImage2D(&gFilter, &bFilter, ary2_imgFrame, ary2_imgInput);	
 				//OverlayImage2D(&rFilter, &bFilter, ary2_imgFrame, ary2_imgSeven);
 				break;	
@@ -349,16 +353,16 @@ void main()
 		/*if(ok){
 			for (j=0;j<XLCD;j++)
 			for (i=0;i<YLCD;i++) {
-				//fputc( (int)(((ary2_imgFrame[j][i]&0xF800)>>11) / 31.0 * 255.0), outputRGBData);
-				//fputc( (int)(((ary2_imgFrame[j][i]&0x7E0)>>5) / 63.0 * 255.0), outputRGBData);
-				//fputc( (int)(((ary2_imgFrame[j][i]&0x1F)) / 31.0 * 255.0), outputRGBData);		
+				fputc( (int)(((ary2_imgFrame[j][i]&0xF800)>>11) / 31.0 * 255.0), outputRGBData);
+				fputc( (int)(((ary2_imgFrame[j][i]&0x7E0)>>5) / 63.0 * 255.0), outputRGBData);
+				fputc( (int)(((ary2_imgFrame[j][i]&0x1F)) / 31.0 * 255.0), outputRGBData);		
 				//fprintf(outputHueData, "%f ", ary2_rgb2hsvTable[ary2_imgFrame[j][i]][0]);
 				//fprintf(outputHueData, "%f ", ary2_rgb2hsvTable[ary2_imgFrame[j][i]][1]);
 				//fprintf(outputHueData, "%f ", ary2_rgb2hsvTable[ary2_imgFrame[j][i]][2]);
 			}
 		}
 		fclose(outputRGBData);
-		fclose(outputHueData);*/
+		//fclose(outputHueData);*/
 	}
 }
 

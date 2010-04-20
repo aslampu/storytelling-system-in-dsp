@@ -9,7 +9,7 @@ slider Image_Size(0,200,1,1,size)	//incr by 10, up to 100
 
 slider Noise_Variance(0,100,1,1,val)	//incr by 10, up to 100
 {
-	noiseVariance = val / 10000.0;			//vary size of Image_Size
+	noiseVariance = val / 100.0;			//vary size of Image_Size
 }
 
 
