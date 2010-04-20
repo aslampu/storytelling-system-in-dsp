@@ -13,10 +13,10 @@ void DrawShadow1D(Filter *ptr_theFilter, unsigned short ary2_imgFrame[XLCD][YLCD
 	unsigned short tmpColor;
 	float tmpH,tmpS,tmpV;
 
-	tmpShadow.xCenter = Min(XLCD, floor(ptr_theFilter->xCenter + 75 * ptr_theFilter->scaleFactor / 100));
-	tmpShadow.yCenter = Min(YLCD, floor(ptr_theFilter->yCenter));
-	tmpShadow.a		  = 50 * ptr_theFilter->scaleFactor / 100;	// Statically define elipse parameters until sizing is complete
-	tmpShadow.b		  = 30 * ptr_theFilter->scaleFactor / 100;	// Statically define elipse parameters until sizing is complete
+	tmpShadow.xCenter = Min(XLCD, ptr_theFilter->xCenter + 75 * ptr_theFilter->scaleFactor / 100 + shadowAOffset - 50);
+	tmpShadow.yCenter = Min(YLCD, ptr_theFilter->yCenter + shadowBOffset - 50);
+	tmpShadow.a		  = shadowA * ptr_theFilter->scaleFactor / 100;	// Statically define elipse parameters until sizing is complete
+	tmpShadow.b		  = shadowB * ptr_theFilter->scaleFactor / 100;	// Statically define elipse parameters until sizing is complete
 	tmpShadow.eccentricity = pow(1 - pow(((double)tmpShadow.b / (double)tmpShadow.a),2.0), 1.0 / 2.0);
 	//DrawBox(ptr_theFilter->xFrom, ptr_theFilter->xTo, ptr_theFilter->yFrom, ptr_theFilter->yTo, ptr_theFilter->boxBorder, ptr_theFilter->boxPadding, ary2_imgFrame);
 	for(j=tmpShadow.xCenter - tmpShadow.b;j<tmpShadow.xCenter + tmpShadow.b;j++){

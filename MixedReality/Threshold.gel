@@ -12,6 +12,25 @@ slider Noise_Variance(0,100,1,1,val)	//incr by 10, up to 100
 	noiseVariance = val / 100.0;			//vary size of Image_Size
 }
 
+slider Shadow_A(0,100,1,1,val)	// Vary shadow width
+{
+	shadowA = val;
+}
+
+slider Shadow_B(0,100,1,1,val)	// Vary shadow height
+{
+	shadowB = val;
+}
+
+slider Shadow_A_offset(0,100,1,1,val) 	// Vary shadow horizontal offset
+{
+	shadowAOffset = val;
+}
+
+slider Shadow_B_offset(0,100,1,1,val) 	// Vary shadow vertical offset
+{
+	shadowBOffset = val;
+}
 
 
 slider RH_Thres(0,360,10,1,rParameter)	//incr by 10, up to 360
