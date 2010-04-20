@@ -1,7 +1,7 @@
 #include <math.h>
 #include "Utility.h"
 																
-void TrackBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], float ary2_rgb2hsvTable[NUM_RGB][3], short ary2_rgb2labTable[NUM_RGB][3]){
+void TrackBall(x, Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], float ary2_rgb2hsvTable[NUM_RGB][3], short ary2_rgb2labTable[NUM_RGB][3]){
 	int i, j, xFrom, yFrom, xTo, yTo, hueFlag = 0;
 	float hTemp, hL, hU, hSwap, sTemp, vTemp;
 	int L,a,b;
@@ -86,12 +86,23 @@ void TrackBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], 
 		//newComer.xTo = Min(XLCD, Max(0, floor(ptr_oldFilter->xTo + newComer.xCenter - ptr_oldFilter->xCenter)));
 		//newComer.yFrom = Min(YLCD, Max(0, floor(ptr_oldFilter->yFrom + newComer.yCenter - ptr_oldFilter->yCenter)));
 		//newComer.yTo = Min(YLCD, Max(0, floor(ptr_oldFilter->yTo + newComer.yCenter - ptr_oldFilter->yCenter)));
-		newComer.xFrom = Min(XLCD, Max(0, floor(ptr_oldFilter->xFrom)));
-		newComer.xTo = Min(XLCD, Max(0, floor(ptr_oldFilter->xTo)));
-		newComer.yFrom = Min(YLCD, Max(0, floor(ptr_oldFilter->yFrom)));
-		newComer.yTo = Min(YLCD, Max(0, floor(ptr_oldFilter->yTo)));
+		
+		newComer.xFrom = Min(XLCD, Max(0, floor(newComer.xCenter- sqrt(newComer.ballSize) / 2 - newComer.boxPadding)));
+		newComer.xTo = Min(XLCD, Max(0, floor(newComer.xFrom + sqrt(newComer.ballSize) + 2 * newComer.boxPadding)));
+		newComer.yFrom = Min(XLCD, Max(0, floor(newComer.yCenter- sqrt(newComer.ballSize) /2 - newComer.boxPadding)));
+		newComer.yTo = Min(XLCD, Max(0, floor(newComer.yFrom + sqrt(newComer.ballSize) + 2 * newComer.boxPadding)));
+		
+		//newComer.xFrom = Min(XLCD, Max(0, floor(newComer.xCenter-100)));
+		//newComer.xTo = Min(XLCD, Max(0, floor(newComer.xFrom + 200)));
+		//newComer.yFrom = Min(XLCD, Max(0, floor(newComer.yCenter-100)));
+		//newComer.yTo = Min(XLCD, Max(0, floor(newComer.yFrom + 200)));
+		
+		//newComer.xFrom = Min(XLCD, Max(0, floor(ptr_oldFilter->xFrom)));
+		//newComer.xTo = Min(XLCD, Max(0, floor(ptr_oldFilter->xTo)));
+		//newComer.yFrom = Min(YLCD, Max(0, floor(ptr_oldFilter->yFrom)));
+		//newComer.yTo = Min(YLCD, Max(0, floor(ptr_oldFilter->yTo)));
 		*ptr_oldFilter = newComer;
-	}else		
+	}else{		
 		InitializeFilter(newComer.ballColor, ptr_oldFilter);
 		ptr_oldFilter->avgL = avgL/labNumber;
 		ptr_oldFilter->avgA = avgA/labNumber;
@@ -99,5 +110,6 @@ void TrackBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], 
 		ptr_oldFilter->stdL = sqrt(stdL/labNumber - ptr_oldFilter->avgL * ptr_oldFilter->avgL);
 		ptr_oldFilter->stdA = sqrt(stdA/labNumber - ptr_oldFilter->avgA * ptr_oldFilter->avgA);
 		ptr_oldFilter->stdB = sqrt(stdB/labNumber - ptr_oldFilter->avgB * ptr_oldFilter->avgB);
+	}
 }
 

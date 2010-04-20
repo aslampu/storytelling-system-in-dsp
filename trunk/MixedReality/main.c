@@ -17,6 +17,7 @@
 //#include    "TeaPot.h"
 //#include    "TeaPot.1.h"
 #include    "TeaPot.2.h"
+#include	"mug.1.h"
 //#include    "AcrylicPaint.h"
 //#include    "AcrylicPaint.2.h"
 //#include    "AcrylicPaint.3.h"
@@ -46,7 +47,7 @@ unsigned short	rhBias = 36;
 unsigned short 	rLowerBound = 150;
 unsigned short 	rUpperBound = 10000;
 unsigned short 	rQuantifiedLevel = 10;
-unsigned short 	rBoxPadding = 100;		
+unsigned short 	rBoxPadding = 5;		
 unsigned short 	rBoxBorder = 2;			
 
 unsigned short	ghThreshold = 110;//0.3055
@@ -54,7 +55,7 @@ unsigned short	ghBias = 36;
 unsigned short 	gLowerBound = 100;
 unsigned short  gUpperBound = 10000;
 unsigned short  gQuantifiedLevel = 10;
-unsigned short  gBoxPadding = 100;			
+unsigned short  gBoxPadding = 5;			
 unsigned short  gBoxBorder = 2;				
 
 unsigned short 	bhThreshold = 234;//0.65;
@@ -62,10 +63,21 @@ unsigned short	bhBias = 36;
 unsigned short 	bLowerBound = 100;
 unsigned short 	bUpperBound = 10000;
 unsigned short 	bQuantifiedLevel = 10;
-unsigned short 	bBoxPadding = 100;			
+unsigned short 	bBoxPadding = 5;			
 unsigned short 	bBoxBorder = 2;
 
+float			backgroundAvgL = 0;
+float 			backgroundAvgA = 0;
+float			backgroundAvgB = 0;
+float			backgroundStdL = 0;
+float 			backgroundStdA = 0;
+float			backgroundStdB = 0;
+
+float           weightingS = 1;
+float			weightingD = 1;
 unsigned short 	displacementThreshold = 50;
+int				imgSizeScale = 20;
+float noiseVariance = 0.001;
 
 void main()
 {
@@ -73,6 +85,7 @@ void main()
 	int	i=-1, j=-1, k=-1, y0=-1, y1=-1, v0=-1, u0=-1;
 	Filter rFilter, gFilter, bFilter;
 	//short check=0;
+	int imgSizeScale = 0;
 	int imgSize = 0;
 	//int imgSize1 = 100, imgSize4 = 100, imgSize5 = 100;
 	//int tmpSize1 = 0, tmpSize4  = 0, tmpSize5 = 0;
@@ -91,6 +104,9 @@ void main()
 	float stdAcrylicPaintL = 0;
 	float stdAcrylicPaintA = 0;
 	float stdAcrylicPaintB = 0;
+	int xTrackCenter = XLCD / 2;
+	int yTrackCenter = YLCD / 2;
+	int trackRange = YLCD / 2;
 
 	//FILE *outputRGBData, *outputHueData,*outputLData, *outputaData, *outputbData;
 	//int ok=0, check = 0;
@@ -243,48 +259,73 @@ void main()
 		}
 		
 		//Call track function, which modify the ary2_imgFrame array passed by a pointer		
-		TrackBall(&gFilter, ary2_imgFrame, ary2_rgb2hsvTable, ary2_rgb2labTable);
-		TrackBall(&bFilter, ary2_imgFrame, ary2_rgb2hsvTable, ary2_rgb2labTable);
-		
+		//TrackBall(&gFilter, ary2_imgFrame, ary2_rgb2hsvTable, ary2_rgb2labTable);
+		//TrackBall(&bFilter, ary2_imgFrame, ary2_rgb2hsvTable, ary2_rgb2labTable);
+		TrackBall2D(xTrackCenter, yTrackCenter, trackRange, &gFilter, &bFilter, ary2_imgFrame, ary2_rgb2hsvTable, ary2_rgb2labTable);
 		//DebugBall(&rFilter, ary2_imgFrame, ary2_rgb2hsvTable);
 		//DebugBall(&bFilter, ary2_imgFrame, ary2_rgb2hsvTable);
 
 		//Compute Rotation and choose the coresponding image
 		//Resize Image
 		//Labequalize Image
-		switch(rFilter.ballFound * 4 + gFilter.ballFound * 2 + bFilter.ballFound){
+		switch(gFilter.ballFound * 2 + bFilter.ballFound){
+			case 0: // found nothing
+				xTrackCenter = XLCD/2;
+				yTrackCenter = YLCD/2;
+				trackRange = YLCD/2;
+				break;
 			case 1: //only find blue one
-				//tmpSize1 = imgSize1;	                                                           			
+				//tmpSize1 = imgSize1;
+				xTrackCenter = floor(2 * bFilter.xCenter-xTrackCenter);
+				yTrackCenter = floor(2 * bFilter.yCenter-yTrackCenter);
+				trackRange = floor(sqrt(bFilter.ballSize));	                                                           			
 				imgSize = Min(100, (bFilter.quantifiedLevel * (bFilter.ballSize - bFilter.lowerBound) / bFilter.upperBound) * bFilter.quantifiedLevel + 50);
 				bFilter.scaleFactor = imgSize;
 				//if(tmpSize1 != imgSize1)
 				scaleImage(imgSize, ary2_imgSeven, ary2_imgInput);
-				OverlayImage1D(avgTeaPotL, avgTeaPotA, avgTeaPotB, stdTeaPotL, avgTeaPotA, avgTeaPotB, &bFilter, ary2_imgFrame, ary2_imgInput, ary2_rgb2labTable);
-				//OverlayImage1D(&bFilter, ary2_imgFrame, ary2_imgSeven);
+				
 				DrawShadow1D(&bFilter, ary2_imgFrame);
+				
+				OverlayImage1D(avgTeaPotL, avgTeaPotA, avgTeaPotB, stdTeaPotL, stdTeaPotA, stdTeaPotB, &bFilter, ary2_imgFrame, ary2_imgInput, ary2_rgb2labTable);
+				//OverlayImage1D(&bFilter, ary2_imgFrame, ary2_imgSeven);
+				//DrawShadow1D(&bFilter, ary2_imgFrame);
 				break;
-			case 2:
-				imgSize = Min(100, (gFilter.quantifiedLevel * (gFilter.ballSize - gFilter.lowerBound) / gFilter.upperBound) * gFilter.quantifiedLevel + 50);
+			case 2://only find green
+				xTrackCenter = floor(gFilter.xCenter);
+				yTrackCenter = floor(gFilter.yCenter);
+				trackRange = floor(sqrt(gFilter.ballSize));
+
+				imgSize = Min(100, ((imgSizeScale / 20.0) * (gFilter.quantifiedLevel * (gFilter.ballSize - gFilter.lowerBound) / (double)gFilter.upperBound) * gFilter.quantifiedLevel + 50));
 				gFilter.scaleFactor = imgSize;
-				scaleImage(imgSize, ary2_imgEight, ary2_imgInput);
+				scaleImage(imgSize, ary2_imgNine, ary2_imgInput);
+				
+				DrawShadow1D(&gFilter, ary2_imgFrame);
+				
 				OverlayImage1D(avgAcrylicPaintL, avgAcrylicPaintA, avgAcrylicPaintB, stdAcrylicPaintL, stdAcrylicPaintA, stdAcrylicPaintB, &gFilter, ary2_imgFrame, ary2_imgInput, ary2_rgb2labTable);
 				//OverlayImage1D(&rFilter, ary2_imgFrame, ary2_imgFive);
-				DrawShadow1D(&gFilter, ary2_imgFrame);
+				//DrawShadow1D(&gFilter, ary2_imgFrame);
 				break;
-			case 3:
+			case 3://find both green and blue
+				xTrackCenter = floor((bFilter.xCenter + gFilter.xCenter) / 2);
+				yTrackCenter = floor((bFilter.yCenter + gFilter.yCenter) / 2);
+				trackRange = floor(sqrt(bFilter.ballSize + gFilter.ballSize));
 				//imgSize = Min(100, floor(((bFilter.ballSize - bFilter.lowerBound) / bFilter.upperBound) * bFilter.quantifiedLevel) * bFilter.quantifiedLevel + floor((rFilter.ballSize - rFilter.lowerBound) / rFilter.upperBound) * rFilter.quantifiedLevel) * rFilter.quantifiedLevel)/2;
 				imgSize = 100;
 				scaleImage(imgSize, ary2_imgSeven, ary2_imgInput);
 				OverlayImage2D(&gFilter, &bFilter, ary2_imgFrame, ary2_imgInput);	
 				//OverlayImage2D(&rFilter, &bFilter, ary2_imgFrame, ary2_imgSeven);
 				break;	
-			case 4: //only find red one
+			/*case 4: //only find red one
 				imgSize = Min(100, (rFilter.quantifiedLevel * (rFilter.ballSize - rFilter.lowerBound) / rFilter.upperBound) * rFilter.quantifiedLevel + 50);
 				rFilter.scaleFactor = imgSize;
 				scaleImage(imgSize, ary2_imgEight, ary2_imgInput);
+				
+				DrawShadow1D(&rFilter, ary2_imgFrame);
+				
+				
 				OverlayImage1D(avgAcrylicPaintL, avgAcrylicPaintA, avgAcrylicPaintB, stdAcrylicPaintL, stdAcrylicPaintA, stdAcrylicPaintB, &rFilter, ary2_imgFrame, ary2_imgInput, ary2_rgb2labTable);
 				//OverlayImage1D(&rFilter, ary2_imgFrame, ary2_imgFive);
-				DrawShadow1D(&rFilter, ary2_imgFrame);
+				//DrawShadow1D(&rFilter, ary2_imgFrame);
 				break;
 			case 5: //find both red and blue ones
 				//imgSize = Min(100, floor(((bFilter.ballSize - bFilter.lowerBound) / bFilter.upperBound) * bFilter.quantifiedLevel) * bFilter.quantifiedLevel + floor((rFilter.ballSize - rFilter.lowerBound) / rFilter.upperBound) * rFilter.quantifiedLevel) * rFilter.quantifiedLevel)/2;
@@ -292,7 +333,7 @@ void main()
 				scaleImage(imgSize, ary2_imgSeven, ary2_imgInput);
 				OverlayImage2D(&rFilter, &bFilter, ary2_imgFrame, ary2_imgInput);	
 				//OverlayImage2D(&rFilter, &bFilter, ary2_imgFrame, ary2_imgSeven);
-				break;
+				break;*/
 			default:
 				;
 		}

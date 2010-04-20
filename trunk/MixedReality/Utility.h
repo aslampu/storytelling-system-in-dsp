@@ -37,6 +37,17 @@ extern unsigned short 	bQuantifiedLevel;
 extern unsigned short 	bBoxPadding;			
 extern unsigned short 	bBoxBorder;
 
+extern float			backgroundAvgL;
+extern float 			backgroundAvgA;
+extern float			backgroundAvgB;
+extern float			backgroundStdL;
+extern float 			backgroundStdA;
+extern float			backgroundStdB;
+
+extern int				imgSizeScale;
+extern float			noiseVariance;
+extern float			weightingS;
+extern float			weightingD;
 extern unsigned short 	displacementThreshold;	
 
 typedef struct{
@@ -52,7 +63,7 @@ typedef struct{
 	short 	quantifiedLevel;
 	short 	boxPadding;
 	short 	boxBorder;
-	short   xFrom;
+	/*short   xFrom;
 	short   xTo;
 	short   yFrom;
 	short   yTo;
@@ -61,7 +72,7 @@ typedef struct{
 	float   avgB;
 	float   stdL;
 	float   stdA;
-	float   stdB;
+	float   stdB;*/
 	int     scaleFactor;
 } Filter;
 
@@ -73,7 +84,8 @@ typedef struct {
 	double	eccentricity;
 } Shadow;
 
-void TrackBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], float ary2_rgb2hsvTable[NUM_RGB][3], short ary2_rgb2labTable[NUM_RGB][3]);
+void TrackBall2D(int xTrackCenter, int yTrackCenter, int trackRange, Filter *ptr_oldFilterGreen, Filter *ptr_oldFilterBlue, unsigned short ary2_imgFrame[XLCD][YLCD], float ary2_rgb2hsvTable[NUM_RGB][3], short ary2_rgb2labTable[NUM_RGB][3]);
+//void TrackBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], float ary2_rgb2hsvTable[NUM_RGB][3], short ary2_rgb2labTable[NUM_RGB][3]);
 void DrawBox(int xFrom, int xTo, int yFrom, int yTo, int boxBorder, int boxPadding,unsigned short ary2_imgFrame[XLCD][YLCD]);
 void DebugBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], unsigned short ary2_rgb2hsvTable[NUM_RGB][3]);
 void RGB2HSV(unsigned short rgbColor, float *h, float *s, float *v);

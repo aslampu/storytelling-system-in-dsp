@@ -50,9 +50,15 @@ float getPixelValueBilinear(float pPrime, float qPrime, unsigned short ary2_imgS
 			   a   * (1-b) * b10 +
 			   a   *   b   * b11;
 
-	rPrime = rPrime * 31;
-	gPrime = gPrime * 63;
-	bPrime = bPrime * 31;
+	if (rPrime != 0 && gPrime != 0 && bPrime != 0) {
+		rPrime += noiseVariance * (rand() % 100);
+		gPrime += noiseVariance * (rand() % 100);
+		bPrime += noiseVariance * (rand() % 100);
+	}
+
+	rPrime = Min(rPrime *= 31, 31);
+	gPrime = Min(gPrime *= 63, 63);
+	bPrime = Min(bPrime *= 31, 31);
 
 	return (((short)rPrime)<<11)|(((short)gPrime)<<5)|(((short)bPrime));
 }
