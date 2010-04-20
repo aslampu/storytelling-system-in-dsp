@@ -39,7 +39,7 @@ void InitializeFilter(int ballColor, Filter *ptr_newFilter){
 	ptr_newFilter->ballSize = 0;
 	ptr_newFilter->xCenter = 0;
 	ptr_newFilter->yCenter = 0;
-	ptr_newFilter->xFrom = 0;
+	/*ptr_newFilter->xFrom = 0;
 	ptr_newFilter->xTo = XLCD;
 	ptr_newFilter->yFrom = 0;
 	ptr_newFilter->yTo = YLCD;
@@ -48,7 +48,7 @@ void InitializeFilter(int ballColor, Filter *ptr_newFilter){
 	ptr_newFilter->avgB = 0;
 	ptr_newFilter->stdL = 0;
 	ptr_newFilter->stdA = 0;
-	ptr_newFilter->stdB = 0;
+	ptr_newFilter->stdB = 0;*/
 	ptr_newFilter->scaleFactor = 100;
 
 	switch(ballColor){
