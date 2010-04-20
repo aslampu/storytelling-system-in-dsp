@@ -113,8 +113,8 @@ void main()
 	int xTrackCenter = XLCD / 2;
 	int yTrackCenter = YLCD / 2;
 	int trackRange = YLCD / 2;
-	FILE *outputRGBData;
-	int ok=0;
+	//FILE *outputRGBData;
+	//int ok=0;
 
 	//FILE *outputRGBData, *outputHueData,*outputLData, *outputaData, *outputbData;
 	//int ok=0, check = 0;
@@ -304,7 +304,7 @@ void main()
 				yTrackCenter = floor(gFilter.yCenter);
 				trackRange = floor(sqrt(gFilter.ballSize));
 
-				imgSize = Min(100, ((imgSizeScale / 20.0) * (gFilter.quantifiedLevel * (gFilter.ballSize - gFilter.lowerBound) / (double)gFilter.upperBound) * gFilter.quantifiedLevel + 50));
+				imgSize = Min(100, ((imgSizeScale / 20.0) * ((double)gFilter.quantifiedLevel * (gFilter.ballSize - gFilter.lowerBound) / (double)gFilter.upperBound / 100.0) * gFilter.quantifiedLevel + 50));
 				gFilter.scaleFactor = imgSize;
 				scaleImage(imgSize, ary2_imgNine, ary2_imgInput);
 				
