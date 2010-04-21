@@ -1,7 +1,8 @@
 #include <math.h>
 #include "Utility.h"
 
-void OverlayImage1D(float imgAvgL, float imgAvgA, float imgAvgB, float imgStdL, float imgStdA, float imgStdB, Filter *ptr_theFilter, unsigned short ary2_imgFrame[XLCD][YLCD], unsigned short ary2_imgInput[HEIGHT][WIDTH], short	ary2_rgb2labTable[NUM_RGB][3]){
+//void OverlayImage1D(float imgAvgL, float imgAvgA, float imgAvgB, float imgStdL, float imgStdA, float imgStdB, Filter *ptr_theFilter, unsigned short ary2_imgFrame[XLCD][YLCD], unsigned short ary2_imgInput[HEIGHT][WIDTH], short	ary2_rgb2labTable[NUM_RGB][3]){
+void OverlayImage1D(Filter *ptr_theFilter, unsigned short ary2_imgFrame[XLCD][YLCD], unsigned short ary2_imgInput[HEIGHT][WIDTH]){
 	
 	/*int i,j;
 	int adjustedLValue, adjustedAValue, adjustedBValue;
