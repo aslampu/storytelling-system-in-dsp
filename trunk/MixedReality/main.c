@@ -310,7 +310,9 @@ void main()
 				
 				DrawShadow1D(&bFilter, ary2_imgFrame);
 				
-				OverlayImage1D(avgTeaPotL, avgTeaPotA, avgTeaPotB, stdTeaPotL, stdTeaPotA, stdTeaPotB, &bFilter, ary2_imgFrame, ary2_imgInput, ary2_rgb2labTable);
+				//OverlayImage1D(avgTeaPotL, avgTeaPotA, avgTeaPotB, stdTeaPotL, stdTeaPotA, stdTeaPotB, &bFilter, ary2_imgFrame, ary2_imgInput, ary2_rgb2labTable);
+				OverlayImage1D(&bFilter, ary2_imgFrame, ary2_imgInput);
+
 				//OverlayImage1D(&bFilter, ary2_imgFrame, ary2_imgSeven);
 				//DrawShadow1D(&bFilter, ary2_imgFrame);
 				break;
@@ -338,7 +340,8 @@ void main()
 				
 				DrawShadow1D(&gFilter, ary2_imgFrame);
 				
-				OverlayImage1D(avgAcrylicPaintL, avgAcrylicPaintA, avgAcrylicPaintB, stdAcrylicPaintL, stdAcrylicPaintA, stdAcrylicPaintB, &gFilter, ary2_imgFrame, ary2_imgInput, ary2_rgb2labTable);
+				//OverlayImage1D(avgAcrylicPaintL, avgAcrylicPaintA, avgAcrylicPaintB, stdAcrylicPaintL, stdAcrylicPaintA, stdAcrylicPaintB, &gFilter, ary2_imgFrame, ary2_imgInput, ary2_rgb2labTable);
+				OverlayImage1D(&gFilter,ary2_imgFrame, ary2_imgInput);
 				//OverlayImage1D(&rFilter, ary2_imgFrame, ary2_imgFive);
 				//DrawShadow1D(&gFilter, ary2_imgFrame);
 				break;
@@ -360,9 +363,10 @@ void main()
 
 			
 
-
+				/*Need rewrite OverlayImage2D()*/
 				
-				OverlayImage2D(&gFilter, &bFilter, ary2_imgFrame, ary2_imgInput);	
+				//OverlayImage2D(&gFilter, &bFilter, ary2_imgFrame, ary2_imgInput);	
+				//OverlayImage1D(ary2_imgFrame, ary2_imgInput);
 				//OverlayImage2D(&rFilter, &bFilter, ary2_imgFrame, ary2_imgSeven);
 				break;	
 			/*case 4: //only find red one

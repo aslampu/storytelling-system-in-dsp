@@ -125,6 +125,7 @@ void scaleImage(short scaleFactor100, unsigned short ary2_imgSample[HEIGHT][WIDT
 			pPrime = (double)j / (scaleFactor100 / 100.0);
 			qPrime = (double)k / (scaleFactor100 / 100.0);
 			ary2_imgInput[j+offsetHeight][k+offsetWidth] = getPixelValueBilinear(pPrime, qPrime, ary2_imgSample);
+			//ary2_imgInput[j][k] = 0x0000;
 		}
 	}
 	//up
