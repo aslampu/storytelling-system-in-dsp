@@ -42,6 +42,12 @@ float				ary2_rgb2hsvTable[NUM_RGB][3];
 short   	  	    ary2_rgb2labTable[NUM_RGB][3];
 //unsigned short  	ary_lab2rgbTable[NUM_RGB];
 
+
+/* Adjust */
+int decideLAB_apply = 0;
+unsigned short ary2_imgInputModified[200][200];
+/* Adjust */
+
 unsigned short 	rhThreshold = 0;
 unsigned short	rhBias = 36;				
 unsigned short 	rLowerBound = 150;
@@ -291,7 +297,16 @@ void main()
 				imgSize = Min(100, (bFilter.quantifiedLevel * (bFilter.ballSize - bFilter.lowerBound) / bFilter.upperBound) * bFilter.quantifiedLevel + 50);
 				bFilter.scaleFactor = imgSize;
 				//if(tmpSize1 != imgSize1)
-				scaleImage(imgSize, ary2_imgNine, ary2_imgInput);
+
+				/*Adjust*/
+				if(decideLAB_apply == 1){
+					applyLAB(avgTeaPotL, avgTeaPotA, avgTeaPotB, stdTeaPotL, stdTeaPotA, stdTeaPotB,ary2_imgNine, ary2_imgInputModified, ary2_rgb2labTable);
+				}
+			
+				//scaleImage(imgSize, ary2_imgNine, ary2_imgInput);
+				scaleImage(imgSize, ary2_imgInputModified, ary2_imgInput);
+				/*Adjust*/
+			
 				
 				DrawShadow1D(&bFilter, ary2_imgFrame);
 				
@@ -306,7 +321,20 @@ void main()
 
 				imgSize = Min(100, ((imgSizeScale / 20.0) * ((double)gFilter.quantifiedLevel * (gFilter.ballSize - gFilter.lowerBound) / (double)gFilter.upperBound / 100.0) * gFilter.quantifiedLevel + 50));
 				gFilter.scaleFactor = imgSize;
-				scaleImage(imgSize, ary2_imgNine, ary2_imgInput);
+
+
+				/*Adjust*/
+				if(decideLAB_apply == 1){
+					applyLAB(avgTeaPotL, avgTeaPotA, avgTeaPotB, stdTeaPotL, stdTeaPotA, stdTeaPotB,ary2_imgNine, ary2_imgInputModified, ary2_rgb2labTable);
+				}
+
+				//scaleImage(imgSize, ary2_imgNine, ary2_imgInput);
+				scaleImage(imgSize, ary2_imgInputModified, ary2_imgInput);
+				/*Adjust*/
+
+
+			
+
 				
 				DrawShadow1D(&gFilter, ary2_imgFrame);
 				
@@ -320,7 +348,20 @@ void main()
 				trackRange = floor(sqrt(bFilter.ballSize + gFilter.ballSize));
 				//imgSize = Min(100, floor(((bFilter.ballSize - bFilter.lowerBound) / bFilter.upperBound) * bFilter.quantifiedLevel) * bFilter.quantifiedLevel + floor((rFilter.ballSize - rFilter.lowerBound) / rFilter.upperBound) * rFilter.quantifiedLevel) * rFilter.quantifiedLevel)/2;
 				imgSize = 100;
-				scaleImage(imgSize, ary2_imgNine, ary2_imgInput);
+
+
+				/*Adjust*/
+				if(decideLAB_apply == 1){
+					applyLAB(avgTeaPotL, avgTeaPotA, avgTeaPotB, stdTeaPotL, stdTeaPotA, stdTeaPotB,ary2_imgNine, ary2_imgInputModified, ary2_rgb2labTable);
+				}
+				//scaleImage(imgSize, ary2_imgNine, ary2_imgInput);
+				scaleImage(imgSize, ary2_imgInputModified, ary2_imgInput);
+				/*Adjust*/
+
+			
+
+
+				
 				OverlayImage2D(&gFilter, &bFilter, ary2_imgFrame, ary2_imgInput);	
 				//OverlayImage2D(&rFilter, &bFilter, ary2_imgFrame, ary2_imgSeven);
 				break;	
