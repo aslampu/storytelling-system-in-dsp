@@ -2,12 +2,14 @@
 #include "Utility.h"
 
 void OverlayImage1D(float imgAvgL, float imgAvgA, float imgAvgB, float imgStdL, float imgStdA, float imgStdB, Filter *ptr_theFilter, unsigned short ary2_imgFrame[XLCD][YLCD], unsigned short ary2_imgInput[HEIGHT][WIDTH], short	ary2_rgb2labTable[NUM_RGB][3]){
-	int i,j;
+	
+	/*int i,j;
 	int adjustedLValue, adjustedAValue, adjustedBValue;
 	float sL,sA,sB,dL,dA,dB;
 	//int k,m;
 	//unsigned short tmpColor,tmpRed,tmpGreen,tmpBlue;
 	//int comLength = 10 * floor((70 + (210/75000) * (ptr_theFilter->ballSize-5000)) / 10);
+	*/
 	/*int xStart = Min(XLCD, Max(0,floor(ptr_theFilter->xCenter-40)));
 	int yStart = Min(YLCD, Max(0,floor(ptr_theFilter->yCenter-40)));
 	//DrawBox(ptr_theFilter->xFrom, ptr_theFilter->xTo, ptr_theFilter->yFrom, ptr_theFilter->yTo, ptr_theFilter->boxBorder, ptr_theFilter->boxPadding, ary2_imgFrame);
@@ -23,6 +25,7 @@ void OverlayImage1D(float imgAvgL, float imgAvgA, float imgAvgB, float imgStdL, 
 		}
 	}*/
 
+	/*
 	int xStart = Min(XLCD, floor(ptr_theFilter->xCenter-100));
 	int yStart = Min(YLCD, floor(ptr_theFilter->yCenter-100));
 	//DrawBox(ptr_theFilter->xFrom, ptr_theFilter->xTo, ptr_theFilter->yFrom, ptr_theFilter->yTo, ptr_theFilter->boxBorder, ptr_theFilter->boxPadding, ary2_imgFrame);
@@ -62,7 +65,7 @@ void OverlayImage1D(float imgAvgL, float imgAvgA, float imgAvgB, float imgStdL, 
 				ary2_imgFrame[xStart+j][yStart+i] = Lab2RGB(adjustedLValue,adjustedAValue,adjustedBValue);
 				//ary2_imgFrame[xStart+j][yStart+i] = ary2_imgInput[j][i];
 			}
-			/*if(xStart+j>9 && yStart+i>9){//LowPass Filter for almost whole image
+			//-----if(xStart+j>9 && yStart+i>9){//LowPass Filter for almost whole image
 				tmpRed=0;
 				tmpGreen=0;
 				tmpBlue=0;
@@ -75,9 +78,25 @@ void OverlayImage1D(float imgAvgL, float imgAvgA, float imgAvgB, float imgStdL, 
 					}
 				}
 				ary2_imgFrame[xStart+j][yStart+i] = (((short)(tmpRed/100)&0x0f8)<<8)|(((short)(tmpGreen/100)&0x0fc)<<3)|(((short)(tmpBlue/100)&0x0f8)>>3);
-			}*/
+			}---------//
 		}
 	}
-	
+	*/
+	int i,j;
+	int xStart = Min(XLCD, floor(ptr_theFilter->xCenter-100));
+	int yStart = Min(YLCD, floor(ptr_theFilter->yCenter-100));
+	for(j=0;j<HEIGHT;j++){
+		if(xStart+j >= XLCD || xStart+j < 0)
+			continue;
+		for(i=0;i<WIDTH;i++){
+			if(yStart+i >= YLCD || yStart+i < 0)
+				continue;
+			
+			if(ary2_imgInput[j][i] != 0){	
+				ary2_imgFrame[xStart+j][yStart+i] = ary2_imgInput[j][i];
+			}
+		}
+	}
+
 }
 

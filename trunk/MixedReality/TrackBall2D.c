@@ -124,6 +124,12 @@ void TrackBall2D(int xTrackCenter, int yTrackCenter, int trackRange, Filter *ptr
 			backgroundStdL = sqrt(stdL/labNumber - backgroundAvgL * backgroundAvgL);
 			backgroundStdA = sqrt(stdA/labNumber - backgroundAvgA * backgroundAvgA);
 			backgroundStdB = sqrt(stdB/labNumber - backgroundAvgB * backgroundAvgB);
+
+			/*Adjust*/
+			decideLAB_apply = 0;
+			/*Adjust*/
+
+
 			break;
 		case 1:
 			newComerBlue.ballFound = 1;
@@ -144,6 +150,11 @@ void TrackBall2D(int xTrackCenter, int yTrackCenter, int trackRange, Filter *ptr
 				newComerGreen.yCenter = ptr_oldFilterGreen->yCenter;	
 			}
 			*ptr_oldFilterGreen = newComerGreen;
+
+			/*Adjust*/
+			decideLAB_apply++;
+			/*Adjust*/
+
 			break;
 		case 3:
 			newComerBlue.ballFound = 1;
@@ -162,6 +173,11 @@ void TrackBall2D(int xTrackCenter, int yTrackCenter, int trackRange, Filter *ptr
 				newComerGreen.yCenter = ptr_oldFilterGreen->yCenter;	
 			}
 			*ptr_oldFilterGreen = newComerGreen;
+
+			/*Adjust*/
+			decideLAB_apply++;
+			/*Adjust*/
+
 			break;
 		}
 		//newComer.xFrom = Min(XLCD, Max(0, floor(ptr_oldFilter->xFrom + newComer.xCenter - ptr_oldFilter->xCenter)));

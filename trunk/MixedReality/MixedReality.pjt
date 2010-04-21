@@ -13,6 +13,7 @@ Config="Release"
 
 [Source Files]
 Source="..\..\..\C6000\cgtools\lib\rts6700.lib"
+Source="ApplyLAB.c"
 Source="ConvertColorSpace.c"
 Source="DrawShadow1D.c"
 Source="main.c"

@@ -56,6 +56,11 @@ extern int				shadowB;
 extern int				shadowAOffset;
 extern int				shadowBOffset;
 
+
+/* Adjust */
+extern int decideLAB_apply;
+/* Adjus */
+
 typedef struct{
 	int		ballFound;
 	int 	ballColor;
@@ -111,6 +116,11 @@ void OverlayImage1D(float imgAvgL, float imgAvgA, float imgAvgB, float imgStdL, 
 //void OverlayImage2D(float imgAvgL, float imgAvgA, float imgAvgB, float imgStdL, float imgStdA, float imgStdB, Filter *ptr_leftFilter, Filter *ptr_rightFilter, unsigned short ary3_imgFrame[XLCD][YLCD], unsigned short ary2_imgInput[HEIGHT][WIDTH], unsigned short ary_lab2rgbTable[NUM_RGB], unsigned short ary_lab2rgbTable[NUM_RGB]);
 void OverlayImage2D(Filter *ptr_leftFilter, Filter *ptr_rightFilter, unsigned short ary2_imgFrame[XLCD][YLCD], unsigned short ary2_imgInput[HEIGHT][WIDTH]);
 void DrawShadow1D(Filter *ptr_theFilter, unsigned short ary2_imgFrame[XLCD][YLCD]);
+
+
+/*Adjust*/
+void applyLAB(float imgAvgL, float imgAvgA, float imgAvgB, float imgStdL, float imgStdA, float imgStdB,unsigned short ary2_source[HEIGHT][WIDTH],unsigned short ary2_imgInputModified[HEIGHT][WIDTH], short	ary2_rgb2labTable[NUM_RGB][3]);
+/**/
 
 #endif /* INC_UTILITY_H */
 
