@@ -1,0 +1,45 @@
+; Code Composer Project File, Version 2.0 (do not modify or remove this line)
+
+[Project Settings]
+ProjectDir="C:\CCStudio_v3.1\MCHproj\MixedReality0404\FixedMixedReality\"
+ProjectType=Executable
+CPUFamily=TMS320C67XX
+Tool="Compiler"
+Tool="CustomBuilder"
+Tool="DspBiosBuilder"
+Tool="Linker"
+Config="Debug"
+Config="Release"
+
+[Source Files]
+Source="..\..\..\C6000\cgtools\lib\rts6400.lib"
+Source="ApplyLAB.c"
+Source="ConvertColorSpace.c"
+Source="DrawShadow1D.c"
+Source="main.c"
+Source="OverlayImage1D.c"
+Source="OverlayImage2D.c"
+Source="ScaleImage.c"
+Source="TrackBall2D.c"
+Source="Utility.c"
+Source="vm3224k.c"
+Source="c6416.cmd"
+
+["Compiler" Settings: "Debug"]
+Options=-g -fr"$(Proj_dir)\Debug" -d"CHIP_6416" -mv6400
+
+["Compiler" Settings: "Release"]
+Options=-o3 -fr"$(Proj_dir)\Release" -mv6710
+
+["Linker" Settings: "Debug"]
+Options=-cr -m".\Debug\FixedMixedReality.map" -o".\Debug\FixedMixedReality.out" -w -x
+
+["Linker" Settings: "Release"]
+Options=-c -m".\Release\MixedReality.map" -o".\Release\MixedReality.out" -w -x
+
+["c6416.cmd" Settings: "Debug"]
+LinkOrder=1
+
+["c6416.cmd" Settings: "Release"]
+LinkOrder=1
+

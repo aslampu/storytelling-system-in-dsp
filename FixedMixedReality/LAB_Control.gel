@@ -1,0 +1,42 @@
+/*---------------------------------------------------------------*/
+/* LAB GEL 
+/*---------------------------------------------------------------*/
+
+menuitem "LAB"
+
+slider DoLAB(0,1,1,1,doLAB_para)
+{
+	doLAB = doLAB_para;
+}
+
+slider NegativeL(0,1,1,1,negL_para)
+{
+	negativeL = negL_para;
+}
+
+slider NegativeA(0,1,1,1,negA_para)
+{
+	negativeA = negA_para;
+}
+
+slider NegativeB(0,1,1,1,negB_para)
+{
+	negativeB = negB_para;
+}
+
+slider L(0,100,1,1,l_para)
+{
+	l_adjust = l_para;
+}
+
+
+slider A(0,100,1,1,a_para)
+{
+	a_adjust = a_para;
+}
+
+
+slider B(0,100,1,1,b_para)
+{
+	b_adjust = b_para;
+}
