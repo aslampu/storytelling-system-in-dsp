@@ -57,6 +57,9 @@ extern int				shadowB;
 extern int				shadowAOffset;
 extern int				shadowBOffset;
 
+extern int				rValue;
+extern int				gValue;
+extern int				bValue;
 
 /* Adjust */
 extern int decideLAB_apply;
