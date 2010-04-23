@@ -82,7 +82,7 @@ float			backgroundStdB = 0;
 float           weightingS = 1;
 float			weightingD = 1;
 unsigned short 	displacementThreshold = 50;
-int				imgSizeScale = 20;
+//int				imgSizeScale = 20;
 //int				randomNoise100;
 float noiseVariance = 0.001;
 
@@ -95,9 +95,9 @@ void main()
 {
 	//Initialize
 	int	i=-1, j=-1, k=-1, y0=-1, y1=-1, v0=-1, u0=-1;
-	Filter rFilter, gFilter, bFilter;
+	Filter rFilter, gFilter, bFilter, combinedFilter;
 	//short check=0;
-	int imgSizeScale = 0;
+	//int imgSizeScale = 0;
 	int imgSize = 0;
 	//int imgSize1 = 100, imgSize4 = 100, imgSize5 = 100;
 	//int tmpSize1 = 0, tmpSize4  = 0, tmpSize5 = 0;
@@ -299,8 +299,8 @@ void main()
 				//tmpSize1 = imgSize1;
 				xTrackCenter = floor(2 * bFilter.xCenter-xTrackCenter);
 				yTrackCenter = floor(2 * bFilter.yCenter-yTrackCenter);
-				trackRange = floor(sqrt(bFilter.ballSize));	                                                           			
-				imgSize = Min(100, (bFilter.quantifiedLevel * (bFilter.ballSize - bFilter.lowerBound) / bFilter.upperBound) * bFilter.quantifiedLevel + 50);
+				trackRange = floor(sqrt(bFilter.ballSize));                                                           			
+				imgSize = Guard((trackRange / bFilter.quantifiedLevel) * bFilter.quantifiedLevel, 30,100);
 				bFilter.scaleFactor = imgSize;
 				//if(tmpSize1 != imgSize1)
 
@@ -326,8 +326,7 @@ void main()
 				xTrackCenter = floor(gFilter.xCenter);
 				yTrackCenter = floor(gFilter.yCenter);
 				trackRange = floor(sqrt(gFilter.ballSize));
-
-				imgSize = Min(100, ((imgSizeScale / 20.0) * ((double)gFilter.quantifiedLevel * (gFilter.ballSize - gFilter.lowerBound) / (double)gFilter.upperBound / 100.0) * gFilter.quantifiedLevel + 50));
+				imgSize = Guard((trackRange / gFilter.quantifiedLevel) * gFilter.quantifiedLevel, 30,100);
 				gFilter.scaleFactor = imgSize;
 
 
@@ -356,8 +355,21 @@ void main()
 				yTrackCenter = floor((bFilter.yCenter + gFilter.yCenter) / 2);
 				trackRange = floor(sqrt(bFilter.ballSize + gFilter.ballSize));
 				//imgSize = Min(100, floor(((bFilter.ballSize - bFilter.lowerBound) / bFilter.upperBound) * bFilter.quantifiedLevel) * bFilter.quantifiedLevel + floor((rFilter.ballSize - rFilter.lowerBound) / rFilter.upperBound) * rFilter.quantifiedLevel) * rFilter.quantifiedLevel)/2;
-				imgSize = 100;
-
+				trackRange = floor(sqrt(bFilter.ballSize) + sqrt(gFilter.ballSize));
+				imgSize = Guard((trackRange / gFilter.quantifiedLevel) * gFilter.quantifiedLevel, 30,100);	
+				combinedFilter.scaleFactor = imgSize;
+				combinedFilter.ballFound = 1;
+		 		combinedFilter.ballColor = -1;
+				combinedFilter.ballSize = trackRange;
+				combinedFilter.xCenter = xTrackCenter;
+				combinedFilter.yCenter = yTrackCenter;
+				combinedFilter.hThreshold = 0;
+				combinedFilter.hBias = 0;
+				combinedFilter.lowerBound = 0;
+				combinedFilter.upperBound = 0;
+				combinedFilter.quantifiedLevel = 0;
+				combinedFilter.boxPadding = 0;
+				combinedFilter.boxBorder = 0;
 
 				/*Adjust*/
 				if(decideLAB_apply == 1){
@@ -367,9 +379,8 @@ void main()
 				scaleImage(imgSize, ary2_imgInputModified, ary2_imgInput);
 				/*Adjust*/
 
-			
-
-				/*Need rewrite OverlayImage2D()*/
+				DrawShadow1D(&combinedFilter, ary2_imgFrame);
+				OverlayImage1D(&combinedFilter,ary2_imgFrame, ary2_imgInput);
 				
 				//OverlayImage2D(&gFilter, &bFilter, ary2_imgFrame, ary2_imgInput);	
 				//OverlayImage1D(ary2_imgFrame, ary2_imgInput);
