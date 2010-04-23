@@ -16,6 +16,12 @@ int getPixelValueBilinear(float pPrime, float qPrime, unsigned short ary2_imgSam
 	float rPrime, gPrime, bPrime;
 
 	//int randomNoise100 = rand() % 100; // Update random noise for each interpolated pixel
+
+	if (ary2_imgSample[lowerP][lowerQ] == 0x0000 ||
+		ary2_imgSample[lowerP][lowerQ+1] == 0x0000 ||
+		ary2_imgSample[lowerP+1][lowerQ] == 0x0000 ||
+		ary2_imgSample[lowerP+1][lowerQ+1] == 0x0000)
+		return Max(Max(Max(ary2_imgSample[lowerP][lowerQ], ary2_imgSample[lowerP][lowerQ+1]),ary2_imgSample[lowerP+1][lowerQ]),ary2_imgSample[lowerP+1][lowerQ+1]);
 	
 	// R
 	rPrime = (1-a) * (1-b) * ((ary2_imgSample[lowerP][lowerQ]&0xF800)>>11) +	    // r00
@@ -44,6 +50,9 @@ int getPixelValueBilinear(float pPrime, float qPrime, unsigned short ary2_imgSam
 	rPrime = Min(rPrime, 31);
 	gPrime = Min(gPrime, 63);
 	bPrime = Min(bPrime, 31);
+	
+	if(rPrime < rValue && gPrime < gValue && bPrime < bValue)
+		return 0x0000;
 
 	return (((short)rPrime)<<11)|(((short)gPrime)<<5)|(((short)bPrime));
 }

@@ -17,7 +17,8 @@
 //#include    "TeaPot.h"
 //#include    "TeaPot.1.h"
 //#include    "TeaPot.2.h"
-#include	"mug.1.h"
+//#include	"mug.1.h"
+#include 	"mug.3.h"
 //#include    "AcrylicPaint.h"
 //#include    "AcrylicPaint.2.h"
 //#include    "AcrylicPaint.3.h"
@@ -79,17 +80,21 @@ float			backgroundStdL = 0;
 float 			backgroundStdA = 0;
 float			backgroundStdB = 0;
 
-float           weightingS = 1;
-float			weightingD = 1;
+float           weightingS = 22;
+float			weightingD = 27;
 unsigned short 	displacementThreshold = 50;
-//int				imgSizeScale = 20;
+int				imgSizeScale = 100;
 //int				randomNoise100;
 float noiseVariance = 0.001;
 
-int				shadowA = 50;
-int				shadowB = 30;
-int				shadowAOffset = 50;  // Value is offset by -50 in implementation -> Offset [-50,50]
-int				shadowBOffset = 50;  // Value is offset by -50 in implementation -> Offset [-50,50]
+int				shadowA = 83;
+int				shadowB = 50;
+int				shadowAOffset = 45;  // Value is offset by -50 in implementation -> Offset [-50,50]
+int				shadowBOffset = 45;  // Value is offset by -50 in implementation -> Offset [-50,50]
+
+int				rValue = 1;
+int				gValue = 1;
+int				bValue = 1;
 
 void main()
 {
@@ -244,9 +249,9 @@ void main()
 	//Read input video
 	while (1) {
 		//randomNoise100 = rand() % 100;
-		//outputRGBData = fopen("C:/CCStudio_v3.1/MCHproj/MixedReality0404/MixedReality/outputRGBData.raw", "wb");
-		//if(!outputRGBData)
-		//	printf("Cannot open outputRGBData");
+		/*outputRGBData = fopen("C:/CCStudio_v3.1/MCHproj/MixedReality0404/MixedReality/outputRGBData.raw", "wb");
+		if(!outputRGBData)
+			printf("Cannot open outputRGBData");*/
 		/*outputHueData = fopen("C:/CCStudio_v3.1/MCHproj/MixedReality0404/MixedReality/outputHueData.raw", "wb");
 		if(!outputHueData)
 			printf("Cannot open outputHueData");*/
@@ -300,7 +305,7 @@ void main()
 				xTrackCenter = floor(2 * bFilter.xCenter-xTrackCenter);
 				yTrackCenter = floor(2 * bFilter.yCenter-yTrackCenter);
 				trackRange = floor(sqrt(bFilter.ballSize));                                                           			
-				imgSize = Guard((trackRange / bFilter.quantifiedLevel) * bFilter.quantifiedLevel, 30,100);
+				imgSize = Guard((trackRange / bFilter.quantifiedLevel) * bFilter.quantifiedLevel, 30,100) * imgSizeScale / 50;
 				bFilter.scaleFactor = imgSize;
 				//if(tmpSize1 != imgSize1)
 
@@ -326,7 +331,7 @@ void main()
 				xTrackCenter = floor(gFilter.xCenter);
 				yTrackCenter = floor(gFilter.yCenter);
 				trackRange = floor(sqrt(gFilter.ballSize));
-				imgSize = Guard((trackRange / gFilter.quantifiedLevel) * gFilter.quantifiedLevel, 30,100);
+				imgSize = Guard((trackRange / gFilter.quantifiedLevel) * gFilter.quantifiedLevel, 30,100) * imgSizeScale / 50;
 				gFilter.scaleFactor = imgSize;
 
 
@@ -356,7 +361,7 @@ void main()
 				trackRange = floor(sqrt(bFilter.ballSize + gFilter.ballSize));
 				//imgSize = Min(100, floor(((bFilter.ballSize - bFilter.lowerBound) / bFilter.upperBound) * bFilter.quantifiedLevel) * bFilter.quantifiedLevel + floor((rFilter.ballSize - rFilter.lowerBound) / rFilter.upperBound) * rFilter.quantifiedLevel) * rFilter.quantifiedLevel)/2;
 				trackRange = floor(sqrt(bFilter.ballSize) + sqrt(gFilter.ballSize));
-				imgSize = Guard((trackRange / gFilter.quantifiedLevel) * gFilter.quantifiedLevel, 30,100);	
+				imgSize = Guard((trackRange / gFilter.quantifiedLevel) * gFilter.quantifiedLevel, 30,100) * imgSizeScale / 50;	
 				combinedFilter.scaleFactor = imgSize;
 				combinedFilter.ballFound = 1;
 		 		combinedFilter.ballColor = -1;
@@ -432,8 +437,8 @@ void main()
 				//fprintf(outputHueData, "%f ", ary2_rgb2hsvTable[ary2_imgFrame[j][i]][2]);
 			}
 		}
-		fclose(outputRGBData);
-		//fclose(outputHueData);*/
+		fclose(outputRGBData);*/
+		//fclose(outputHueData);
 	}
 }
 
