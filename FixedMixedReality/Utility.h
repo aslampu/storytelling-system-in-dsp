@@ -10,6 +10,7 @@
 
 #define Min(A,B)(A<B ? A:B)
 #define Max(A,B)(A>B ? A:B)
+#define Guard(G,A,B)(Min(Max(G,A),B))//A:min, B:max
 //Min(100,floor((x-min/max)*lvl)*lvl)
 enum colorID {rColor, gColor, bColor};
 
