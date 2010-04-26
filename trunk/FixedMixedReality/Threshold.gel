@@ -7,9 +7,9 @@ slider Image_Size(0,200,1,1,size)	//incr by 10, up to 100
 	imgSizeScale = size;			//vary size of Image_Size
 }
 
-slider Noise_Variance(0,100,1,1,val)	//incr by 10, up to 100
+slider Noise_Variance(0,100,1,1,val)	//incr by 10, up to 1000
 {
-	noiseVariance = val / 100.0;			//vary size of Image_Size
+	noiseVariance = val;			//vary size of Image_Size
 }
 
 slider RValue(0,30,1,1,val)
