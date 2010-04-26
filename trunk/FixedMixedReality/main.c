@@ -41,6 +41,7 @@ unsigned short     	ary3_yuv2rgbTable[64][32][32];
 float				ary2_rgb2hsvTable[NUM_RGB][3];
 //unsigned short		ary_hsv2rgbTable[NUM_RGB];
 short   	  	    ary2_rgb2labTable[NUM_RGB][3];
+int					ary2_rotationTable[360][4];
 //unsigned short  	ary_lab2rgbTable[NUM_RGB];
 
 
@@ -95,6 +96,7 @@ int				shadowBOffset = 45;  // Value is offset by -50 in implementation -> Offse
 int				rValue = 1;
 int				gValue = 1;
 int				bValue = 1;
+int				rotationPrecisionScale = 100;
 
 void main()
 {
@@ -141,8 +143,17 @@ void main()
 	vm3224bl(15);
 	
     for (k=0;k<64;k++)
-    for (i=0;i<32;i++)
-    for (j=0;j<32;j++) ary3_yuv2rgbTable[k][i][j] = ybr_565(k<<2,i<<3,j<<3);
+    	for (i=0;i<32;i++)
+    		for (j=0;j<32;j++)
+    			ary3_yuv2rgbTable[k][i][j] = ybr_565(k<<2,i<<3,j<<3);
+
+	// Generates the roation look-up table
+	for (i = 0; i < 360; ++i) {
+		ary2_rotationTable[i][0] = cos(i * 3.1415926 / 180) * rotationPrecisionScale;
+		ary2_rotationTable[i][1] = -sin(i * 3.1415926 / 180) * rotationPrecisionScale;
+		ary2_rotationTable[i][2] = sin(i * 3.1415926 / 180) * rotationPrecisionScale;
+		ary2_rotationTable[i][3] = cos(i * 3.1415926 / 180) * rotationPrecisionScale;
+	}
 	
 	/*outputLData = fopen("C:/CCStudio_v3.1/MCHproj/MixedReality0404/MixedReality/outputLData.dat", "wb");
 	if(!outputLData) printf("Cannot open outputLData");
@@ -314,8 +325,8 @@ void main()
 					applyLAB(avgTeaPotL, avgTeaPotA, avgTeaPotB, stdTeaPotL, stdTeaPotA, stdTeaPotB,ary2_imgNine, ary2_imgInputModified, ary2_rgb2labTable);
 				}
 			
-				//scaleImage(imgSize, ary2_imgNine, ary2_imgInput);
-				scaleImage(imgSize, ary2_imgInputModified, ary2_imgInput);
+				//scaleImage(imgSize, ary2_imgNine, ary2_imgInput, ary2_rotationTable[0]);
+				scaleImage(imgSize, ary2_imgInputModified, ary2_imgInput, ary2_rotationTable[0]);
 				/*Adjust*/
 			
 				
@@ -341,7 +352,7 @@ void main()
 				}
 
 				//scaleImage(imgSize, ary2_imgNine, ary2_imgInput);
-				scaleImage(imgSize, ary2_imgInputModified, ary2_imgInput);
+				scaleImage(imgSize, ary2_imgInputModified, ary2_imgInput, ary2_rotationTable[0]);
 				/*Adjust*/
 
 
@@ -381,7 +392,7 @@ void main()
 					applyLAB(avgTeaPotL, avgTeaPotA, avgTeaPotB, stdTeaPotL, stdTeaPotA, stdTeaPotB,ary2_imgNine, ary2_imgInputModified, ary2_rgb2labTable);
 				}
 				//scaleImage(imgSize, ary2_imgNine, ary2_imgInput);
-				scaleImage(imgSize, ary2_imgInputModified, ary2_imgInput);
+				scaleImage(imgSize, ary2_imgInputModified, ary2_imgInput, ary2_rotationTable[0]);
 				/*Adjust*/
 
 				DrawShadow1D(&combinedFilter, ary2_imgFrame);
@@ -394,7 +405,7 @@ void main()
 			/*case 4: //only find red one
 				imgSize = Min(100, (rFilter.quantifiedLevel * (rFilter.ballSize - rFilter.lowerBound) / rFilter.upperBound) * rFilter.quantifiedLevel + 50);
 				rFilter.scaleFactor = imgSize;
-				scaleImage(imgSize, ary2_imgEight, ary2_imgInput);
+				scaleImage(imgSize, ary2_imgEight, ary2_imgInput, ary2_rotationTable[0]);
 				
 				DrawShadow1D(&rFilter, ary2_imgFrame);
 				
@@ -406,7 +417,7 @@ void main()
 			case 5: //find both red and blue ones
 				//imgSize = Min(100, floor(((bFilter.ballSize - bFilter.lowerBound) / bFilter.upperBound) * bFilter.quantifiedLevel) * bFilter.quantifiedLevel + floor((rFilter.ballSize - rFilter.lowerBound) / rFilter.upperBound) * rFilter.quantifiedLevel) * rFilter.quantifiedLevel)/2;
 				imgSize = 100;
-				scaleImage(imgSize, ary2_imgSeven, ary2_imgInput);
+				scaleImage(imgSize, ary2_imgSeven, ary2_imgInput, ary2_rotationTable[0]);
 				OverlayImage2D(&rFilter, &bFilter, ary2_imgFrame, ary2_imgInput);	
 				//OverlayImage2D(&rFilter, &bFilter, ary2_imgFrame, ary2_imgSeven);
 				break;*/

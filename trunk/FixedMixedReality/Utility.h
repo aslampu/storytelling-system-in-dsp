@@ -61,6 +61,8 @@ extern int				rValue;
 extern int				gValue;
 extern int				bValue;
 
+extern int				rotationPrecisionScale;
+
 /* Adjust */
 extern int decideLAB_apply;
 /* Adjus */
@@ -112,8 +114,8 @@ unsigned short Lab2RGB(short LValue, short aValue, short bValue);
 void InitializeFilter(int ballColor, Filter *ptr_newFilter);
 void PLL6713();
 unsigned short	ybr_565(short y,short u,short v);
-void scaleImage(short scaleFactor100, unsigned short ary2_imgSample[HEIGHT][WIDTH], unsigned short ary2_imgInput[HEIGHT][WIDTH]);
-int getPixelValueBilinear(int pPrime100, int qPrime100, unsigned short ary2_imgSample[HEIGHT][WIDTH], int angle); 
+void scaleImage(short scaleFactor100, unsigned short ary2_imgSample[HEIGHT][WIDTH], unsigned short ary2_imgInput[HEIGHT][WIDTH], int rotMatrix[4]);
+int getPixelValueBilinear(int pPrime100, int qPrime100, unsigned short ary2_imgSample[HEIGHT][WIDTH]); 
 //int getPixelValueBilinear(float pPrime, float qPrime, unsigned short ary2_imgSample[HEIGHT][WIDTH]); 
 //float getPixelValueBilinearOriginal(float pPrime, float qPrime, unsigned short ary2_imgSample[HEIGHT][WIDTH]);
 
