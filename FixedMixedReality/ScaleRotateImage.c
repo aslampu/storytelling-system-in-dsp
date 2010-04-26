@@ -3,9 +3,9 @@
 
 #include "Utility.h"
 
-static int floatToIntScale = 20;
+static int floatToIntScale = 1000;
 
-int getPixelValueBilinear(int pPrime, int qPrime, unsigned short ary2_imgSample[HEIGHT][WIDTH], int angle) {
+int getPixelValueBilinear(int pPrime, int qPrime, unsigned short ary2_imgSample[HEIGHT][WIDTH]) {
 	// This function returns the pixel value at a non-integeral
 	// coordinates of the image using bilinear interpolation.
 	// If the values are outside of the bounds of the image,
@@ -49,9 +49,9 @@ int getPixelValueBilinear(int pPrime, int qPrime, unsigned short ary2_imgSample[
 		bPrime += noiseVariance * (rand() % 100);
 	}
 
-	rPrime = Min(rPrime / 400, 31);
-	gPrime = Min(gPrime / 400, 63);
-	bPrime = Min(bPrime / 400, 31);
+	rPrime = Min(rPrime / 1000000, 31);
+	gPrime = Min(gPrime / 1000000, 63);
+	bPrime = Min(bPrime / 1000000, 31);
 	
 	if(rPrime < rValue && gPrime < gValue && bPrime < bValue)
 		return 0x0000;
@@ -59,8 +59,8 @@ int getPixelValueBilinear(int pPrime, int qPrime, unsigned short ary2_imgSample[
 	return (((short)rPrime)<<11)|(((short)gPrime)<<5)|(((short)bPrime));
 }
 
-void scaleImage(short scaleFactor100, unsigned short ary2_imgSample[HEIGHT][WIDTH], unsigned short ary2_imgInput[HEIGHT][WIDTH]) {
-	int j,k;
+void scaleImage(short scaleFactor100, unsigned short ary2_imgSample[HEIGHT][WIDTH], unsigned short ary2_imgInput[HEIGHT][WIDTH], int rotMatrix[4]) {
+	int j,k,jPrime,kPrime;
 	int pPrime, qPrime;
 	int scaledHeight, scaledWidth;
 	int offsetHeight, offsetWidth;
@@ -73,9 +73,11 @@ void scaleImage(short scaleFactor100, unsigned short ary2_imgSample[HEIGHT][WIDT
 
 	for (j=0; j < scaledHeight; j++) {
 		for (k=0; k < scaledWidth; k++) {
-			pPrime = j * floatToIntScale / (scaleFactor100 / 100.0);
-			qPrime = k * floatToIntScale / (scaleFactor100 / 100.0);
-			ary2_imgInput[j+offsetHeight][k+offsetWidth] = getPixelValueBilinear(pPrime, qPrime, ary2_imgSample, 0);
+			jPrime = Max(Min((rotMatrix[0] * j + rotMatrix[1] * k) / rotationPrecisionScale, 200), 0);
+			kPrime = Max(Min((rotMatrix[2] * j + rotMatrix[3] * k) / rotationPrecisionScale, 200), 0);
+			pPrime = jPrime * floatToIntScale / (scaleFactor100 / 100.0);
+			qPrime = kPrime * floatToIntScale / (scaleFactor100 / 100.0);
+			ary2_imgInput[j+offsetHeight][k+offsetWidth] = getPixelValueBilinear(pPrime, qPrime, ary2_imgSample);
 			//ary2_imgInput[j][k] = 0x0000;
 		}
 	}
