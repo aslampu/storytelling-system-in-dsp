@@ -1,6 +1,6 @@
 #include "Utility.h"
 
-void PLL6713(){
+/*void PLL6713(){
 	int i;
 	// CPU Clock Input : 50MHz
 	
@@ -16,7 +16,7 @@ void PLL6713(){
 	*(volatile int *)(0x01b7c100) = *(volatile int *)(0x01b7c100) & 0xfffffff7;
 	for(i=0;i<4;i++);
 	*(volatile int *)(0x01b7c100) = *(volatile int *)(0x01b7c100) | 0x01;
-}
+}*/
 
 unsigned short	ybr_565(short y,short u,short v){
 	int		r,g,b;
