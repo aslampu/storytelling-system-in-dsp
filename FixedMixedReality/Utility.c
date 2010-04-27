@@ -56,28 +56,28 @@ void InitializeFilter(int ballColor, Filter *ptr_newFilter){
 			ptr_newFilter->hThreshold = rhThreshold;
 			ptr_newFilter->hBias = rhBias;
 			ptr_newFilter->lowerBound = rLowerBound;
-			ptr_newFilter->upperBound = rUpperBound;
+			//ptr_newFilter->upperBound = rUpperBound;
 			ptr_newFilter->quantifiedLevel = rQuantifiedLevel;
 			ptr_newFilter->boxPadding = rBoxPadding;
-			ptr_newFilter->boxBorder = rBoxBorder;
+			//ptr_newFilter->boxBorder = rBoxBorder;
 			break;
 		case gColor:
 			ptr_newFilter->hThreshold = ghThreshold;
 			ptr_newFilter->hBias = ghBias;
 			ptr_newFilter->lowerBound = gLowerBound;
-			ptr_newFilter->upperBound = gUpperBound;
+			//ptr_newFilter->upperBound = gUpperBound;
 			ptr_newFilter->quantifiedLevel = gQuantifiedLevel;
 			ptr_newFilter->boxPadding = gBoxPadding;
-			ptr_newFilter->boxBorder = gBoxBorder;
+			//ptr_newFilter->boxBorder = gBoxBorder;
 			break;
 		case bColor:
 			ptr_newFilter->hThreshold = bhThreshold;
 			ptr_newFilter->hBias = bhBias;
 			ptr_newFilter->lowerBound = bLowerBound;
-			ptr_newFilter->upperBound = bUpperBound;
+			//ptr_newFilter->upperBound = bUpperBound;
 			ptr_newFilter->quantifiedLevel = bQuantifiedLevel;
 			ptr_newFilter->boxPadding = bBoxPadding;
-			ptr_newFilter->boxBorder = bBoxBorder;
+			//ptr_newFilter->boxBorder = bBoxBorder;
 			break;
 		default:
 			;//error message

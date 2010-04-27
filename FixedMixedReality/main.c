@@ -20,12 +20,12 @@
 //#include    <stdio.h>
 #include    <math.h>
 
-//#pragma 	DATA_SECTION ( ary2_imgCamera,".sdram" )
+#pragma 	DATA_SECTION ( ary2_imgCamera,".sdram" )
 //#pragma 	DATA_SECTION ( ary2_imgFrame,".sdram" )
-//#pragma 	DATA_SECTION ( ary3_yuv2rgbTable,".sdram" )
-#pragma 	DATA_SECTION ( ary2_rgb2hsvTable,".sdram" )
+#pragma 	DATA_SECTION ( ary3_yuv2rgbTable,".sdram" )
+//#pragma 	DATA_SECTION ( ary2_rgb2hsvTable,".sdram" )
 #pragma 	DATA_SECTION ( ary2_rgb2labTable,".sdram" )
-#pragma 	DATA_SECTION ( ary2_rotationTable,".sdram" )
+//#pragma 	DATA_SECTION ( ary2_rotationTable,".sdram" )
 //#pragma 	DATA_SECTION ( ary2_imgInputModified,".sdram" )
 
 short				ary2_imgCamera[240][320];
@@ -86,6 +86,7 @@ int				rValue = 1;
 int				gValue = 1;
 int				bValue = 1;
 int				rotationPrecisionScale = 100;
+int				quantifiedPrecision = 10000;
 
 void main()
 {
@@ -320,7 +321,7 @@ void main()
 				/*Adjust*/
 			
 				
-				//DrawShadow1D(&bFilter, ary2_imgFrame);
+				DrawShadow1D(&bFilter, ary2_imgFrame);
 				
 				//OverlayImage1D(avgTeaPotL, avgTeaPotA, avgTeaPotB, stdTeaPotL, stdTeaPotA, stdTeaPotB, &bFilter, ary2_imgFrame, ary2_imgInput, ary2_rgb2labTable);
 				OverlayImage1D(&bFilter, ary2_imgFrame, ary2_imgNine);
@@ -349,7 +350,7 @@ void main()
 			
 
 				
-				//DrawShadow1D(&gFilter, ary2_imgFrame);
+				DrawShadow1D(&gFilter, ary2_imgFrame);
 				
 				//OverlayImage1D(avgAcrylicPaintL, avgAcrylicPaintA, avgAcrylicPaintB, stdAcrylicPaintL, stdAcrylicPaintA, stdAcrylicPaintB, &gFilter, ary2_imgFrame, ary2_imgInput, ary2_rgb2labTable);
 				OverlayImage1D(&gFilter,ary2_imgFrame, ary2_imgNine);
@@ -359,8 +360,8 @@ void main()
 			case 3://find both green and blue
 				xTrackCenter = floor((bFilter.xCenter + gFilter.xCenter) / 2);
 				yTrackCenter = floor((bFilter.yCenter + gFilter.yCenter) / 2);
-				rotatedAngle = (180 / 3.1415926) * Guard(atan2((bFilter.xCenter-gFilter.xCenter) * 1000000,(bFilter.yCenter-gFilter.yCenter) * 1000000),-6.2915926,6.2915926);
-				if(rotatedAngle<0)
+				rotatedAngle = (180 * quantifiedPrecision / 31416) * Guard(atan2((bFilter.xCenter-gFilter.xCenter) * quantifiedPrecision,(bFilter.yCenter-gFilter.yCenter) * quantifiedPrecision) * quantifiedPrecision,-62915,62915) / quantifiedPrecision;
+				if(rotatedAngle < 0)
 					rotatedAngle += 360;			   
 				trackRange = floor(sqrt(bFilter.ballSize + gFilter.ballSize));
 				//imgSize = Min(100, floor(((bFilter.ballSize - bFilter.lowerBound) / bFilter.upperBound) * bFilter.quantifiedLevel) * bFilter.quantifiedLevel + floor((rFilter.ballSize - rFilter.lowerBound) / rFilter.upperBound) * rFilter.quantifiedLevel) * rFilter.quantifiedLevel)/2;
@@ -368,17 +369,17 @@ void main()
 				imgSize = Guard((trackRange / gFilter.quantifiedLevel) * gFilter.quantifiedLevel, 30,100) * imgSizeScale / 50;	
 				combinedFilter.scaleFactor = imgSize;
 				combinedFilter.ballFound = 1;
-		 		combinedFilter.ballColor = -1;
+		 		combinedFilter.ballColor = 100;// means no color
 				combinedFilter.ballSize = trackRange;
 				combinedFilter.xCenter = xTrackCenter;
 				combinedFilter.yCenter = yTrackCenter;
 				combinedFilter.hThreshold = 0;
 				combinedFilter.hBias = 0;
 				combinedFilter.lowerBound = 0;
-				combinedFilter.upperBound = 0;
+				//combinedFilter.upperBound = 0;
 				combinedFilter.quantifiedLevel = 0;
 				combinedFilter.boxPadding = 0;
-				combinedFilter.boxBorder = 0;
+				//combinedFilter.boxBorder = 0;
 
 				/*Adjust*/
 				if(decideLAB_apply == 1){
@@ -389,7 +390,7 @@ void main()
 				//scaleImage(imgSize, ary2_imgInputModified, ary2_imgInput, ary2_rotationTable[rotatedAngle]);
 				/*Adjust*/
 
-				//DrawShadow1D(&combinedFilter, ary2_imgFrame);
+				DrawShadow1D(&combinedFilter, ary2_imgFrame);
 				OverlayImage1D(&combinedFilter,ary2_imgFrame, ary2_imgNine);
 				
 				//OverlayImage2D(&gFilter, &bFilter, ary2_imgFrame, ary2_imgInput);	

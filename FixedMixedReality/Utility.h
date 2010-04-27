@@ -68,18 +68,20 @@ extern int decideLAB_apply;
 /* Adjus */
 
 typedef struct{
-	int		ballFound;
-	int 	ballColor;
-	unsigned short 	ballSize;
-	float 	xCenter;
-	float 	yCenter;
-	float 	hThreshold;
-	float 	hBias;
-	short 	lowerBound;
-	unsigned short 	upperBound;
-	short 	quantifiedLevel;
-	short 	boxPadding;
-	short 	boxBorder;
+	unsigned short	ballFound;
+	unsigned short 	ballColor;
+	int			 	ballSize;
+	int 			xCenter;
+	int 			yCenter;
+	unsigned short 	hThreshold;
+	unsigned short 	hBias;
+	unsigned short  boxPadding;
+	unsigned short  scaleFactor;
+	unsigned short  rotatedAngle;
+	unsigned short 	lowerBound;
+	unsigned short 	quantifiedLevel;
+	//unsigned short 	upperBound;
+	//unsigned short 	boxBorder;
 	/*short   xFrom;
 	short   xTo;
 	short   yFrom;
@@ -90,7 +92,6 @@ typedef struct{
 	float   stdL;
 	float   stdA;
 	float   stdB;*/
-	int     scaleFactor;
 } Filter;
 
 typedef struct {
