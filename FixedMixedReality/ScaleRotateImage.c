@@ -73,11 +73,12 @@ void scaleImage(short scaleFactor100, unsigned short ary2_imgSample[HEIGHT][WIDT
 
 	for (j=0; j < scaledHeight; j++) {
 		for (k=0; k < scaledWidth; k++) {
-			jPrime = Max(Min((rotMatrix[0] * j + rotMatrix[1] * k) / rotationPrecisionScale, 200), 0);
-			kPrime = Max(Min((rotMatrix[2] * j + rotMatrix[3] * k) / rotationPrecisionScale, 200), 0);
+			jPrime = Max(Min((rotMatrix[0] * (j - scaledHeight) + rotMatrix[1] * (k - scaledWidth) + 100) / rotationPrecisionScale, 200), 0);
+			kPrime = Max(Min((rotMatrix[2] * (j - scaledHeight) + rotMatrix[3] * (k - scaledWidth) + 100) / rotationPrecisionScale, 200), 0);
 			pPrime = jPrime * floatToIntScale / (scaleFactor100 / 100.0);
 			qPrime = kPrime * floatToIntScale / (scaleFactor100 / 100.0);
 			ary2_imgInput[j+offsetHeight][k+offsetWidth] = getPixelValueBilinear(pPrime, qPrime, ary2_imgSample);
+			//ary2_imgInput[j+offsetHeight][k+offsetWidth] = getPixelValueBilinear(pPrime, qPrime, ary2_imgSample);
 			//ary2_imgInput[j][k] = 0x0000;
 		}
 	}

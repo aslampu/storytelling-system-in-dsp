@@ -106,6 +106,7 @@ void main()
 	//short check=0;
 	//int imgSizeScale = 0;
 	int imgSize = 0;
+	int rotatedAngle = 0;
 	//int imgSize1 = 100, imgSize4 = 100, imgSize5 = 100;
 	//int tmpSize1 = 0, tmpSize4  = 0, tmpSize5 = 0;
 	int labTeaPotNumber = 0;
@@ -369,6 +370,9 @@ void main()
 			case 3://find both green and blue
 				xTrackCenter = floor((bFilter.xCenter + gFilter.xCenter) / 2);
 				yTrackCenter = floor((bFilter.yCenter + gFilter.yCenter) / 2);
+				rotatedAngle = (180 / 3.1415926) * Guard(atan2((bFilter.xCenter-gFilter.xCenter) * 1000000,(bFilter.yCenter-gFilter.yCenter) * 1000000),-6.2915926,6.2915926);
+				if(rotatedAngle<0)
+					rotatedAngle += 360;			   
 				trackRange = floor(sqrt(bFilter.ballSize + gFilter.ballSize));
 				//imgSize = Min(100, floor(((bFilter.ballSize - bFilter.lowerBound) / bFilter.upperBound) * bFilter.quantifiedLevel) * bFilter.quantifiedLevel + floor((rFilter.ballSize - rFilter.lowerBound) / rFilter.upperBound) * rFilter.quantifiedLevel) * rFilter.quantifiedLevel)/2;
 				trackRange = floor(sqrt(bFilter.ballSize) + sqrt(gFilter.ballSize));
@@ -391,8 +395,9 @@ void main()
 				if(decideLAB_apply == 1){
 					applyLAB(avgTeaPotL, avgTeaPotA, avgTeaPotB, stdTeaPotL, stdTeaPotA, stdTeaPotB,ary2_imgNine, ary2_imgInputModified, ary2_rgb2labTable);
 				}
+
 				//scaleImage(imgSize, ary2_imgNine, ary2_imgInput);
-				scaleImage(imgSize, ary2_imgInputModified, ary2_imgInput, ary2_rotationTable[0]);
+				scaleImage(imgSize, ary2_imgInputModified, ary2_imgInput, ary2_rotationTable[rotatedAngle]);
 				/*Adjust*/
 
 				DrawShadow1D(&combinedFilter, ary2_imgFrame);
