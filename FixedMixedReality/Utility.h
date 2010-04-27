@@ -101,18 +101,20 @@ typedef struct {
 	double	eccentricity;
 } Shadow;
 
-void TrackBall2D(int xTrackCenter, int yTrackCenter, int trackRange, Filter *ptr_oldFilterGreen, Filter *ptr_oldFilterBlue, unsigned short ary2_imgFrame[XLCD][YLCD], float ary2_rgb2hsvTable[NUM_RGB][3], short ary2_rgb2labTable[NUM_RGB][3]);
+void TrackBall2D(int xTrackCenter, int yTrackCenter, int trackRange, Filter *ptr_oldFilterGreen, Filter *ptr_oldFilterBlue, unsigned short ary2_imgFrame[XLCD][YLCD], unsigned short ary2_rgb2hsvTable[NUM_RGB][3], short ary2_rgb2labTable[NUM_RGB][3]);
+void RGB2HSV(unsigned short rgbColor, unsigned short *h, unsigned short *s, unsigned short *v);
+unsigned short HSV2RGB(unsigned short hValue, unsigned short sValue, unsigned short vValue);
 //void TrackBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], float ary2_rgb2hsvTable[NUM_RGB][3], short ary2_rgb2labTable[NUM_RGB][3]);
-void DrawBox(int xFrom, int xTo, int yFrom, int yTo, int boxBorder, int boxPadding,unsigned short ary2_imgFrame[XLCD][YLCD]);
-void DebugBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], unsigned short ary2_rgb2hsvTable[NUM_RGB][3]);
-void RGB2HSV(unsigned short rgbColor, float *h, float *s, float *v);
-unsigned short HSV2RGB(float hValue, float sValue, float vValue);
+//void DrawBox(int xFrom, int xTo, int yFrom, int yTo, int boxBorder, int boxPadding,unsigned short ary2_imgFrame[XLCD][YLCD]);
+//void DebugBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], unsigned short ary2_rgb2hsvTable[NUM_RGB][3]);
+//void RGB2HSV(unsigned short rgbColor, float *h, float *s, float *v);
+//unsigned short HSV2RGB(float hValue, float sValue, float vValue);
 //void RGB2HSV(unsigned short rgbColor, unsigned short *h, unsigned short *s, unsigned short *v);
 //unsigned short HSV2RGB(unsigned short hValue, unsigned short sValue, unsigned short vValue);
 void RGB2Lab(unsigned short rgbColor, short *ptr_LValue, short *ptr_aValue, short *ptr_bValue);
 unsigned short Lab2RGB(short LValue, short aValue, short bValue);
 void InitializeFilter(int ballColor, Filter *ptr_newFilter);
-void PLL6713();
+//void PLL6713();
 unsigned short	ybr_565(short y,short u,short v);
 void scaleImage(short scaleFactor100, unsigned short ary2_imgSample[HEIGHT][WIDTH], unsigned short ary2_imgInput[HEIGHT][WIDTH], int rotMatrix[4]);
 int getPixelValueBilinear(int pPrime100, int qPrime100, unsigned short ary2_imgSample[HEIGHT][WIDTH]); 

@@ -2,29 +2,39 @@
 #include "Utility.h"
 
 // modifed version
-void RGB2HSV(unsigned short rgbColor, float *ptr_hValue, float *ptr_sValue, float *ptr_vValue){
 //void RGB2HSV(unsigned short rgbColor, float *ptr_hValue, float *ptr_sValue, float *ptr_vValue){
-	float zMatlab, sMatlab;
-	int rTemp = (int)((((rgbColor & 0xf800) >> 11) * 255 / 31));
-	int gTemp = (int)((((rgbColor & 0x07e0) >> 5) * 255 / 63));
-	int bTemp = (int)(((rgbColor & 0x001f) * 255 / 31));
-	//float RGB_Min = Min(rTemp,Min(gTemp,bTemp));
-	float v = Max(rTemp,Max(gTemp,bTemp));
-	float h = 0;
-	float s = v - Min(rTemp,Min(gTemp,bTemp));
+void RGB2HSV(unsigned short rgbColor, unsigned short *ptr_hValue, unsigned short *ptr_sValue, unsigned short *ptr_vValue){
+	//float zMatlab, sMatlab;
+	unsigned short zMatlab, sMatlab;
+	//int rTemp = (int)((((rgbColor & 0xf800) >> 11) * 255 / 31));
+	//int gTemp = (int)((((rgbColor & 0x07e0) >> 5) * 255 / 63));
+	//int bTemp = (int)(((rgbColor & 0x001f) * 255 / 31));
+	unsigned short rTemp = ((rgbColor & 0xf800) >> 11) * 255 / 31;
+	unsigned short gTemp = ((rgbColor & 0x07e0) >> 5) * 255 / 63;
+	unsigned short bTemp = (rgbColor & 0x001f) * 255 / 31;
+	//float v = Max(rTemp,Max(gTemp,bTemp));
+	//float h = 0;
+	//float s = v - Min(rTemp,Min(gTemp,bTemp));
+	short v = Max(rTemp,Max(gTemp,bTemp));
+	short h = 0;
+	short s = v - Min(rTemp,Min(gTemp,bTemp));
 	
 	zMatlab = s ? 0 : 1;
 	s = s + zMatlab;
 	
 	//H_value
 	if(rTemp == v)
-		h = (gTemp - bTemp) / s;
+		//h = (gTemp - bTemp) / s;
+		h = gTemp -bTemp;
 	else if(gTemp == v)
-		h = 2 + ( bTemp - rTemp ) / s;
+		//h = 2 + ( bTemp - rTemp ) / s;
+		h = 2 * s + bTemp - rTemp;
 	else if(bTemp == v)
-		h = 4 + ( rTemp - gTemp ) / s;
+		//h = 4 + ( rTemp - gTemp ) / s;
+		h = 4 * s + rTemp - gTemp;
 
-	h = h/6;
+	//h = h/6;
+	h = h * 60 / s;
 	if(h < 0)
 		h = h + 360;
 
@@ -32,71 +42,84 @@ void RGB2HSV(unsigned short rgbColor, float *ptr_hValue, float *ptr_sValue, floa
 	h = sMatlab * h;
 
 	if(v > 0)	
-		s = sMatlab * s / v;
+		s = sMatlab * s * 360 / v;
 	else
 		s = 0;
 	
-	//*ptr_hValue = h;
 	//*ptr_sValue = s;
 	//*ptr_vValue = v;
-	*ptr_hValue = h * 360;
-	*ptr_sValue = s * 360;
+	//*ptr_hValue = h * 360;
+	*ptr_hValue = h;
+	//*ptr_sValue = s * 360;
+	*ptr_sValue = s;
 	*ptr_vValue = v;
 	//*ptr_hValue = (int)(h * 360);
 	//*ptr_sValue = (int)(s * 360);
 	//*ptr_vValue = (int)(v);
 }
 
-unsigned short HSV2RGB(float hValue, float sValue, float vValue){
-	 float hTemp = hValue, sTemp = sValue/360, vTemp = vValue;
+//unsigned short HSV2RGB(float hValue, float sValue, float vValue){
+unsigned short HSV2RGB(unsigned short hValue, unsigned short sValue, unsigned short vValue){
 	 int rTemp,gTemp,bTemp,i;
-     float f, p, q, t;
+	 //float hTemp = hValue, sTemp = sValue/360, vTemp = vValue;
+     //float f, p, q, t;
+	 //int hTemp = hValue, sTemp = sValue, vTemp = vValue;
+     int f, p, q, t;
 
 	
-    if( sTemp == 0 ) 
+    if( sValue == 0 ) 
     {    	
     // achromatic (grey)
-        rTemp = floor(vTemp);
-        gTemp = floor(vTemp);
-        bTemp = floor(vTemp);
-        return ((rTemp&0x0f8)<<8)|((gTemp&0x0fc)<<3)|((bTemp&0x0f8)>>3);
+        //rTemp = floor(vTemp);
+        //gTemp = floor(vTemp);
+        //bTemp = floor(vTemp);
+        //return ((rTemp&0x0f8)<<8)|((gTemp&0x0fc)<<3)|((bTemp&0x0f8)>>3);
+		return ((vValue&0x0f8)<<8)|((vValue&0x0fc)<<3)|((vValue&0x0f8)>>3);
     }
 
-	hTemp /= 60;                        // sector 0 to 5
-    i = floor(hTemp); 
-    f = hTemp - i;                      // factorial part of h
-    p = floor(vValue * ( 1 - sTemp ));
-    q = floor(vValue * ( 1 - sTemp * f ));
-    t = floor(vValue * ( 1 - sTemp * ( 1 - f )));
+	//hTemp /= 60;                        // sector 0 to 5
+    //i = floor(hTemp); 
+    //f = hTemp - i;                      // factorial part of h
+
+	i = hValue / 60;
+	f = hValue - i * 60;
+
+    //p = floor(vValue * ( 1 - sTemp ));
+    //q = floor(vValue * ( 1 - sTemp * f ));
+    //t = floor(vValue * ( 1 - sTemp * ( 1 - f )));
+	p = vValue * ( 360 - sValue ) / 360;
+    q = vValue * ( 360 - sValue * f * 6 ) / 360;
+    t = vValue * ( 360 - sValue * (360 - f * 6)) / 360;
+
 
 	switch( i ) {
 		case 0:
-		        rTemp = vTemp;
+		        rTemp = vValue;
 		        gTemp = t;
 		        bTemp = p;
 		        break;
 		case 1:
 		        rTemp = q;
-		        gTemp = vTemp;
+		        gTemp = vValue;
 		        bTemp = p;
 		        break;
 		case 2:
 		        rTemp = p;
-		        gTemp = vTemp;
+		        gTemp = vValue;
 		        bTemp = t;
 		        break;
 		case 3:
 		        rTemp = p;
 		        gTemp = q;
-		        bTemp = vTemp;
+		        bTemp = vValue;
 		        break;
 		case 4:
 		        rTemp = t;
 		        gTemp = p;
-		        bTemp = vTemp;
+		        bTemp = vValue;
 		        break;
 		default:                // case 5:
-		        rTemp = vTemp;
+		        rTemp = vValue;
 		        gTemp = p;
 		        bTemp = q;
 		        break;

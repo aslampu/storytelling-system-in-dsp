@@ -11,7 +11,8 @@ void DrawShadow1D(Filter *ptr_theFilter, unsigned short ary2_imgFrame[XLCD][YLCD
 	Shadow tmpShadow;
 	//unsigned short tmpColor,tmpH,tmpS,tmpV;
 	unsigned short tmpColor;
-	float tmpH,tmpS,tmpV;
+	//float tmpH,tmpS,tmpV;
+	unsigned short tmpH,tmpS,tmpV;
 
 	tmpShadow.xCenter = Min(XLCD, ptr_theFilter->xCenter + 75 * ptr_theFilter->scaleFactor / 100 + shadowAOffset - 50);
 	tmpShadow.yCenter = Min(YLCD, ptr_theFilter->yCenter + shadowBOffset - 50);

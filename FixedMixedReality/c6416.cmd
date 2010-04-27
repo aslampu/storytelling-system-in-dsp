@@ -6,8 +6,8 @@
 -x
 
 /* Memory for TMS320C641x */
-MEMORY   { IDRAM  : origin = 0x00000000,len = 0x00100000 
-		   SDRAM  : origin = 0x80000000,len = 0x02000000}
+MEMORY   { 	IDRAM  : origin = 0x00000000,len = 0x00100000
+		 	SDRAM  : origin = 0x80000000,len = 0x02000000}
 		   
 SECTIONS { .vectors:    {} > IDRAM
            .text:       {} > IDRAM
@@ -16,9 +16,9 @@ SECTIONS { .vectors:    {} > IDRAM
            .bss:        {} > IDRAM
            .sysmem:     {} > IDRAM
            .cio:        {} > IDRAM
-           .far:        {} > SDRAM
+           .far:        {} > IDRAM
            .stack:      {} > IDRAM
-           .sdram:      {} > SDRAM }
+           .sdram:      {} > SDRAM}
 
 
 

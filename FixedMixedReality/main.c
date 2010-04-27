@@ -14,37 +14,26 @@
 
 #include    "Utility.h"
 #include    "InputImage.h"
-//#include    "TeaPot.h"
-//#include    "TeaPot.1.h"
-//#include    "TeaPot.2.h"
-//#include	"mug.1.h"
 #include 	"mug.3.h"
-//#include    "AcrylicPaint.h"
-//#include    "AcrylicPaint.2.h"
-//#include    "AcrylicPaint.3.h"
-//#include    "AcrylicPaint.4.h"
-//#include    "plant_insert.2.h"
 #include    "QDMA2.h"
 #include	"vm3224k.h"
-#include    <stdio.h>
+//#include    <stdio.h>
 #include    <math.h>
 
-#pragma 	DATA_SECTION ( ary2_imgCamera,".sdram" )
-#pragma 	DATA_SECTION ( ary2_imgFrame,".sdram" )
-//#pragma 	DATA_SECTION ( ary2_imgOne,".sdram" )
-//#pragma 	DATA_SECTION ( ary2_imgTwo,".sdram" )
+//#pragma 	DATA_SECTION ( ary2_imgCamera,".sdram" )
+//#pragma 	DATA_SECTION ( ary2_imgFrame,".sdram" )
 //#pragma 	DATA_SECTION ( ary3_yuv2rgbTable,".sdram" )
+#pragma 	DATA_SECTION ( ary2_rgb2hsvTable,".sdram" )
+#pragma 	DATA_SECTION ( ary2_rgb2labTable,".sdram" )
+#pragma 	DATA_SECTION ( ary2_rotationTable,".sdram" )
+//#pragma 	DATA_SECTION ( ary2_imgInputModified,".sdram" )
 
-short				ary2_imgCamera[XLCD][YLCD];
-unsigned short 		ary2_imgFrame[XLCD][YLCD]; 
+short				ary2_imgCamera[240][320];
+unsigned short 		ary2_imgFrame[240][320]; 
 unsigned short     	ary3_yuv2rgbTable[64][32][32];
-float				ary2_rgb2hsvTable[NUM_RGB][3];
-//unsigned short		ary_hsv2rgbTable[NUM_RGB];
-short   	  	    ary2_rgb2labTable[NUM_RGB][3];
+unsigned short		ary2_rgb2hsvTable[65536][3];
+short   	  	    ary2_rgb2labTable[65536][3];
 int					ary2_rotationTable[360][4];
-//unsigned short  	ary_lab2rgbTable[NUM_RGB];
-
-
 /* Adjust */
 int decideLAB_apply = 0;
 unsigned short ary2_imgInputModified[200][200];
@@ -331,10 +320,10 @@ void main()
 				/*Adjust*/
 			
 				
-				DrawShadow1D(&bFilter, ary2_imgFrame);
+				//DrawShadow1D(&bFilter, ary2_imgFrame);
 				
 				//OverlayImage1D(avgTeaPotL, avgTeaPotA, avgTeaPotB, stdTeaPotL, stdTeaPotA, stdTeaPotB, &bFilter, ary2_imgFrame, ary2_imgInput, ary2_rgb2labTable);
-				OverlayImage1D(&bFilter, ary2_imgFrame, ary2_imgInput);
+				OverlayImage1D(&bFilter, ary2_imgFrame, ary2_imgNine);
 
 				//OverlayImage1D(&bFilter, ary2_imgFrame, ary2_imgSeven);
 				//DrawShadow1D(&bFilter, ary2_imgFrame);
@@ -360,10 +349,10 @@ void main()
 			
 
 				
-				DrawShadow1D(&gFilter, ary2_imgFrame);
+				//DrawShadow1D(&gFilter, ary2_imgFrame);
 				
 				//OverlayImage1D(avgAcrylicPaintL, avgAcrylicPaintA, avgAcrylicPaintB, stdAcrylicPaintL, stdAcrylicPaintA, stdAcrylicPaintB, &gFilter, ary2_imgFrame, ary2_imgInput, ary2_rgb2labTable);
-				OverlayImage1D(&gFilter,ary2_imgFrame, ary2_imgInput);
+				OverlayImage1D(&gFilter,ary2_imgFrame, ary2_imgNine);
 				//OverlayImage1D(&rFilter, ary2_imgFrame, ary2_imgFive);
 				//DrawShadow1D(&gFilter, ary2_imgFrame);
 				break;
@@ -397,11 +386,11 @@ void main()
 				}
 
 				//scaleImage(imgSize, ary2_imgNine, ary2_imgInput);
-				scaleImage(imgSize, ary2_imgInputModified, ary2_imgInput, ary2_rotationTable[rotatedAngle]);
+				//scaleImage(imgSize, ary2_imgInputModified, ary2_imgInput, ary2_rotationTable[rotatedAngle]);
 				/*Adjust*/
 
-				DrawShadow1D(&combinedFilter, ary2_imgFrame);
-				OverlayImage1D(&combinedFilter,ary2_imgFrame, ary2_imgInput);
+				//DrawShadow1D(&combinedFilter, ary2_imgFrame);
+				OverlayImage1D(&combinedFilter,ary2_imgFrame, ary2_imgNine);
 				
 				//OverlayImage2D(&gFilter, &bFilter, ary2_imgFrame, ary2_imgInput);	
 				//OverlayImage1D(ary2_imgFrame, ary2_imgInput);
