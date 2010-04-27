@@ -131,10 +131,14 @@ unsigned short HSV2RGB(unsigned short hValue, unsigned short sValue, unsigned sh
 void RGB2Lab(unsigned short rgbColor, short *ptr_LValue, short *ptr_aValue, short *ptr_bValue){
   	
 	float X, Y, Z, fX, fY, fZ;
+	//int X,Y,Z,fX,fY,fZ;
 	//int L,a,b;
 	float R = (((rgbColor & 0xf800) >> 11) * 255 / 31);
 	float G = (((rgbColor & 0x07e0) >> 5) * 255 / 63);
 	float B = ((rgbColor & 0x001f) * 255 / 31);
+	//int R = ((rgbColor & 0xf800) >> 11) * 255 / 31;
+	//int G = ((rgbColor & 0x07e0) >> 5) * 255 / 63;
+	//int B = (rgbColor & 0x001f) * 255 / 31;
 
   	X = 0.412453 * R + 0.357580 * G + 0.180423 * B;
   	Y = 0.212671 * R + 0.715160 * G + 0.072169 * B;
@@ -143,6 +147,10 @@ void RGB2Lab(unsigned short rgbColor, short *ptr_LValue, short *ptr_aValue, shor
 	X /= (255 * 0.950456);
   	Y /=  255;
   	Z /= (255 * 1.088754);
+	
+	//X = (0.412453 * R + 0.357580 * G + 0.180423 * B) / (255 * 0.950456);
+  	//Y = (0.212671 * R + 0.715160 * G + 0.072169 * B) / 255;
+  	//Z = (0.019334 * R + 0.119193 * G + 0.950227 * B) / (255 * 1.088754);
 
   	if (Y > 0.008856){
     	fY = pow(Y, 1.0 / 3.0);

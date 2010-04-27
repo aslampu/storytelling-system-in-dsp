@@ -2,12 +2,17 @@
 #include "Utility.h"
 																
 void TrackBall2D(int xTrackCenter, int yTrackCenter, int trackRange, Filter *ptr_oldFilterGreen, Filter *ptr_oldFilterBlue, unsigned short ary2_imgFrame[XLCD][YLCD], unsigned short ary2_rgb2hsvTable[NUM_RGB][3], short ary2_rgb2labTable[NUM_RGB][3]){
+//void TrackBall2D(unsigned short xTrackCenter, unsigned short yTrackCenter, unsigned short trackRange, Filter *ptr_oldFilterGreen, Filter *ptr_oldFilterBlue, unsigned short ary2_imgFrame[XLCD][YLCD], unsigned short ary2_rgb2hsvTable[NUM_RGB][3], short ary2_rgb2labTable[NUM_RGB][3]){
+	//int i, j, xFrom, yFrom, xTo, yTo, hueFlagGreen = 0, hueFlagBlue=0;
+	//float hTemp, hLGreen, hUGreen, sTemp, vTemp, hLBlue, hUBlue;
+	//int L,a,b;
+	//int labNumber = 0;
+	//float avgL = 0, avgA = 0, avgB = 0, stdL = 0, stdA = 0, stdB = 0;
 	int i, j, xFrom, yFrom, xTo, yTo, hueFlagGreen = 0, hueFlagBlue=0;
 	float hTemp, hLGreen, hUGreen, sTemp, vTemp, hLBlue, hUBlue;
 	int L,a,b;
 	int labNumber = 0;
 	float avgL = 0, avgA = 0, avgB = 0, stdL = 0, stdA = 0, stdB = 0;
-	//int rTemp, gTemp, bTemp;
 
 	Filter newComerGreen, newComerBlue;
 	InitializeFilter(ptr_oldFilterGreen->ballColor, &newComerGreen);
