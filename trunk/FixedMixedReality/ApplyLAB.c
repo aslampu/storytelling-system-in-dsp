@@ -1,8 +1,6 @@
 #include "Utility.h"
-#include <math.h>
 
-//void applyLAB(unsigned short ary2_source[HEIGHT][WIDTH], unsigned short shortary2_imgInputModified[HEIGHT][WIDTH]){
-void applyLAB(float imgAvgL, float imgAvgA, float imgAvgB, float imgStdL, float imgStdA, float imgStdB,unsigned short ary2_source[HEIGHT][WIDTH],unsigned short ary2_imgInputModified[HEIGHT][WIDTH], short	ary2_rgb2labTable[NUM_RGB][3]){
+void applyLAB(float imgAvgL, float imgAvgA, float imgAvgB, float imgStdL, float imgStdA, float imgStdB, unsigned short ary2_source[HEIGHT][WIDTH],unsigned short ary2_imgInputModified[HEIGHT][WIDTH], short ary2_rgb2labTable[NUM_RGB][3]){
 
 	int i,j;
 	int adjustedLValue, adjustedAValue, adjustedBValue;

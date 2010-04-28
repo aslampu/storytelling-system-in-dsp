@@ -17,16 +17,12 @@
 #include 	"mug.3.h"
 #include    "QDMA2.h"
 #include	"vm3224k.h"
-//#include    <stdio.h>
 #include    <math.h>
+//#include    <stdio.h>
 
 #pragma 	DATA_SECTION ( ary2_imgCamera,".sdram" )
-//#pragma 	DATA_SECTION ( ary2_imgFrame,".sdram" )
 #pragma 	DATA_SECTION ( ary3_yuv2rgbTable,".sdram" )
-//#pragma 	DATA_SECTION ( ary2_rgb2hsvTable,".sdram" )
 #pragma 	DATA_SECTION ( ary2_rgb2labTable,".sdram" )
-//#pragma 	DATA_SECTION ( ary2_rotationTable,".sdram" )
-//#pragma 	DATA_SECTION ( ary2_imgInputModified,".sdram" )
 
 short				ary2_imgCamera[240][320];
 unsigned short 		ary2_imgFrame[240][320]; 
@@ -72,10 +68,19 @@ float			backgroundStdB = 0;
 
 float           weightingS = 22;
 float			weightingD = 27;
+
+//int				backgroundAvgL = 0;
+//int 			backgroundAvgA = 0;
+//int				backgroundAvgB = 0;
+//int				backgroundStdL = 0;
+//int 			backgroundStdA = 0;
+//int				backgroundStdB = 0;
+
+//int		        weightingS = 22;
+//int				weightingD = 27;
 unsigned short 	displacementThreshold = 50;
 int				imgSizeScale = 100;
-//int				randomNoise100;
-float noiseVariance = 0.001;
+float 			noiseVariance = 0.001;
 
 int				shadowA = 83;
 int				shadowB = 50;
@@ -92,39 +97,22 @@ void main()
 {
 	//Initialize
 	int	i=-1, j=-1, k=-1, y0=-1, y1=-1, v0=-1, u0=-1;
-	Filter rFilter, gFilter, bFilter, combinedFilter;
-	//short check=0;
-	//int imgSizeScale = 0;
+	Filter gFilter, bFilter, combinedFilter;
 	int imgSize = 0;
 	int rotatedAngle = 0;
-	//int imgSize1 = 100, imgSize4 = 100, imgSize5 = 100;
-	//int tmpSize1 = 0, tmpSize4  = 0, tmpSize5 = 0;
-	int labTeaPotNumber = 0;
 	int L,a,b;
-	float avgTeaPotL = 0;
-	float avgTeaPotA = 0;
-	float avgTeaPotB = 0;
-	float stdTeaPotL = 0;
-	float stdTeaPotA = 0;
-	float stdTeaPotB = 0;
-	int labAcrylicPaintNumber = 0;
-	float avgAcrylicPaintL = 0;
-	float avgAcrylicPaintA = 0;
-	float avgAcrylicPaintB = 0;
-	float stdAcrylicPaintL = 0;
-	float stdAcrylicPaintA = 0;
-	float stdAcrylicPaintB = 0;
+	int labMugNumber = 0;
+	int avgMugL = 0;
+	int avgMugA = 0;
+	int avgMugB = 0;
+	int stdMugL = 0;
+	int stdMugA = 0;
+	int stdMugB = 0;
 	int xTrackCenter = XLCD / 2;
 	int yTrackCenter = YLCD / 2;
 	int trackRange = YLCD / 2;
 	//FILE *outputRGBData;
 	//int ok=0;
-
-	//FILE *outputRGBData, *outputHueData,*outputLData, *outputaData, *outputbData;
-	//int ok=0, check = 0;
-	//unsigned int testLAB;
-	//int tmpL,tmpA,tmpB;
-	//short scaleFactor100=100;
 
 	//PLL6713();	// Initialize C6713 PLL	
 	//CE2CTL = (WSU|WST|WHD|RSU|RST|RHD|MTYPE);
@@ -145,51 +133,20 @@ void main()
 		ary2_rotationTable[i][2] = sin(i * 3.1415926 / 180) * rotationPrecisionScale;
 		ary2_rotationTable[i][3] = cos(i * 3.1415926 / 180) * rotationPrecisionScale;
 	}
-	
-	/*outputLData = fopen("C:/CCStudio_v3.1/MCHproj/MixedReality0404/MixedReality/outputLData.dat", "wb");
-	if(!outputLData) printf("Cannot open outputLData");
-	outputaData = fopen("C:/CCStudio_v3.1/MCHproj/MixedReality0404/MixedReality/outputaData.dat", "wb");
-	if(!outputaData) printf("Cannot open outputLData");
-	outputbData = fopen("C:/CCStudio_v3.1/MCHproj/MixedReality0404/MixedReality/outputbData.dat", "wb");
-	if(!outputbData) printf("Cannot open outputbData");*/
-
 
     for (j=0;j<NUM_RGB;j++){ 
 		RGB2HSV(j,&(ary2_rgb2hsvTable[j][0]),&(ary2_rgb2hsvTable[j][1]),&(ary2_rgb2hsvTable[j][2]));
-		//ary_hsv2rgbTable[j] = HSV2RGB(ary2_rgb2hsvTable[j][0], ary2_rgb2hsvTable[j][1], ary2_rgb2hsvTable[j][2]);
 		RGB2Lab(j,&(ary2_rgb2labTable[j][0]),&(ary2_rgb2labTable[j][1]),&(ary2_rgb2labTable[j][2]));
-		//ary_lab2rgbTable[j] = Lab2RGB(((0&0x0ff)<<24|(ary2_rgb2labTable[j][0]&0x0ff)<<16|(ary2_rgb2labTable[j][1]&0x0ff)<<8|ary2_rgb2labTable[j][2]&0x0ff));
-		//ary_rgb2labTable[j] = RGB2Lab(j);
-		/*if((ary_rgb2labTable[j] & 0x00800000) >> 23)//negative
-			check = (ary_rgb2labTable[j] | 0xffffffffff00ffff) >>16;
-			//fprintf(outputLData, "%d: %d\n", j, (int)((ary_rgb2labTable[j] | 0xffffffffff00ffff) >>16));
-		else
-			//check = (ary_rgb2labTable[j] & 0x00ff0000) >>16;
-			fprintf(outputLData, "%d: %d\n", j, (int)((ary_rgb2labTable[j] & 0x00ff0000) >>16));
-		if((ary_rgb2labTable[j] & 0x00008000) >> 15)//negative
-			//check = (ary_rgb2labTable[j] | 0xffffffffffff00ff) >>8;
-			fprintf(outputaData, "%d: %d\n", j, (int)((ary_rgb2labTable[j] | 0xffffffffffff00ff) >>8));
-		else
-			//check = (ary_rgb2labTable[j] & 0x0000ff00) >>8;
-			fprintf(outputaData, "%d: %d\n", j, (int)((ary_rgb2labTable[j] & 0x0000ff00) >>8));
-		if((ary_rgb2labTable[j] & 0x00000080) >> 7)//negative
-			//check = (ary_rgb2labTable[j] | 0xffffffffffffff00);
-			fprintf(outputbData, "%d: %d\n", j, (int)((ary_rgb2labTable[j] | 0xffffffffffffff00)));
-		else
-			//check = (ary_rgb2labTable[j] & 0x000000ff);
-			fprintf(outputbData, "%d: %d\n", j, (int)((ary_rgb2labTable[j] & 0x000000ff)));
-		*/
 	}
 
 	QDMA_CNT 	= (239<<16)|320;
 	QDMA_IDX 	= 0x0000<<16;
 	
-	
 	for(j=0; j<HEIGHT; j++){
 		for(i=0; i<WIDTH;i++){
 			//compute input images' Lab
 			if(ary2_imgNine[j][i] != 65535){
-				labTeaPotNumber++;
+				labMugNumber++;
 				L = ary2_rgb2labTable[ary2_imgNine[j][i]][0];
 				a = ary2_rgb2labTable[ary2_imgNine[j][i]][1];
 				b = ary2_rgb2labTable[ary2_imgNine[j][i]][2];
@@ -199,64 +156,31 @@ void main()
 				b = 0;
 			}
 
-			avgTeaPotL += L;
-			avgTeaPotA += a;
-			avgTeaPotB += b;
-			stdTeaPotL += L * L;
-			stdTeaPotA += a * a;
-			stdTeaPotB += b * b;	
-			
-			if(ary2_imgNine[j][i] != 65535){
-				labAcrylicPaintNumber++;
-				L = ary2_rgb2labTable[ary2_imgNine[j][i]][0];
-				a = ary2_rgb2labTable[ary2_imgNine[j][i]][1];
-				b = ary2_rgb2labTable[ary2_imgNine[j][i]][2];
-			}else{
-				L = 0;
-				a = 0;
-				b = 0;
-			}
-
-			avgAcrylicPaintL += L;
-			avgAcrylicPaintA += a;
-			avgAcrylicPaintB += b;
-			stdAcrylicPaintL += L * L;
-			stdAcrylicPaintA += a * a;
-			stdAcrylicPaintB += b * b;		
+			avgMugL += L;
+			avgMugA += a;
+			avgMugB += b;
+			stdMugL += L * L;
+			stdMugA += a * a;
+			stdMugB += b * b;			
 		}
 	}
 
-	avgTeaPotL = avgTeaPotL/labTeaPotNumber;
-	avgTeaPotA = avgTeaPotA/labTeaPotNumber;
-	avgTeaPotB = avgTeaPotB/labTeaPotNumber;
-	stdTeaPotL = sqrt(stdTeaPotL/labTeaPotNumber - avgTeaPotL * avgTeaPotL);
-	stdTeaPotA = sqrt(stdTeaPotA/labTeaPotNumber - avgTeaPotA * avgTeaPotA);
-	stdTeaPotB = sqrt(stdTeaPotB/labTeaPotNumber - avgTeaPotB * avgTeaPotB);
+	avgMugL = avgMugL/labMugNumber;
+	avgMugA = avgMugA/labMugNumber;
+	avgMugB = avgMugB/labMugNumber;
+	stdMugL = sqrt(stdMugL/labMugNumber - avgMugL * avgMugL);
+	stdMugA = sqrt(stdMugA/labMugNumber - avgMugA * avgMugA);
+	stdMugB = sqrt(stdMugB/labMugNumber - avgMugB * avgMugB);
 
-	avgAcrylicPaintL = avgAcrylicPaintL/labAcrylicPaintNumber;
-	avgAcrylicPaintA = avgAcrylicPaintA/labAcrylicPaintNumber;
-	avgAcrylicPaintB = avgAcrylicPaintB/labAcrylicPaintNumber;
-	stdAcrylicPaintL = sqrt(stdAcrylicPaintL/labAcrylicPaintNumber - avgAcrylicPaintL * avgAcrylicPaintL);
-	stdAcrylicPaintA = sqrt(stdAcrylicPaintA/labAcrylicPaintNumber - avgAcrylicPaintA * avgAcrylicPaintA);
-	stdAcrylicPaintB = sqrt(stdAcrylicPaintB/labAcrylicPaintNumber - avgAcrylicPaintB * avgAcrylicPaintB);	
-
-	InitializeFilter(rColor, &rFilter);
+	//InitializeFilter(rColor, &rFilter);
 	InitializeFilter(gColor, &gFilter);
 	InitializeFilter(bColor, &bFilter);
 	
-	//fclose(outputLData);
-	//fclose(outputaData);
-	//fclose(outputbData);
-	
 	//Read input video
 	while (1) {
-		//randomNoise100 = rand() % 100;
 		/*outputRGBData = fopen("C:/CCStudio_v3.1/MCHproj/MixedReality0404/MixedReality/outputRGBData.raw", "wb");
 		if(!outputRGBData)
 			printf("Cannot open outputRGBData");*/
-		/*outputHueData = fopen("C:/CCStudio_v3.1/MCHproj/MixedReality0404/MixedReality/outputHueData.raw", "wb");
-		if(!outputHueData)
-			printf("Cannot open outputHueData");*/
 		
 		//Get Input Frames C6416 version
 		for(i=0;i<1000000;i++) if(EDMA_CIPRL&0x200) break;		
@@ -287,11 +211,7 @@ void main()
 		}
 		
 		//Call track function, which modify the ary2_imgFrame array passed by a pointer		
-		//TrackBall(&gFilter, ary2_imgFrame, ary2_rgb2hsvTable, ary2_rgb2labTable);
-		//TrackBall(&bFilter, ary2_imgFrame, ary2_rgb2hsvTable, ary2_rgb2labTable);
 		TrackBall2D(xTrackCenter, yTrackCenter, trackRange, &gFilter, &bFilter, ary2_imgFrame, ary2_rgb2hsvTable, ary2_rgb2labTable);
-		//DebugBall(&rFilter, ary2_imgFrame, ary2_rgb2hsvTable);
-		//DebugBall(&bFilter, ary2_imgFrame, ary2_rgb2hsvTable);
 
 		//Compute Rotation and choose the coresponding image
 		//Resize Image
@@ -303,69 +223,50 @@ void main()
 				trackRange = YLCD/2;
 				break;
 			case 1: //only find blue one
-				//tmpSize1 = imgSize1;
-				xTrackCenter = floor(2 * bFilter.xCenter-xTrackCenter);
-				yTrackCenter = floor(2 * bFilter.yCenter-yTrackCenter);
-				trackRange = floor(sqrt(bFilter.ballSize));                                                           			
+				xTrackCenter = 2 * bFilter.xCenter-xTrackCenter;
+				yTrackCenter = 2 * bFilter.yCenter-yTrackCenter;
+				trackRange = sqrt(bFilter.ballSize);                                                           			
 				imgSize = Guard((trackRange / bFilter.quantifiedLevel) * bFilter.quantifiedLevel, 30,100) * imgSizeScale / 50;
 				bFilter.scaleFactor = imgSize;
-				//if(tmpSize1 != imgSize1)
 
 				/*Adjust*/
 				if(decideLAB_apply == 1){
-					applyLAB(avgTeaPotL, avgTeaPotA, avgTeaPotB, stdTeaPotL, stdTeaPotA, stdTeaPotB,ary2_imgNine, ary2_imgInputModified, ary2_rgb2labTable);
+					applyLAB(avgMugL, avgMugA, avgMugB, stdMugL, stdMugA, stdMugB, ary2_imgNine, ary2_imgInputModified, ary2_rgb2labTable);
 				}
 			
-				//scaleImage(imgSize, ary2_imgNine, ary2_imgInput, ary2_rotationTable[0]);
 				scaleImage(imgSize, ary2_imgInputModified, ary2_imgInput, ary2_rotationTable[0]);
 				/*Adjust*/
-			
-				
+							
 				DrawShadow1D(&bFilter, ary2_imgFrame);
 				
-				//OverlayImage1D(avgTeaPotL, avgTeaPotA, avgTeaPotB, stdTeaPotL, stdTeaPotA, stdTeaPotB, &bFilter, ary2_imgFrame, ary2_imgInput, ary2_rgb2labTable);
-				OverlayImage1D(&bFilter, ary2_imgFrame, ary2_imgNine);
-
-				//OverlayImage1D(&bFilter, ary2_imgFrame, ary2_imgSeven);
-				//DrawShadow1D(&bFilter, ary2_imgFrame);
+				OverlayImage1D(&bFilter, ary2_imgFrame, ary2_imgInput);
 				break;
 			case 2://only find green
-				xTrackCenter = floor(gFilter.xCenter);
-				yTrackCenter = floor(gFilter.yCenter);
-				trackRange = floor(sqrt(gFilter.ballSize));
+				xTrackCenter = gFilter.xCenter;
+				yTrackCenter = gFilter.yCenter;
+				trackRange = sqrt(gFilter.ballSize);
 				imgSize = Guard((trackRange / gFilter.quantifiedLevel) * gFilter.quantifiedLevel, 30,100) * imgSizeScale / 50;
 				gFilter.scaleFactor = imgSize;
 
-
 				/*Adjust*/
 				if(decideLAB_apply == 1){
-					applyLAB(avgTeaPotL, avgTeaPotA, avgTeaPotB, stdTeaPotL, stdTeaPotA, stdTeaPotB,ary2_imgNine, ary2_imgInputModified, ary2_rgb2labTable);
+					applyLAB(avgMugL, avgMugA, avgMugB, stdMugL, stdMugA, stdMugB, ary2_imgNine, ary2_imgInputModified, ary2_rgb2labTable);
 				}
 
-				//scaleImage(imgSize, ary2_imgNine, ary2_imgInput);
 				scaleImage(imgSize, ary2_imgInputModified, ary2_imgInput, ary2_rotationTable[0]);
 				/*Adjust*/
-
-
 			
-
-				
 				DrawShadow1D(&gFilter, ary2_imgFrame);
 				
-				//OverlayImage1D(avgAcrylicPaintL, avgAcrylicPaintA, avgAcrylicPaintB, stdAcrylicPaintL, stdAcrylicPaintA, stdAcrylicPaintB, &gFilter, ary2_imgFrame, ary2_imgInput, ary2_rgb2labTable);
-				OverlayImage1D(&gFilter,ary2_imgFrame, ary2_imgNine);
-				//OverlayImage1D(&rFilter, ary2_imgFrame, ary2_imgFive);
-				//DrawShadow1D(&gFilter, ary2_imgFrame);
+				OverlayImage1D(&gFilter,ary2_imgFrame, ary2_imgInput);
 				break;
 			case 3://find both green and blue
-				xTrackCenter = floor((bFilter.xCenter + gFilter.xCenter) / 2);
-				yTrackCenter = floor((bFilter.yCenter + gFilter.yCenter) / 2);
+				xTrackCenter = (bFilter.xCenter + gFilter.xCenter) / 2;
+				yTrackCenter = (bFilter.yCenter + gFilter.yCenter) / 2;
 				rotatedAngle = (180 * quantifiedPrecision / 31416) * Guard(atan2((bFilter.xCenter-gFilter.xCenter) * quantifiedPrecision,(bFilter.yCenter-gFilter.yCenter) * quantifiedPrecision) * quantifiedPrecision,-62915,62915) / quantifiedPrecision;
 				if(rotatedAngle < 0)
 					rotatedAngle += 360;			   
-				trackRange = floor(sqrt(bFilter.ballSize + gFilter.ballSize));
-				//imgSize = Min(100, floor(((bFilter.ballSize - bFilter.lowerBound) / bFilter.upperBound) * bFilter.quantifiedLevel) * bFilter.quantifiedLevel + floor((rFilter.ballSize - rFilter.lowerBound) / rFilter.upperBound) * rFilter.quantifiedLevel) * rFilter.quantifiedLevel)/2;
-				trackRange = floor(sqrt(bFilter.ballSize) + sqrt(gFilter.ballSize));
+				trackRange = sqrt(bFilter.ballSize) + sqrt(gFilter.ballSize);
 				imgSize = Guard((trackRange / gFilter.quantifiedLevel) * gFilter.quantifiedLevel, 30,100) * imgSizeScale / 50;	
 				combinedFilter.scaleFactor = imgSize;
 				combinedFilter.ballFound = 1;
@@ -383,40 +284,15 @@ void main()
 
 				/*Adjust*/
 				if(decideLAB_apply == 1){
-					applyLAB(avgTeaPotL, avgTeaPotA, avgTeaPotB, stdTeaPotL, stdTeaPotA, stdTeaPotB,ary2_imgNine, ary2_imgInputModified, ary2_rgb2labTable);
+					applyLAB(avgMugL, avgMugA, avgMugB, stdMugL, stdMugA, stdMugB, ary2_imgNine, ary2_imgInputModified, ary2_rgb2labTable);
 				}
 
-				//scaleImage(imgSize, ary2_imgNine, ary2_imgInput);
 				scaleImage(imgSize, ary2_imgInputModified, ary2_imgInput, ary2_rotationTable[rotatedAngle]);
-				//scaleImage(100, ary2_imgInputModified, ary2_imgInput, ary2_rotationTable[rotatedAngle]);
 				/*Adjust*/
 
 				DrawShadow1D(&combinedFilter, ary2_imgFrame);
 				OverlayImage1D(&combinedFilter, ary2_imgFrame, ary2_imgInput);
-				
-				//OverlayImage2D(&gFilter, &bFilter, ary2_imgFrame, ary2_imgInput);	
-				//OverlayImage1D(ary2_imgFrame, ary2_imgInput);
-				//OverlayImage2D(&rFilter, &bFilter, ary2_imgFrame, ary2_imgSeven);
 				break;	
-			/*case 4: //only find red one
-				imgSize = Min(100, (rFilter.quantifiedLevel * (rFilter.ballSize - rFilter.lowerBound) / rFilter.upperBound) * rFilter.quantifiedLevel + 50);
-				rFilter.scaleFactor = imgSize;
-				scaleImage(imgSize, ary2_imgEight, ary2_imgInput, ary2_rotationTable[0]);
-				
-				DrawShadow1D(&rFilter, ary2_imgFrame);
-				
-				
-				OverlayImage1D(avgAcrylicPaintL, avgAcrylicPaintA, avgAcrylicPaintB, stdAcrylicPaintL, stdAcrylicPaintA, stdAcrylicPaintB, &rFilter, ary2_imgFrame, ary2_imgInput, ary2_rgb2labTable);
-				//OverlayImage1D(&rFilter, ary2_imgFrame, ary2_imgFive);
-				//DrawShadow1D(&rFilter, ary2_imgFrame);
-				break;
-			case 5: //find both red and blue ones
-				//imgSize = Min(100, floor(((bFilter.ballSize - bFilter.lowerBound) / bFilter.upperBound) * bFilter.quantifiedLevel) * bFilter.quantifiedLevel + floor((rFilter.ballSize - rFilter.lowerBound) / rFilter.upperBound) * rFilter.quantifiedLevel) * rFilter.quantifiedLevel)/2;
-				imgSize = 100;
-				scaleImage(imgSize, ary2_imgSeven, ary2_imgInput, ary2_rotationTable[0]);
-				OverlayImage2D(&rFilter, &bFilter, ary2_imgFrame, ary2_imgInput);	
-				//OverlayImage2D(&rFilter, &bFilter, ary2_imgFrame, ary2_imgSeven);
-				break;*/
 			default:
 				;
 		}
@@ -445,7 +321,6 @@ void main()
 			}
 		}
 		fclose(outputRGBData);*/
-		//fclose(outputHueData);
 	}
 }
 
