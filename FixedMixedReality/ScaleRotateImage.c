@@ -19,12 +19,12 @@ int getPixelValueBilinear(int pPrime, int qPrime, unsigned short ary2_imgSample[
 
 	//int randomNoise100 = rand() % 100; // Update random noise for each interpolated pixel
 
-	if (ary2_imgSample[lowerP][lowerQ] == 0x0000 ||
+	/*if (ary2_imgSample[lowerP][lowerQ] == 0x0000 ||
 		ary2_imgSample[lowerP][lowerQ+1] == 0x0000 ||
 		ary2_imgSample[lowerP+1][lowerQ] == 0x0000 ||
 		ary2_imgSample[lowerP+1][lowerQ+1] == 0x0000)
 		return Max(Max(Max(ary2_imgSample[lowerP][lowerQ], ary2_imgSample[lowerP][lowerQ+1]),ary2_imgSample[lowerP+1][lowerQ]),ary2_imgSample[lowerP+1][lowerQ+1]);
-	
+	*/
 	// R
 	rPrime = (floatToIntScale-a) * (floatToIntScale-b) * ((ary2_imgSample[lowerP][lowerQ]&0xF800)>>11) +	    // r00
 			 (floatToIntScale-a) *   b   * ((ary2_imgSample[lowerP + 1][lowerQ]&0xF800)>>11) +    // r01
@@ -73,12 +73,21 @@ void scaleImage(short scaleFactor100, unsigned short ary2_imgSample[HEIGHT][WIDT
 
 	for (j=0; j < scaledHeight; j++) {
 		for (k=0; k < scaledWidth; k++) {
-			jPrime = Max(Min((rotMatrix[0] * (j - scaledHeight) + rotMatrix[1] * (k - scaledWidth) + 100) / rotationPrecisionScale, 200), 0);
-			kPrime = Max(Min((rotMatrix[2] * (j - scaledHeight) + rotMatrix[3] * (k - scaledWidth) + 100) / rotationPrecisionScale, 200), 0);
-			pPrime = jPrime * floatToIntScale / (scaleFactor100 / 100.0);
-			qPrime = kPrime * floatToIntScale / (scaleFactor100 / 100.0);
-			ary2_imgInput[j+offsetHeight][k+offsetWidth] = getPixelValueBilinear(pPrime, qPrime, ary2_imgSample);
+			//jPrime = Max(Min((rotMatrix[0] * (j - scaledHeight) + rotMatrix[1] * (k - scaledWidth) + 100) / rotationPrecisionScale, 200), 0);
+			//kPrime = Max(Min((rotMatrix[2] * (j - scaledHeight) + rotMatrix[3] * (k - scaledWidth) + 100) / rotationPrecisionScale, 200), 0);
+			//pPrime = Guard((rotMatrix[0] * (j - scaledHeight / 2) * (200 / scaledHeight) + rotMatrix[1] * (k - scaledWidth / 2) * (200 / scaledWidth) + 10000) / rotationPrecisionScale, 0, 200);
+			//qPrime = Guard((rotMatrix[2] * (j - scaledHeight / 2) * (200 / scaledHeight) + rotMatrix[3] * (k - scaledWidth / 2) * (200 / scaledHeight) + 10000) / rotationPrecisionScale, 0, 200);
+			pPrime = Guard(((double)rotMatrix[0] * (j - (double)scaledHeight / 2) * (200 / (double)scaledHeight) + (double)rotMatrix[1] * (k - (double)scaledWidth / 2) * (200 / (double)scaledWidth) + 10000) / (double)rotationPrecisionScale * floatToIntScale, 0, 200 * floatToIntScale);
+			qPrime = Guard(((double)rotMatrix[2] * (j - (double)scaledHeight / 2) * (200 / (double)scaledHeight) + (double)rotMatrix[3] * (k - (double)scaledWidth / 2) * (200 / (double)scaledHeight) + 10000) / (double)rotationPrecisionScale * floatToIntScale, 0, 200 * floatToIntScale);
+			//pPrime = jPrime * floatToIntScale / (scaleFactor100 / 100.0);
+			//qPrime = kPrime * floatToIntScale / (scaleFactor100 / 100.0);
 			//ary2_imgInput[j+offsetHeight][k+offsetWidth] = getPixelValueBilinear(pPrime, qPrime, ary2_imgSample);
+			//ary2_imgInput[j][k] = getPixelValueBilinear(pPrime, qPrime, ary2_imgSample);
+			ary2_imgInput[j+offsetHeight][k+offsetWidth] = getPixelValueBilinear(pPrime, qPrime, ary2_imgSample);
+			
+			if(j == 55 && k == 80) {
+				jPrime = 10;
+			}
 			//ary2_imgInput[j][k] = 0x0000;
 		}
 	}

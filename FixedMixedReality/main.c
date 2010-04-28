@@ -387,11 +387,12 @@ void main()
 				}
 
 				//scaleImage(imgSize, ary2_imgNine, ary2_imgInput);
-				//scaleImage(imgSize, ary2_imgInputModified, ary2_imgInput, ary2_rotationTable[rotatedAngle]);
+				scaleImage(imgSize, ary2_imgInputModified, ary2_imgInput, ary2_rotationTable[rotatedAngle]);
+				//scaleImage(100, ary2_imgInputModified, ary2_imgInput, ary2_rotationTable[rotatedAngle]);
 				/*Adjust*/
 
 				DrawShadow1D(&combinedFilter, ary2_imgFrame);
-				OverlayImage1D(&combinedFilter,ary2_imgFrame, ary2_imgNine);
+				OverlayImage1D(&combinedFilter, ary2_imgFrame, ary2_imgInput);
 				
 				//OverlayImage2D(&gFilter, &bFilter, ary2_imgFrame, ary2_imgInput);	
 				//OverlayImage1D(ary2_imgFrame, ary2_imgInput);
