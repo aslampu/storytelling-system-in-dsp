@@ -61,8 +61,8 @@ void RGB2HSV(unsigned short rgbColor, unsigned short *ptr_hValue, unsigned short
 //unsigned short HSV2RGB(float hValue, float sValue, float vValue){
 unsigned short HSV2RGB(unsigned short hValue, unsigned short sValue, unsigned short vValue){
 	 int rTemp,gTemp,bTemp,i;
-	 //float hTemp = hValue, sTemp = sValue/360, vTemp = vValue;
-     //float f, p, q, t;
+	 //float sTemp = sValue / 360;
+     //float p, q, t;
 	 //int hTemp = hValue, sTemp = sValue, vTemp = vValue;
      int f, p, q, t;
 
@@ -70,16 +70,16 @@ unsigned short HSV2RGB(unsigned short hValue, unsigned short sValue, unsigned sh
     if( sValue == 0 ) 
     {    	
     // achromatic (grey)
-        //rTemp = floor(vTemp);
-        //gTemp = floor(vTemp);
-        //bTemp = floor(vTemp);
+        //rTemp = floor(vValue);
+        //gTemp = floor(vValue);
+        //bTemp = floor(vValue);
         //return ((rTemp&0x0f8)<<8)|((gTemp&0x0fc)<<3)|((bTemp&0x0f8)>>3);
 		return ((vValue&0x0f8)<<8)|((vValue&0x0fc)<<3)|((vValue&0x0f8)>>3);
     }
 
-	//hTemp /= 60;                        // sector 0 to 5
-    //i = floor(hTemp); 
-    //f = hTemp - i;                      // factorial part of h
+	//hValue /= 60;                        // sector 0 to 5
+    //i = floor(hValue); 
+    //f = hValue - i;                      // factorial part of h
 
 	i = hValue / 60;
 	f = hValue - i * 60;
@@ -88,8 +88,8 @@ unsigned short HSV2RGB(unsigned short hValue, unsigned short sValue, unsigned sh
     //q = floor(vValue * ( 1 - sTemp * f ));
     //t = floor(vValue * ( 1 - sTemp * ( 1 - f )));
 	p = vValue * ( 360 - sValue ) / 360;
-    q = vValue * ( 360 - sValue * f * 6 ) / 360;
-    t = vValue * ( 360 - sValue * (360 - f * 6)) / 360;
+    q = vValue * ( 360 * 60 - sValue * f) / (360 * 60);
+    t = vValue * ( 360 * 60 - sValue * (60 - f)) / (360 * 60);
 
 
 	switch( i ) {
@@ -131,14 +131,10 @@ unsigned short HSV2RGB(unsigned short hValue, unsigned short sValue, unsigned sh
 void RGB2Lab(unsigned short rgbColor, short *ptr_LValue, short *ptr_aValue, short *ptr_bValue){
   	
 	float X, Y, Z, fX, fY, fZ;
-	//int X,Y,Z,fX,fY,fZ;
 	//int L,a,b;
 	float R = (((rgbColor & 0xf800) >> 11) * 255 / 31);
 	float G = (((rgbColor & 0x07e0) >> 5) * 255 / 63);
 	float B = ((rgbColor & 0x001f) * 255 / 31);
-	//int R = ((rgbColor & 0xf800) >> 11) * 255 / 31;
-	//int G = ((rgbColor & 0x07e0) >> 5) * 255 / 63;
-	//int B = (rgbColor & 0x001f) * 255 / 31;
 
   	X = 0.412453 * R + 0.357580 * G + 0.180423 * B;
   	Y = 0.212671 * R + 0.715160 * G + 0.072169 * B;
@@ -147,10 +143,6 @@ void RGB2Lab(unsigned short rgbColor, short *ptr_LValue, short *ptr_aValue, shor
 	X /= (255 * 0.950456);
   	Y /=  255;
   	Z /= (255 * 1.088754);
-	
-	//X = (0.412453 * R + 0.357580 * G + 0.180423 * B) / (255 * 0.950456);
-  	//Y = (0.212671 * R + 0.715160 * G + 0.072169 * B) / 255;
-  	//Z = (0.019334 * R + 0.119193 * G + 0.950227 * B) / (255 * 1.088754);
 
   	if (Y > 0.008856){
     	fY = pow(Y, 1.0 / 3.0);

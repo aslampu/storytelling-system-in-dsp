@@ -11,7 +11,6 @@
 #define Min(A,B)(A<B ? A:B)
 #define Max(A,B)(A>B ? A:B)
 #define Guard(G,A,B)(Min(Max(G,A),B))//A:min, B:max
-//Min(100,floor((x-min/max)*lvl)*lvl)
 enum colorID {rColor, gColor, bColor};
 
 extern unsigned short 	rhThreshold;
@@ -38,19 +37,26 @@ extern unsigned short 	bQuantifiedLevel;
 extern unsigned short 	bBoxPadding;			
 extern unsigned short 	bBoxBorder;
 
-extern float			backgroundAvgL;
-extern float 			backgroundAvgA;
-extern float			backgroundAvgB;
-extern float			backgroundStdL;
-extern float 			backgroundStdA;
-extern float			backgroundStdB;
+//extern int				backgroundAvgL;
+//extern int	 			backgroundAvgA;
+//extern int				backgroundAvgB;
+//extern int				backgroundStdL;
+//extern int	 			backgroundStdA;
+//extern int				backgroundStdB;
+extern float				backgroundAvgL;
+extern float	 			backgroundAvgA;
+extern float				backgroundAvgB;
+extern float				backgroundStdL;
+extern float	 			backgroundStdA;
+extern float				backgroundStdB;
 
 extern int				imgSizeScale;
 extern float			noiseVariance;
-extern float			weightingS;
-extern float			weightingD;
+//extern int				weightingS;
+//extern int				weightingD;
+extern float				weightingS;
+extern float				weightingD;
 extern unsigned short 	displacementThreshold;	
-//extern int				randomNoise100;
 
 extern int				shadowA;
 extern int				shadowB;
@@ -64,7 +70,7 @@ extern int				bValue;
 extern int				rotationPrecisionScale;
 
 /* Adjust */
-extern int decideLAB_apply;
+extern int 				decideLAB_apply;
 /* Adjus */
 
 typedef struct{
@@ -80,62 +86,34 @@ typedef struct{
 	unsigned short  rotatedAngle;
 	unsigned short 	lowerBound;
 	unsigned short 	quantifiedLevel;
-	//unsigned short 	upperBound;
-	//unsigned short 	boxBorder;
-	/*short   xFrom;
-	short   xTo;
-	short   yFrom;
-	short   yTo;
-	float   avgL;
-	float   avgA;
-	float   avgB;
-	float   stdL;
-	float   stdA;
-	float   stdB;*/
 } Filter;
 
 typedef struct {
-	int		xCenter;
-	int		yCenter;
-	int		a;
-	int		b;
-	double	eccentricity;
+	short	xCenter;
+	short	yCenter;
+	short	a;
+	short	b;
+	int	eccentricity;
 } Shadow;
 
-void TrackBall2D(int xTrackCenter, int yTrackCenter, int trackRange, Filter *ptr_oldFilterGreen, Filter *ptr_oldFilterBlue, unsigned short ary2_imgFrame[XLCD][YLCD], unsigned short ary2_rgb2hsvTable[NUM_RGB][3], short ary2_rgb2labTable[NUM_RGB][3]);
+
 void RGB2HSV(unsigned short rgbColor, unsigned short *h, unsigned short *s, unsigned short *v);
 unsigned short HSV2RGB(unsigned short hValue, unsigned short sValue, unsigned short vValue);
-//void TrackBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], float ary2_rgb2hsvTable[NUM_RGB][3], short ary2_rgb2labTable[NUM_RGB][3]);
-//void DrawBox(int xFrom, int xTo, int yFrom, int yTo, int boxBorder, int boxPadding,unsigned short ary2_imgFrame[XLCD][YLCD]);
-//void DebugBall(Filter *ptr_oldFilter, unsigned short ary2_imgFrame[XLCD][YLCD], unsigned short ary2_rgb2hsvTable[NUM_RGB][3]);
-//void RGB2HSV(unsigned short rgbColor, float *h, float *s, float *v);
-//unsigned short HSV2RGB(float hValue, float sValue, float vValue);
-//void RGB2HSV(unsigned short rgbColor, unsigned short *h, unsigned short *s, unsigned short *v);
-//unsigned short HSV2RGB(unsigned short hValue, unsigned short sValue, unsigned short vValue);
 void RGB2Lab(unsigned short rgbColor, short *ptr_LValue, short *ptr_aValue, short *ptr_bValue);
 unsigned short Lab2RGB(short LValue, short aValue, short bValue);
-void InitializeFilter(int ballColor, Filter *ptr_newFilter);
 //void PLL6713();
 unsigned short	ybr_565(short y,short u,short v);
+void InitializeFilter(int ballColor, Filter *ptr_newFilter);
+
+void TrackBall2D(int xTrackCenter, int yTrackCenter, int trackRange, Filter *ptr_oldFilterGreen, Filter *ptr_oldFilterBlue, unsigned short ary2_imgFrame[XLCD][YLCD], unsigned short ary2_rgb2hsvTable[NUM_RGB][3], short ary2_rgb2labTable[NUM_RGB][3]);
 void scaleImage(short scaleFactor100, unsigned short ary2_imgSample[HEIGHT][WIDTH], unsigned short ary2_imgInput[HEIGHT][WIDTH], int rotMatrix[4]);
 int getPixelValueBilinear(int pPrime100, int qPrime100, unsigned short ary2_imgSample[HEIGHT][WIDTH]); 
-//int getPixelValueBilinear(float pPrime, float qPrime, unsigned short ary2_imgSample[HEIGHT][WIDTH]); 
-//float getPixelValueBilinearOriginal(float pPrime, float qPrime, unsigned short ary2_imgSample[HEIGHT][WIDTH]);
-
-
-//void OverlayImage1D(float imgAvgL, float imgAvgA, float imgAvgB, float imgStdL, float imgStdA, float imgStdB, Filter *ptr_theFilter, unsigned short ary2_imgFrame[XLCD][YLCD], unsigned short ary2_imgInput[HEIGHT][WIDTH], unsigned short ary_lab2rgbTable[NUM_RGB], unsigned short ary_lab2rgbTable[NUM_RGB]);
-//void OverlayImage1D(float imgAvgL, float imgAvgA, float imgAvgB, float imgStdL, float imgStdA, float imgStdB, Filter *ptr_theFilter, unsigned short ary2_imgFrame[XLCD][YLCD], unsigned short ary2_imgInput[HEIGHT][WIDTH],short	ary2_rgb2labTable[NUM_RGB][3]);
 void OverlayImage1D(Filter *ptr_theFilter, unsigned short ary2_imgFrame[XLCD][YLCD], unsigned short ary2_imgInput[HEIGHT][WIDTH]);
-
-
-
-//void OverlayImage2D(float imgAvgL, float imgAvgA, float imgAvgB, float imgStdL, float imgStdA, float imgStdB, Filter *ptr_leftFilter, Filter *ptr_rightFilter, unsigned short ary3_imgFrame[XLCD][YLCD], unsigned short ary2_imgInput[HEIGHT][WIDTH], unsigned short ary_lab2rgbTable[NUM_RGB], unsigned short ary_lab2rgbTable[NUM_RGB]);
-void OverlayImage2D(Filter *ptr_leftFilter, Filter *ptr_rightFilter, unsigned short ary2_imgFrame[XLCD][YLCD], unsigned short ary2_imgInput[HEIGHT][WIDTH]);
 void DrawShadow1D(Filter *ptr_theFilter, unsigned short ary2_imgFrame[XLCD][YLCD]);
 
-
 /*Adjust*/
-void applyLAB(float imgAvgL, float imgAvgA, float imgAvgB, float imgStdL, float imgStdA, float imgStdB,unsigned short ary2_source[HEIGHT][WIDTH],unsigned short ary2_imgInputModified[HEIGHT][WIDTH], short	ary2_rgb2labTable[NUM_RGB][3]);
+//void applyLAB(int imgAvgL, int imgAvgA, int imgAvgB, int imgStdL, int imgStdA, int imgStdB, unsigned short ary2_source[HEIGHT][WIDTH],unsigned short ary2_imgInputModified[HEIGHT][WIDTH], short ary2_rgb2labTable[NUM_RGB][3]);
+void applyLAB(float imgAvgL, float imgAvgA, float imgAvgB, float imgStdL, float imgStdA, float imgStdB, unsigned short ary2_source[HEIGHT][WIDTH],unsigned short ary2_imgInputModified[HEIGHT][WIDTH], short ary2_rgb2labTable[NUM_RGB][3]);
 /**/
 
 #endif /* INC_UTILITY_H */
