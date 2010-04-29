@@ -73,18 +73,18 @@ float			backgroundStdL = 0;
 float 			backgroundStdA = 0;
 float			backgroundStdB = 0;
 
-float           weightingS = 1;
-float			weightingD = 1;
+float           weightingS = 14;
+float			weightingD = 26;
 unsigned short 	displacementThreshold = 50;
 //int				imgSizeScale = 20;
 int imgSizeScale = 0;
 //int				randomNoise100;
-float noiseVariance = 0.001;
+float noiseVariance = 0.005;
 
-int				shadowA = 50;
-int				shadowB = 30;
-int				shadowAOffset = 50;  // Value is offset by -50 in implementation -> Offset [-50,50]
-int				shadowBOffset = 50;  // Value is offset by -50 in implementation -> Offset [-50,50]
+int				shadowA = 94;
+int				shadowB = 62;
+int				shadowAOffset = 42;  // Value is offset by -50 in implementation -> Offset [-50,50]
+int				shadowBOffset = 47;  // Value is offset by -50 in implementation -> Offset [-50,50]
 
 void main()
 {
@@ -366,6 +366,8 @@ void main()
 				trackRange = floor(sqrt(bFilter.ballSize) + sqrt(gFilter.ballSize));
 				imgSize = Guard((trackRange / gFilter.quantifiedLevel) * gFilter.quantifiedLevel, 30,100)* imgSizeScale / 50;	
 				//imgSize = Min(100, floor(((bFilter.ballSize - bFilter.lowerBound) / bFilter.upperBound) * bFilter.quantifiedLevel) * bFilter.quantifiedLevel + floor((rFilter.ballSize - rFilter.lowerBound) / rFilter.upperBound) * rFilter.quantifiedLevel) * rFilter.quantifiedLevel)
+				imgSize = imgSize * 3.0 / 4;
+				
 				combinedFilter.scaleFactor = imgSize;
 				combinedFilter.ballFound = 1;
 		 		combinedFilter.ballColor = -1;
@@ -385,6 +387,7 @@ void main()
 					applyLAB(avgTeaPotL, avgTeaPotA, avgTeaPotB, stdTeaPotL, stdTeaPotA, stdTeaPotB,ary2_imgEleven, ary2_imgInputModified, ary2_rgb2labTable);
 				}
 				//scaleImage(imgSize, ary2_imgEleven, ary2_imgInput);
+				
 				scaleImage(imgSize, ary2_imgInputModified, ary2_imgInput);
 				/*Adjust*/
 				DrawShadow1D(&combinedFilter, ary2_imgFrame);
