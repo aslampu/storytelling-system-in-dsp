@@ -14,6 +14,7 @@
 //Min(100,floor((x-min/max)*lvl)*lvl)
 enum colorID {rColor, gColor, bColor};
 
+extern float			PI;
 extern unsigned short 	rhThreshold;
 extern unsigned short 	rhBias;				
 extern unsigned short 	rLowerBound;
@@ -56,6 +57,10 @@ extern int				shadowA;
 extern int				shadowB;
 extern int				shadowAOffset;
 extern int				shadowBOffset;
+
+extern int				rValue;
+extern int				gValue;
+extern int				bValue;
 
 
 /* Adjust */
@@ -109,7 +114,7 @@ unsigned short Lab2RGB(short LValue, short aValue, short bValue);
 void InitializeFilter(int ballColor, Filter *ptr_newFilter);
 void PLL6713();
 unsigned short	ybr_565(short y,short u,short v);
-void scaleImage(short scaleFactor100, unsigned short ary2_imgSample[HEIGHT][WIDTH], unsigned short ary2_imgInput[HEIGHT][WIDTH]);
+void scaleImage(short scaleFactor100, unsigned short ary2_imgSample[HEIGHT][WIDTH], unsigned short ary2_imgInput[HEIGHT][WIDTH], float rotMatrix[4]);
 int getPixelValueBilinear(float pPrime, float qPrime, unsigned short ary2_imgSample[HEIGHT][WIDTH]); 
 float getPixelValueBilinearOriginal(float pPrime, float qPrime, unsigned short ary2_imgSample[HEIGHT][WIDTH]);
 

@@ -35,6 +35,7 @@ float				ary2_rgb2hsvTable[NUM_RGB][3];
 //unsigned short		ary_hsv2rgbTable[NUM_RGB];
 short   	  	    ary2_rgb2labTable[NUM_RGB][3];
 //unsigned short  	ary_lab2rgbTable[NUM_RGB];
+float				ary2_rotationTable[360][4];
 
 
 /* Adjust */
@@ -42,6 +43,7 @@ int decideLAB_apply = 0;
 unsigned short ary2_imgInputModified[200][200];
 /* Adjust */
 
+float			PI = 3.1415926;
 unsigned short 	rhThreshold = 0;
 unsigned short	rhBias = 36;				
 unsigned short 	rLowerBound = 150;
@@ -80,6 +82,12 @@ unsigned short 	displacementThreshold = 50;
 int imgSizeScale = 0;
 //int				randomNoise100;
 float noiseVariance = 0.005;
+
+
+float			rotatedAngle = 0;
+int				rValue = 1;
+int				gValue = 1;
+int				bValue = 1;
 
 int				shadowA = 94;
 int				shadowB = 62;
@@ -140,6 +148,14 @@ void main()
 	outputbData = fopen("C:/CCStudio_v3.1/MCHproj/MixedReality0404/MixedReality/outputbData.dat", "wb");
 	if(!outputbData) printf("Cannot open outputbData");*/
 
+
+	// Generates the roation look-up table
+	for (i = 0; i < 360; ++i) {
+		ary2_rotationTable[i][0] = cos(i * PI / 180);
+		ary2_rotationTable[i][1] = -sin(i * PI / 180);
+		ary2_rotationTable[i][2] = sin(i * PI / 180);
+		ary2_rotationTable[i][3] = cos(i * PI / 180);
+	}
 
     for (j=0;j<NUM_RGB;j++){ 
 		RGB2HSV(j,&(ary2_rgb2hsvTable[j][0]),&(ary2_rgb2hsvTable[j][1]),&(ary2_rgb2hsvTable[j][2]));
@@ -320,7 +336,7 @@ void main()
 				}
 			
 				//scaleImage(imgSize, ary2_imgEleven, ary2_imgInput);
-				scaleImage(imgSize, ary2_imgInputModified, ary2_imgInput);
+				scaleImage(imgSize, ary2_imgInputModified, ary2_imgInput, ary2_rotationTable[0]);
 				/*Adjust*/
 			
 				
@@ -346,7 +362,7 @@ void main()
 				}
 
 				//scaleImage(imgSize, ary2_imgEleven, ary2_imgInput);
-				scaleImage(imgSize, ary2_imgInputModified, ary2_imgInput);
+				scaleImage(imgSize, ary2_imgInputModified, ary2_imgInput, ary2_rotationTable[0]);
 				/*Adjust*/
 
 
@@ -364,6 +380,9 @@ void main()
 				xTrackCenter = floor((bFilter.xCenter + gFilter.xCenter) / 2);
 				yTrackCenter = floor((bFilter.yCenter + gFilter.yCenter) / 2);
 				trackRange = floor(sqrt(bFilter.ballSize) + sqrt(gFilter.ballSize));
+				rotatedAngle = (180 / PI) * Guard(atan2((bFilter.xCenter-gFilter.xCenter),(bFilter.yCenter-gFilter.yCenter)),-2 * PI,2 * PI);
+				if(rotatedAngle < 0)
+					rotatedAngle += 360;
 				imgSize = Guard((trackRange / gFilter.quantifiedLevel) * gFilter.quantifiedLevel, 30,100)* imgSizeScale / 50;	
 				//imgSize = Min(100, floor(((bFilter.ballSize - bFilter.lowerBound) / bFilter.upperBound) * bFilter.quantifiedLevel) * bFilter.quantifiedLevel + floor((rFilter.ballSize - rFilter.lowerBound) / rFilter.upperBound) * rFilter.quantifiedLevel) * rFilter.quantifiedLevel)
 				imgSize = imgSize * 3.0 / 4;
@@ -388,7 +407,7 @@ void main()
 				}
 				//scaleImage(imgSize, ary2_imgEleven, ary2_imgInput);
 				
-				scaleImage(imgSize, ary2_imgInputModified, ary2_imgInput);
+				scaleImage(imgSize, ary2_imgInputModified, ary2_imgInput, ary2_rotationTable[(int)rotatedAngle]);
 				/*Adjust*/
 				DrawShadow1D(&combinedFilter, ary2_imgFrame);
 				OverlayImage1D(&combinedFilter,ary2_imgFrame, ary2_imgInput);
