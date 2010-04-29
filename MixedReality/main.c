@@ -14,15 +14,9 @@
 
 #include    "Utility.h"
 #include    "InputImage.h"
-//#include    "TeaPot.h"
-//#include    "TeaPot.1.h"
-//#include    "TeaPot.2.h"
 #include	"mug.1.h"
-//#include    "AcrylicPaint.h"
-//#include    "AcrylicPaint.2.h"
-//#include    "AcrylicPaint.3.h"
-//#include    "AcrylicPaint.4.h"
-//#include    "plant_insert.2.h"
+//#include    "mug2.1.h"
+#include    "mug2.2.h"
 #include    "QDMA.h"
 #include	"vm3224k.h"
 #include    <stdio.h>
@@ -83,6 +77,7 @@ float           weightingS = 1;
 float			weightingD = 1;
 unsigned short 	displacementThreshold = 50;
 //int				imgSizeScale = 20;
+int imgSizeScale = 0;
 //int				randomNoise100;
 float noiseVariance = 0.001;
 
@@ -119,8 +114,8 @@ void main()
 	int xTrackCenter = XLCD / 2;
 	int yTrackCenter = YLCD / 2;
 	int trackRange = YLCD / 2;
-	//FILE *outputRGBData;
-	//int ok=0;
+	FILE *outputRGBData;
+	int ok=0;
 
 	//FILE *outputRGBData, *outputHueData,*outputLData, *outputaData, *outputbData;
 	//int ok=0, check = 0;
@@ -180,11 +175,12 @@ void main()
 	for(j=0; j<HEIGHT; j++){
 		for(i=0; i<WIDTH;i++){
 			//compute input images' Lab
-			if(ary2_imgNine[j][i] != 65535){
+			//if(ary2_imgEleven[j][i] != 65535){
+			if(ary2_imgEleven[j][i] != 65535){
 				labTeaPotNumber++;
-				L = ary2_rgb2labTable[ary2_imgNine[j][i]][0];
-				a = ary2_rgb2labTable[ary2_imgNine[j][i]][1];
-				b = ary2_rgb2labTable[ary2_imgNine[j][i]][2];
+				L = ary2_rgb2labTable[ary2_imgEleven[j][i]][0];
+				a = ary2_rgb2labTable[ary2_imgEleven[j][i]][1];
+				b = ary2_rgb2labTable[ary2_imgEleven[j][i]][2];
 			}else{
 				L = 0;
 				a = 0;
@@ -198,11 +194,12 @@ void main()
 			stdTeaPotA += a * a;
 			stdTeaPotB += b * b;	
 			
-			if(ary2_imgNine[j][i] != 65535){
+			//if(ary2_imgEleven[j][i] != 65535){
+			if(ary2_imgEleven[j][i] != 65535){
 				labAcrylicPaintNumber++;
-				L = ary2_rgb2labTable[ary2_imgNine[j][i]][0];
-				a = ary2_rgb2labTable[ary2_imgNine[j][i]][1];
-				b = ary2_rgb2labTable[ary2_imgNine[j][i]][2];
+				L = ary2_rgb2labTable[ary2_imgEleven[j][i]][0];
+				a = ary2_rgb2labTable[ary2_imgEleven[j][i]][1];
+				b = ary2_rgb2labTable[ary2_imgEleven[j][i]][2];
 			}else{
 				L = 0;
 				a = 0;
@@ -241,11 +238,12 @@ void main()
 	//fclose(outputbData);
 	
 	//Read input video
+
 	while (1) {
 		//randomNoise100 = rand() % 100;
-		//outputRGBData = fopen("C:/CCStudio_v3.1/MCHproj/MixedReality0404/MixedReality/outputRGBData.raw", "wb");
-		//if(!outputRGBData)
-		//	printf("Cannot open outputRGBData");
+		outputRGBData = fopen("C:/CCStudio_v3.1/MCHproj/MixedReality0404/MixedReality/outputRGBData.raw", "wb");
+		if(!outputRGBData)
+			printf("Cannot open outputRGBData");
 		/*outputHueData = fopen("C:/CCStudio_v3.1/MCHproj/MixedReality0404/MixedReality/outputHueData.raw", "wb");
 		if(!outputHueData)
 			printf("Cannot open outputHueData");*/
@@ -288,22 +286,40 @@ void main()
 				xTrackCenter = XLCD/2;
 				yTrackCenter = YLCD/2;
 				trackRange = YLCD/2;
+
+				//-----Adjust
+				/*
+				for(i = 0; i < 200; i++){
+					for(j = 0; j < 200; j++){
+					
+						if(ary2_imgEleven[i][j] != 0)
+							ary2_imgFrame[30+i][40+j] = ary2_imgEleven[i][j];
+					
+					}
+				}
+				*/
+				//-----Adjust
+
+
+
 				break;
 			case 1: //only find blue one
 				//tmpSize1 = imgSize1;
-				xTrackCenter = floor(2 * bFilter.xCenter-xTrackCenter);
-				yTrackCenter = floor(2 * bFilter.yCenter-yTrackCenter);
+				//xTrackCenter = floor(2 * bFilter.xCenter-xTrackCenter);
+				//yTrackCenter = floor(2 * bFilter.yCenter-yTrackCenter);
+				xTrackCenter = floor(bFilter.xCenter);
+				yTrackCenter = floor(bFilter.yCenter);
 				trackRange = floor(sqrt(bFilter.ballSize));
-				imgSize = Guard((trackRange / bFilter.quantifiedLevel) * bFilter.quantifiedLevel, 30,100);
+				imgSize = Guard((trackRange / bFilter.quantifiedLevel) * bFilter.quantifiedLevel, 30,100)* imgSizeScale / 50;
 				bFilter.scaleFactor = imgSize;
 				//if(tmpSize1 != imgSize1)
 
 				/*Adjust*/
 				if(decideLAB_apply == 1){
-					applyLAB(avgTeaPotL, avgTeaPotA, avgTeaPotB, stdTeaPotL, stdTeaPotA, stdTeaPotB,ary2_imgNine, ary2_imgInputModified, ary2_rgb2labTable);
+					applyLAB(avgTeaPotL, avgTeaPotA, avgTeaPotB, stdTeaPotL, stdTeaPotA, stdTeaPotB,ary2_imgEleven, ary2_imgInputModified, ary2_rgb2labTable);
 				}
 			
-				//scaleImage(imgSize, ary2_imgNine, ary2_imgInput);
+				//scaleImage(imgSize, ary2_imgEleven, ary2_imgInput);
 				scaleImage(imgSize, ary2_imgInputModified, ary2_imgInput);
 				/*Adjust*/
 			
@@ -320,16 +336,16 @@ void main()
 				xTrackCenter = floor(gFilter.xCenter);
 				yTrackCenter = floor(gFilter.yCenter);
 				trackRange = floor(sqrt(gFilter.ballSize));
-				imgSize = Guard((trackRange / gFilter.quantifiedLevel) * gFilter.quantifiedLevel, 30,100);	
+				imgSize = Guard((trackRange / gFilter.quantifiedLevel) * gFilter.quantifiedLevel, 30,100)* imgSizeScale / 50;	
 				gFilter.scaleFactor = imgSize;
 
 
 				/*Adjust*/
 				if(decideLAB_apply == 1){
-					applyLAB(avgTeaPotL, avgTeaPotA, avgTeaPotB, stdTeaPotL, stdTeaPotA, stdTeaPotB,ary2_imgNine, ary2_imgInputModified, ary2_rgb2labTable);
+					applyLAB(avgTeaPotL, avgTeaPotA, avgTeaPotB, stdTeaPotL, stdTeaPotA, stdTeaPotB,ary2_imgEleven, ary2_imgInputModified, ary2_rgb2labTable);
 				}
 
-				//scaleImage(imgSize, ary2_imgNine, ary2_imgInput);
+				//scaleImage(imgSize, ary2_imgEleven, ary2_imgInput);
 				scaleImage(imgSize, ary2_imgInputModified, ary2_imgInput);
 				/*Adjust*/
 
@@ -348,7 +364,7 @@ void main()
 				xTrackCenter = floor((bFilter.xCenter + gFilter.xCenter) / 2);
 				yTrackCenter = floor((bFilter.yCenter + gFilter.yCenter) / 2);
 				trackRange = floor(sqrt(bFilter.ballSize) + sqrt(gFilter.ballSize));
-				imgSize = Guard((trackRange / gFilter.quantifiedLevel) * gFilter.quantifiedLevel, 30,100);	
+				imgSize = Guard((trackRange / gFilter.quantifiedLevel) * gFilter.quantifiedLevel, 30,100)* imgSizeScale / 50;	
 				//imgSize = Min(100, floor(((bFilter.ballSize - bFilter.lowerBound) / bFilter.upperBound) * bFilter.quantifiedLevel) * bFilter.quantifiedLevel + floor((rFilter.ballSize - rFilter.lowerBound) / rFilter.upperBound) * rFilter.quantifiedLevel) * rFilter.quantifiedLevel)
 				combinedFilter.scaleFactor = imgSize;
 				combinedFilter.ballFound = 1;
@@ -366,9 +382,9 @@ void main()
 
 				/*Adjust*/
 				if(decideLAB_apply == 1){
-					applyLAB(avgTeaPotL, avgTeaPotA, avgTeaPotB, stdTeaPotL, stdTeaPotA, stdTeaPotB,ary2_imgNine, ary2_imgInputModified, ary2_rgb2labTable);
+					applyLAB(avgTeaPotL, avgTeaPotA, avgTeaPotB, stdTeaPotL, stdTeaPotA, stdTeaPotB,ary2_imgEleven, ary2_imgInputModified, ary2_rgb2labTable);
 				}
-				//scaleImage(imgSize, ary2_imgNine, ary2_imgInput);
+				//scaleImage(imgSize, ary2_imgEleven, ary2_imgInput);
 				scaleImage(imgSize, ary2_imgInputModified, ary2_imgInput);
 				/*Adjust*/
 				DrawShadow1D(&combinedFilter, ary2_imgFrame);
@@ -411,7 +427,7 @@ void main()
 		QDMA_DST 	= (int)&VM3224DATA;		
 		QDMA_S_OPT 	= OptionField_1;
 		
-		/*if(ok){
+		if(ok){
 			for (j=0;j<XLCD;j++)
 			for (i=0;i<YLCD;i++) {
 				fputc( (int)(((ary2_imgFrame[j][i]&0xF800)>>11) / 31.0 * 255.0), outputRGBData);
@@ -423,7 +439,7 @@ void main()
 			}
 		}
 		fclose(outputRGBData);
-		//fclose(outputHueData);*/
+		//fclose(outputHueData);
 	}
 }
 

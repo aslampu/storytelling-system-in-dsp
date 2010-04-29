@@ -140,6 +140,10 @@ void TrackBall2D(int xTrackCenter, int yTrackCenter, int trackRange, Filter *ptr
 				newComerBlue.yCenter = ptr_oldFilterBlue->yCenter;	
 			}
 			*ptr_oldFilterBlue = newComerBlue;
+
+				/*Adjust*/
+			decideLAB_apply++;
+			/*Adjust*/
 			break;
 		case 2:					
 			newComerGreen.ballFound = 1;
