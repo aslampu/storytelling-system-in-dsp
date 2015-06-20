@@ -1,0 +1,2 @@
+Speech Recongition & Video Synthesis System in TMS320C6713 Digital Singal Processing(DSP) DSK.
+Our main focus is to build an human-DSP interactive storytelling prototype, which can be applied to education and training purposes depending on a variety of story/multimedia scripts.
